@@ -267,12 +267,39 @@ const YOUTUBE_CHANNELS: { id: string; name: string }[] = [
   { id: 'UCb--64Gl51jIEVE-GLDAVTg', name: 'C-SPAN' },
 ];
 
-// Keyword filter for what counts as U-visa / immigration-fraud relevant.
-// Broadened to include general immigration / asylum / deportation coverage so
-// mainstream channels contribute real items — narrower filters gave zero
-// hits because BBC/CNN/etc. rarely produce U-visa-specific videos.
-const YOUTUBE_KEYWORDS =
-  /\b(u[-\s]visa|u[-\s]nonimmigrant|i-?918|visa fraud|immigration fraud|marriage fraud|bona fide determination|ICE raid|VAWA|crime victim visa|I-918B|trafficking|asylum|deportation|immigration (?:policy|court|hearing|crackdown|raid|enforcement|attorney))\b/i;
+// Keyword filter for YouTube channel feeds. Has to reject noisy matches like
+// "Jeffrey Epstein … trafficking" (a UK child-abuse story that has nothing
+// to do with US immigration) while still accepting legitimate mainstream
+// coverage of immigration policy. Rule: MUST mention an immigration-specific
+// anchor. Generic terms (trafficking / asylum / deportation) are only
+// accepted when paired with an immigration-context word.
+const YOUTUBE_KEYWORDS = new RegExp(
+  [
+    // Strong anchors — directly about U visa / program
+    '\\bu[-\\s]visa\\b',
+    '\\bu[-\\s]nonimmigrant\\b',
+    '\\bi-?918\\b',
+    '\\bI-918B\\b',
+    '\\bbona fide determination\\b',
+    '\\bcrime victim visa\\b',
+    '\\bVAWA\\b',
+    // Immigration fraud family
+    '\\bvisa fraud\\b',
+    '\\bimmigration fraud\\b',
+    '\\bmarriage fraud\\b',
+    // Agency / enforcement with immigration context
+    '\\bUSCIS\\b',
+    '\\bICE raid\\b',
+    '\\bborder patrol\\b',
+    // Broader terms — require adjacent immigration-policy context
+    '\\bimmigration\\s+(?:policy|court|hearing|crackdown|raid|enforcement|attorney|ruling|bill|order|reform|judge)\\b',
+    '\\basylum\\s+(?:seeker|seekers|claim|policy|case|hearing|ruling)\\b',
+    '\\bdeportation\\s+(?:order|case|policy|flight|hearing)\\b',
+    '\\bhuman trafficking\\s+(?:visa|immigration|victim)\\b',
+    '\\b(?:visa|green card|asylum|deportation|immigration)\\s+(?:bill|reform|law|ruling|fraud|scheme)\\b',
+  ].join('|'),
+  'i',
+);
 
 async function fetchYouTubeChannel(
   channel: { id: string; name: string },
