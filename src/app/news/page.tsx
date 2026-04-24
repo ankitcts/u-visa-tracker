@@ -5,6 +5,7 @@ import { BarChart3, Clock, MapPin, ShieldAlert, Loader2 } from 'lucide-react';
 import InteractiveNewsFeed from '@/components/InteractiveNewsFeed';
 import NewsTicker from '@/components/NewsTicker';
 import USNewsMap from '@/components/USNewsMapClient';
+import NewsFetchProgress from '@/components/NewsFetchProgress';
 import { Card, CardContent } from '@/components/ui/card';
 import { latestPending } from '@/lib/data';
 import { ANNUAL_PRINCIPAL } from '@/lib/data';
@@ -125,16 +126,8 @@ function MapAndFeedSkeleton() {
             </div>
           ))}
         </div>
-        <div className="flex items-center justify-center aspect-[16/9] bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <p className="text-sm">
-              Fetching news from Google · Reddit · GDELT · Hacker News · YouTube…
-            </p>
-            <p className="text-[11px]">
-              Classifying by state, tag, and country · attaching thumbnails
-            </p>
-          </div>
+        <div className="aspect-[16/9] bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
+          <NewsFetchProgress />
         </div>
       </div>
 
