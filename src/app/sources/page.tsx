@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DATA_SOURCES } from '@/lib/data';
+import ArchiveSearchPanel from '@/components/ArchiveSearchPanel';
 
 export const metadata: Metadata = {
   title: 'Data Sources',
@@ -49,6 +50,10 @@ export default function SourcesPage() {
           </li>
         ))}
       </ul>
+
+      {/* Archive search panel — pre-built URLs into every free public archive
+          covering the U-visa era */}
+      <ArchiveSearchPanel />
 
       <section className="prose-page">
         <h2>What is NOT available and why</h2>
