@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShieldCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ShieldCheck, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const LINKS = [
@@ -26,6 +27,15 @@ function isActive(href: string, pathname: string): boolean {
 
 export default function Navbar() {
   const pathname = usePathname() ?? '/';
+  // Track which link the user just clicked so we can show a spinner on it
+  // until Next.js settles the new route. `usePathname` updates once the new
+  // server component has streamed in, which clears the pending state.
+  const [pending, setPending] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Pathname has caught up with the click — clear the spinner.
+    setPending(null);
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -33,6 +43,7 @@ export default function Navbar() {
         <Link
           href="/"
           className="flex items-center gap-2 font-semibold text-foreground"
+          onClick={() => setPending('/')}
         >
           <ShieldCheck className="h-5 w-5 text-primary" />
           <span>U Visa Tracker</span>
@@ -40,18 +51,28 @@ export default function Navbar() {
         <ul className="flex flex-wrap gap-1 text-sm">
           {LINKS.map((l) => {
             const active = isActive(l.href, pathname);
+            const isPending = pending === l.href && !active;
             return (
               <li key={l.href}>
                 <Link
                   href={l.href}
                   aria-current={active ? 'page' : undefined}
+                  aria-busy={isPending || undefined}
+                  onClick={() => setPending(l.href)}
                   className={cn(
-                    'relative inline-flex h-9 items-center rounded-md px-3 transition-colors',
+                    'relative inline-flex h-9 items-center gap-1.5 rounded-md px-3 transition-colors',
                     active
                       ? 'bg-primary/10 text-primary font-medium'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                    isPending && 'opacity-80',
                   )}
                 >
+                  {isPending && (
+                    <Loader2
+                      aria-hidden="true"
+                      className="h-3 w-3 animate-spin text-primary"
+                    />
+                  )}
                   {l.label}
                   {active && (
                     <span

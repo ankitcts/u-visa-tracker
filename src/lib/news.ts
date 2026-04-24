@@ -33,6 +33,23 @@ const FEED_QUERIES: string[] = [
   '"certifying agency" U visa',
 ];
 
+// Fallback queries — Reddit RSS search. Works even when Google News is
+// rate-limiting our IP (which it does aggressively during dev). Each entry
+// picks a subreddit + query; results are merged.
+const REDDIT_QUERIES: { subreddit: string | null; query: string }[] = [
+  { subreddit: 'immigration', query: '"U visa"' },
+  { subreddit: 'immigration', query: '"I-918" OR "U nonimmigrant"' },
+  { subreddit: 'immigration', query: '"visa fraud" OR "immigration fraud"' },
+  { subreddit: 'immigration', query: '"Bona Fide Determination"' },
+  { subreddit: 'USCIS', query: '"U visa"' },
+  { subreddit: 'legaladvice', query: '"U visa"' },
+  { subreddit: 'Asylum', query: '"U visa"' },
+  // Unrestricted (cross-subreddit) — catch mainstream article shares.
+  { subreddit: null, query: '"U visa" fraud OR scheme OR indictment' },
+  { subreddit: null, query: '"visa fraud" indicted OR charged' },
+  { subreddit: null, query: '"I-918" OR "U nonimmigrant"' },
+];
+
 function buildFeedUrl(query: string): string {
   return (
     'https://news.google.com/rss/search?' +
@@ -128,12 +145,200 @@ async function fetchOneQuery(query: string, perQueryCap: number): Promise<NewsIt
   }
 }
 
+function buildRedditFeedUrl(subreddit: string | null, query: string): string {
+  const base = subreddit
+    ? `https://www.reddit.com/r/${subreddit}/search.rss`
+    : 'https://www.reddit.com/search.rss';
+  return (
+    base +
+    '?' +
+    new URLSearchParams({
+      q: query,
+      ...(subreddit ? { restrict_sr: '1' } : {}),
+      sort: 'new',
+      t: 'year',
+    }).toString()
+  );
+}
+
+async function fetchRedditQuery(
+  subreddit: string | null,
+  query: string,
+  perQueryCap: number,
+): Promise<NewsItem[]> {
+  try {
+    const res = await fetch(buildRedditFeedUrl(subreddit, query), {
+      next: { revalidate: REVALIDATE_SECONDS },
+      headers: {
+        // Reddit rejects requests without a descriptive UA.
+        'User-Agent': 'u-visa-tracker-news/1.0 (+news-feed)',
+      },
+    });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    return extractAtomEntries(xml).slice(0, perQueryCap).map(parseAtomEntry);
+  } catch {
+    return [];
+  }
+}
+
+// ── GDELT Doc API ──────────────────────────────────────────────────────
+// Free global news archive (artlist mode returns JSON with url/title/domain/
+// seendate/sourcecountry). Reliable when Google is 503'ing.
+const GDELT_QUERIES: string[] = [
+  '"U visa"',
+  '"visa fraud"',
+  '"immigration fraud"',
+  '"I-918"',
+  '"marriage fraud" visa',
+  '"U nonimmigrant"',
+];
+
+async function fetchGdeltQuery(query: string, limit: number): Promise<NewsItem[]> {
+  const url =
+    'https://api.gdeltproject.org/api/v2/doc/doc?' +
+    new URLSearchParams({
+      query,
+      mode: 'artlist',
+      format: 'json',
+      maxrecords: String(Math.min(75, limit)),
+      sort: 'datedesc',
+      timespan: '14d',
+    }).toString();
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: REVALIDATE_SECONDS },
+      headers: { 'User-Agent': 'u-visa-tracker-news/1.0' },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as {
+      articles?: Array<{
+        url: string;
+        title: string;
+        seendate: string;
+        domain: string;
+        sourcecountry?: string;
+      }>;
+    };
+    const arts = json.articles ?? [];
+    return arts.map((a) => ({
+      title: a.title ?? '',
+      link: a.url,
+      source: a.domain || 'GDELT',
+      // GDELT seendate is YYYYMMDDHHMMSS — convert to ISO.
+      pubDate: formatGdeltDate(a.seendate),
+      description: '',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function formatGdeltDate(s?: string): string {
+  if (!s || s.length < 14) return new Date().toISOString();
+  const yyyy = s.slice(0, 4);
+  const mm = s.slice(4, 6);
+  const dd = s.slice(6, 8);
+  const hh = s.slice(8, 10);
+  const mi = s.slice(10, 12);
+  const ss = s.slice(12, 14);
+  return `${yyyy}-${mm}-${dd}T${hh}:${mi}:${ss}Z`;
+}
+
+// ── Hacker News Algolia ────────────────────────────────────────────────
+async function fetchHackerNewsQuery(query: string, limit: number): Promise<NewsItem[]> {
+  const url =
+    'https://hn.algolia.com/api/v1/search?' +
+    new URLSearchParams({
+      query,
+      tags: 'story',
+      hitsPerPage: String(Math.min(40, limit)),
+    }).toString();
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: REVALIDATE_SECONDS },
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as {
+      hits?: Array<{ url?: string; title?: string; created_at?: string; author?: string }>;
+    };
+    const hits = (json.hits ?? []).filter((h) => h.url && h.title);
+    return hits.map((h) => ({
+      title: h.title!,
+      link: h.url!,
+      source: `HN · ${h.author ?? ''}`,
+      pubDate: h.created_at ?? new Date().toISOString(),
+      description: '',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function extractAtomEntries(xml: string): string[] {
+  const out: string[] = [];
+  const re = /<entry[\s\S]*?<\/entry>/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(xml)) !== null) out.push(m[0]);
+  return out;
+}
+
+function parseAtomEntry(raw: string): NewsItem {
+  const title = decodeHtmlEntities(stripTags(extractFirst(raw, 'title')));
+  const linkMatch = raw.match(/<link[^>]*href="([^"]+)"/i);
+  const link = linkMatch ? linkMatch[1] : '';
+  const updated = extractFirst(raw, 'updated') || extractFirst(raw, 'published');
+  const authorMatch = raw.match(
+    /<author>[\s\S]*?<name>([^<]+)<\/name>[\s\S]*?<\/author>/,
+  );
+  const author = authorMatch ? authorMatch[1].trim() : 'Reddit';
+  // Reddit feed includes a content block with HTML — strip it.
+  const contentMatch = raw.match(/<content[^>]*>([\s\S]*?)<\/content>/);
+  const contentRaw = contentMatch ? contentMatch[1] : '';
+  const description = stripTags(decodeHtmlEntities(contentRaw))
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 280);
+  return {
+    title,
+    link,
+    source: `r/immigration · ${author}`,
+    pubDate: updated,
+    description: description.toLowerCase().startsWith(title.toLowerCase().slice(0, 20))
+      ? ''
+      : description,
+  };
+}
+
 export async function fetchUVisaNews(limit = 12): Promise<NewsItem[]> {
   // Oversample per query so that after link+title dedupe we still clear `limit`.
   const perQueryCap = Math.max(30, Math.ceil((limit * 3) / FEED_QUERIES.length));
-  const batches = await Promise.all(
-    FEED_QUERIES.map((q) => fetchOneQuery(q, perQueryCap)),
-  );
+
+  // Run every available source in parallel. Each source has failure isolation
+  // — if Google News 503s, Reddit/GDELT/HN still populate the feed.
+  const [googleBatches, redditBatches, gdeltBatches, hnBatches] =
+    await Promise.all([
+      Promise.all(FEED_QUERIES.map((q) => fetchOneQuery(q, perQueryCap))),
+      Promise.all(
+        REDDIT_QUERIES.map((r) =>
+          fetchRedditQuery(r.subreddit, r.query, Math.max(15, perQueryCap)),
+        ),
+      ),
+      Promise.all(GDELT_QUERIES.map((q) => fetchGdeltQuery(q, 50))),
+      Promise.all(
+        ['"U visa"', '"I-918"', '"visa fraud"'].map((q) =>
+          fetchHackerNewsQuery(q, 20),
+        ),
+      ),
+    ]);
+  const batches = [
+    ...googleBatches,
+    ...redditBatches,
+    ...gdeltBatches,
+    ...hnBatches,
+  ];
 
   // Dedupe by link, then by normalized title.
   const seenLink = new Set<string>();

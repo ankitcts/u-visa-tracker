@@ -83,7 +83,7 @@ export const HISTORY: HistoryEvent[] = [
     ],
     articles: [
       { outlet: 'Congress.gov', headline: 'H.R. 3244 — Victims of Trafficking and Violence Protection Act of 2000', url: 'https://www.congress.gov/bill/106th-congress/house-bill/3244' },
-      { outlet: 'White House Archives', headline: 'Clinton statement on signing VTVPA, Oct 28 2000', url: 'https://clintonwhitehouse4.archives.gov/WH/new/html/Fri_Oct_27_164436_2000.html' },
+      { outlet: 'UCSB Presidency Project', headline: 'Clinton statement on signing VTVPA, Oct 28 2000', url: 'https://www.presidency.ucsb.edu/documents/statement-signing-the-victims-trafficking-and-violence-protection-act-2000' },
       { outlet: 'Newspapers.com archive', headline: 'Oct 2000 front pages — VTVPA signed into law', url: 'https://www.newspapers.com/search/results/?query=%22Victims+of+Trafficking%22&dr_year=2000-2000' },
       { outlet: 'Internet Archive', headline: 'Digitized reports & coverage — VTVPA 2000', url: 'https://archive.org/search?query=%22Victims+of+Trafficking+and+Violence+Protection+Act%22' },
     ],
@@ -212,10 +212,10 @@ export const HISTORY: HistoryEvent[] = [
     narration:
       "On June 14th, 2021, USCIS answered. Policy Memorandum 602-0184 — the Bona Fide Determination process. The idea was elegant, and overdue. Before fully adjudicating a U-visa petition, an officer could make a preliminary check. Were the basics present — the law-enforcement certification, a personal statement, the fingerprint clearance? If so, and if the petitioner did not pose a safety risk, she could be granted what the agency called bona fide determination status. With it came a four-year work permit and deferred action. Not a visa. Not permanent. But no longer limbo. For a program that had moved almost nothing, administratively, since the 2007 final rule, this was the largest procedural change in more than a decade. It did not raise the cap. It could not. But it quietly reshaped what a petitioner actually experienced, year to year, while waiting.",
     citations: [
-      { label: 'USCIS PM-602-0184', url: 'https://www.uscis.gov/sites/default/files/document/policy-manual-updates/20210614-BonaFideDetermination.pdf' },
+      { label: 'USCIS PM-602-0184 · Bona Fide Determination policy', url: 'https://www.uscis.gov/policy-manual/volume-3-part-c-chapter-5' },
     ],
     articles: [
-      { outlet: 'USCIS Newsroom', headline: 'USCIS Implements New Process for U Visa Petitioners', url: 'https://www.uscis.gov/newsroom/news-releases/uscis-implements-new-process-for-u-visa-petitioners' },
+      { outlet: 'USCIS Policy Manual', headline: 'Volume 3, Part C, Chapter 5 — Bona Fide Determination', url: 'https://www.uscis.gov/policy-manual/volume-3-part-c-chapter-5' },
       { outlet: 'Newspapers.com archive', headline: 'June 2021 coverage — Bona Fide Determination policy', url: 'https://www.newspapers.com/search/results/?query=%22Bona+Fide+Determination%22+%22U+visa%22&dr_year=2021-2021' },
     ],
   },
