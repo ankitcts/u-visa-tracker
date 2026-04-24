@@ -99,12 +99,17 @@ export async function classifyNews(
     return { ...item, state, tag, country };
   });
 
-  // Fetch og:image / og:video per article (cached 6h per URL). If the fetch
-  // layer fails, the items fall through with imageUrl=null and the UI falls
-  // back to the old flag-only header.
+  // Fetch og:image / og:video for the top-N items only (the ones shown above
+  // the fold + in the map tooltips). Items beyond N fall through with
+  // imageUrl=null — the UI still renders them, just without a thumbnail.
+  // This caps feed render time at ~N × 4s ÷ concurrency, keeping p95 under
+  // ~6s even when some publishers are slow.
+  const TOP_N = 40;
   try {
-    const withOg = await enrichWithOg(enriched, 8);
-    return withOg;
+    const top = enriched.slice(0, TOP_N);
+    const tail = enriched.slice(TOP_N);
+    const withOg = await enrichWithOg(top, 8);
+    return [...withOg, ...tail];
   } catch {
     return enriched;
   }
