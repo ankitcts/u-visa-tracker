@@ -267,15 +267,20 @@ const YOUTUBE_CHANNELS: { id: string; name: string }[] = [
   { id: 'UCb--64Gl51jIEVE-GLDAVTg', name: 'C-SPAN' },
 ];
 
-// Keyword filter for YouTube channel feeds. Has to reject noisy matches like
-// "Jeffrey Epstein … trafficking" (a UK child-abuse story that has nothing
-// to do with US immigration) while still accepting legitimate mainstream
-// coverage of immigration policy. Rule: MUST mention an immigration-specific
-// anchor. Generic terms (trafficking / asylum / deportation) are only
-// accepted when paired with an immigration-context word.
+// Keyword filter for YouTube channel feeds.
+//
+// Learned the hard way: matching on tangential mentions ("trafficking",
+// "immigration reform") lets through political roundup shows (C-SPAN
+// "Washington Today") and unrelated crime stories (BBC Epstein flats)
+// because their descriptions brush past those words in a different context.
+//
+// Current strict rule: the TITLE must contain an immigration-document /
+// agency / case-type token. Descriptions are ignored (too noisy on
+// mainstream feeds). This trades recall for precision — we'd rather show
+// zero YouTube hits than irrelevant ones.
 const YOUTUBE_KEYWORDS = new RegExp(
   [
-    // Strong anchors — directly about U visa / program
+    // Program-specific — always accept
     '\\bu[-\\s]visa\\b',
     '\\bu[-\\s]nonimmigrant\\b',
     '\\bi-?918\\b',
@@ -283,23 +288,36 @@ const YOUTUBE_KEYWORDS = new RegExp(
     '\\bbona fide determination\\b',
     '\\bcrime victim visa\\b',
     '\\bVAWA\\b',
-    // Immigration fraud family
+    // Fraud terms that are unambiguous
     '\\bvisa fraud\\b',
     '\\bimmigration fraud\\b',
     '\\bmarriage fraud\\b',
-    // Agency / enforcement with immigration context
+    '\\bgreen card fraud\\b',
+    // Agency / document anchors
     '\\bUSCIS\\b',
     '\\bICE raid\\b',
-    '\\bborder patrol\\b',
-    // Broader terms — require adjacent immigration-policy context
-    '\\bimmigration\\s+(?:policy|court|hearing|crackdown|raid|enforcement|attorney|ruling|bill|order|reform|judge)\\b',
-    '\\basylum\\s+(?:seeker|seekers|claim|policy|case|hearing|ruling)\\b',
-    '\\bdeportation\\s+(?:order|case|policy|flight|hearing)\\b',
-    '\\bhuman trafficking\\s+(?:visa|immigration|victim)\\b',
-    '\\b(?:visa|green card|asylum|deportation|immigration)\\s+(?:bill|reform|law|ruling|fraud|scheme)\\b',
+    '\\bICE detainer\\b',
+    // Specific immigration proceedings / roles
+    '\\bimmigration (?:court|judge|attorney|detention|detainee)\\b',
+    '\\basylum (?:seeker|seekers|claim|ruling|denial|grant)\\b',
+    '\\bdeportation (?:order|case|flight|hearing|raid)\\b',
+    '\\bwork permit (?:fraud|scheme|revocation)\\b',
+    '\\bgreen card (?:fraud|scheme|denial|interview)\\b',
+    // Specific visa types (narrow, crime-victim-adjacent)
+    '\\bT[-\\s]visa\\b',
+    '\\bSIJS\\b',
+    '\\bDACA\\b',
+    '\\bTPS (?:holder|recipient|revocation)\\b',
   ].join('|'),
   'i',
 );
+
+// Require the anchor to appear in the TITLE only (descriptions on mainstream
+// channels are too noisy — "Senate takes up immigration reform" filler in a
+// political-roundup description shouldn't promote a non-immigration video).
+function isYouTubeRelevant(title: string): boolean {
+  return YOUTUBE_KEYWORDS.test(title);
+}
 
 async function fetchYouTubeChannel(
   channel: { id: string; name: string },
@@ -328,8 +346,9 @@ async function fetchYouTubeChannel(
       )
         .replace(/\s+/g, ' ')
         .trim();
-      // Only keep videos that match our topical filter.
-      if (!YOUTUBE_KEYWORDS.test(`${title} ${description}`)) continue;
+      // Only keep videos whose TITLE hits the strict filter. Descriptions on
+      // mainstream channels are too noisy (political roundups, ad copy).
+      if (!isYouTubeRelevant(title)) continue;
 
       const videoIdMatch = raw.match(/<yt:videoId>([^<]+)<\/yt:videoId>/);
       const videoId = videoIdMatch ? videoIdMatch[1] : '';
