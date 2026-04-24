@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   MapPin,
@@ -20,17 +20,6 @@ import {
   SiYoutube,
 } from 'react-icons/si';
 
-/**
- * Animated live-status widget for the /news Suspense fallback.
- *
- * Each source & enrichment stage moves through
- *   pending → loading (with progress bar) → done (animated green tick)
- * on a staggered timer so the user sees clear sequential completion.
- *
- * Purely cosmetic — the real fetches happen on the server behind the
- * <Suspense> boundary. But it makes the wait feel intentional instead of
- * frozen.
- */
 type Status = 'pending' | 'loading' | 'done';
 
 interface Step {
@@ -55,44 +44,72 @@ const STAGES: Step[] = [
   { key: 'image', label: 'Attaching thumbnails', Icon: ImageIcon, color: '#10b981' },
 ];
 
-// Each "tick" is ~220ms. Each step spends 2 ticks (~440ms) in the loading
-// state, so a single source completes in under half a second and the whole
-// 5-source + 4-stage pipeline finishes in ~3.5s — visible, but never a drag.
-const TICK_MS = 220;
-const LOADING_TICKS = 2;
+// Pipeline timing (real milliseconds).
+const STEP_DURATION_MS = 700; // how long each row spends "loading"
+const STEP_STAGGER_MS = 450; // delay between rows starting
+const CYCLE_PAUSE_MS = 1200; // pause after pipeline completes before restart
 
+const TOTAL_STEPS = SOURCES.length + STAGES.length; // 9
+const PIPELINE_DURATION_MS =
+  (TOTAL_STEPS - 1) * STEP_STAGGER_MS + STEP_DURATION_MS;
+const CYCLE_DURATION_MS = PIPELINE_DURATION_MS + CYCLE_PAUSE_MS;
+
+/**
+ * Live-status widget for the /news Suspense fallback.
+ * rAF-driven: each frame computes (elapsed ms since mount) and derives the
+ * progress of every source + stage deterministically. No setInterval and no
+ * stale-closure risk — if the page is visible at all, the bars are moving.
+ * Loops continuously so a slow fetch keeps showing motion.
+ */
 export default function NewsFetchProgress() {
-  const [tick, setTick] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), TICK_MS);
-    return () => clearInterval(id);
+    const start = performance.now();
+    const tick = () => {
+      setElapsed(performance.now() - start);
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
-  const statusFor = (startTick: number): Status => {
-    if (tick < startTick) return 'pending';
-    if (tick < startTick + LOADING_TICKS) return 'loading';
-    return 'done';
-  };
+  // Time within the current cycle (0..CYCLE_DURATION_MS).
+  const t = elapsed % CYCLE_DURATION_MS;
 
-  // Per-row loading progress (0..1) while in loading state.
-  const progressFor = (startTick: number): number => {
-    if (tick < startTick) return 0;
-    const raw = (tick - startTick) / LOADING_TICKS;
-    return Math.max(0, Math.min(1, raw));
-  };
+  /** Compute progress (0..1) for a step index, where i is its position in
+   *  the overall 9-item pipeline. Each step starts at i*STAGGER, takes
+   *  DURATION to complete, then remains at 100% until the cycle ends.
+   */
+  function progressFor(i: number): number {
+    const startAt = i * STEP_STAGGER_MS;
+    if (t < startAt) return 0;
+    if (t >= PIPELINE_DURATION_MS) return 1; // pipeline complete — all done
+    const localT = t - startAt;
+    if (localT >= STEP_DURATION_MS) return 1;
+    return Math.max(0, Math.min(1, localT / STEP_DURATION_MS));
+  }
 
-  const sourceStatuses = SOURCES.map((_, i) => statusFor(i));
-  const stageStatuses = STAGES.map((_, i) =>
-    statusFor(SOURCES.length + i + 1),
-  );
+  function statusFor(p: number): Status {
+    if (p <= 0) return 'pending';
+    if (p >= 1) return 'done';
+    return 'loading';
+  }
+
+  const sourceProgress = SOURCES.map((_, i) => progressFor(i));
+  const stageProgress = STAGES.map((_, i) => progressFor(SOURCES.length + i));
+
+  const sourceStatuses = sourceProgress.map(statusFor);
+  const stageStatuses = stageProgress.map(statusFor);
 
   const sourcesDone = sourceStatuses.filter((s) => s === 'done').length;
   const stagesDone = stageStatuses.filter((s) => s === 'done').length;
 
   return (
     <div className="flex h-full w-full flex-col p-4 md:p-6">
-      {/* Top counter */}
       <div className="mb-4 flex items-center justify-between text-[10.5px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
         <span className="inline-flex items-center gap-2">
           <span className="relative h-2 w-2 rounded-full bg-green-500">
@@ -117,7 +134,7 @@ export default function NewsFetchProgress() {
                 key={s.key}
                 step={s}
                 status={sourceStatuses[i]}
-                progress={progressFor(i)}
+                progress={sourceProgress[i]}
               />
             ))}
           </ul>
@@ -132,7 +149,7 @@ export default function NewsFetchProgress() {
                 key={s.key}
                 step={s}
                 status={stageStatuses[i]}
-                progress={progressFor(SOURCES.length + i + 1)}
+                progress={stageProgress[i]}
               />
             ))}
           </ul>
@@ -152,7 +169,7 @@ function ProgressRow({
   progress: number;
 }) {
   const { Icon, label, color } = step;
-  const bg =
+  const bubbleBg =
     status === 'pending'
       ? 'rgba(148,163,184,0.15)'
       : status === 'loading'
@@ -164,7 +181,7 @@ function ProgressRow({
       <div className="flex items-center gap-2.5 text-sm">
         <span
           className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors"
-          style={{ backgroundColor: bg }}
+          style={{ backgroundColor: bubbleBg }}
         >
           <Icon
             className="h-3.5 w-3.5"
@@ -185,26 +202,20 @@ function ProgressRow({
         </span>
         <span
           className={
-            status === 'pending'
-              ? 'text-muted-foreground'
-              : 'text-foreground'
+            status === 'pending' ? 'text-muted-foreground' : 'text-foreground'
           }
         >
           {label}
         </span>
         <span className="ml-auto inline-flex h-5 w-5 items-center justify-center">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             {status === 'done' ? (
               <motion.span
                 key="done"
                 initial={{ scale: 0.3, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.3, opacity: 0 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 500,
-                  damping: 14,
-                }}
+                transition={{ type: 'spring', stiffness: 500, damping: 14 }}
                 className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-white shadow-sm"
               >
                 <Check className="h-3 w-3" strokeWidth={3} />
@@ -231,42 +242,29 @@ function ProgressRow({
         </span>
       </div>
 
-      {/* Per-row progress bar */}
+      {/* Continuous rAF-driven progress bar — width is a plain inline style so
+          it updates every frame without motion's diffing. Shimmer overlay gives
+          unmistakable motion on rows that are actively filling. */}
       <div className="ml-9 h-1 overflow-hidden rounded-full bg-muted relative">
-        <motion.div
+        <div
           className="h-full rounded-full relative overflow-hidden"
-          style={{ backgroundColor: color }}
-          initial={false}
-          animate={{
-            width:
-              status === 'pending'
-                ? '0%'
-                : status === 'loading'
-                  ? `${Math.round(progress * 100)}%`
-                  : '100%',
-          }}
-          transition={{
-            duration: status === 'done' ? 0.2 : 0.3,
-            ease: 'easeOut',
+          style={{
+            width: `${progress * 100}%`,
+            backgroundColor: color,
+            transition: 'width 80ms linear',
           }}
         >
           {status === 'loading' && (
-            <motion.span
+            <span
               aria-hidden
-              className="absolute inset-0"
+              className="absolute inset-y-0 w-1/2 animate-[shimmerSweep_0.9s_linear_infinite]"
               style={{
                 background:
                   'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%)',
               }}
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{
-                duration: 0.9,
-                repeat: Infinity,
-                ease: 'linear',
-              }}
             />
           )}
-        </motion.div>
+        </div>
       </div>
     </li>
   );
