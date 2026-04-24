@@ -1,0 +1,12 @@
+node_modules
+.next
+.env
+.env.local
+.env.*.local
+tsconfig.tsbuildinfo
+.DS_Store
+*.log
+.vercel
+coverage
+public/sitemap*.xml
+public/robots.txt
