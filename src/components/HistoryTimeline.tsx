@@ -214,30 +214,38 @@ function TimelineItem({
             className="float-right ml-4 mb-2 w-44 md:w-56 rounded-sm overflow-hidden border border-[#c8bb96] dark:border-[#5a5040] bg-white shadow-sm"
             style={{ shapeOutside: 'margin-box' }}
           >
-            <div className="aspect-[4/3] bg-[#f4ecd8] flex items-center justify-center overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={event.image.url}
-                alt={event.image.caption}
-                loading="lazy"
-                className="w-full h-full object-cover"
-                style={{
-                  filter: 'sepia(0.08) saturate(0.95)',
-                }}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.visibility = 'hidden';
-                }}
-              />
-            </div>
-            <figcaption
-              className="px-2 py-1.5 text-[10.5px] leading-snug text-foreground/70 border-t border-dashed border-[#c8bb96] dark:border-[#5a5040]"
-              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+            <a
+              href={commonsPageUrlFor(event.image.url)}
+              target="_blank"
+              rel="noreferrer"
+              className="block group"
+              title={`Open source on Wikimedia Commons: ${event.image.caption}`}
             >
-              <span className="block italic">{event.image.caption}</span>
-              <span className="block mt-0.5 text-[9px] uppercase tracking-[0.1em] text-muted-foreground">
-                {event.image.credit} · {event.image.license}
-              </span>
-            </figcaption>
+              <div className="aspect-[4/3] bg-[#f4ecd8] flex items-center justify-center overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={event.image.url}
+                  alt={event.image.caption}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  style={{
+                    filter: 'sepia(0.08) saturate(0.95)',
+                  }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.visibility = 'hidden';
+                  }}
+                />
+              </div>
+              <figcaption
+                className="px-2 py-1.5 text-[10.5px] leading-snug text-foreground/70 border-t border-dashed border-[#c8bb96] dark:border-[#5a5040] group-hover:text-foreground"
+                style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+              >
+                <span className="block italic">{event.image.caption}</span>
+                <span className="block mt-0.5 text-[9px] uppercase tracking-[0.1em] text-muted-foreground">
+                  {event.image.credit} · {event.image.license}
+                </span>
+              </figcaption>
+            </a>
           </figure>
         )}
 
@@ -321,4 +329,23 @@ function slug(s: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
     .slice(0, 40);
+}
+
+/**
+ * Given a Wikimedia Commons direct-image URL, returns the Commons File: page
+ * URL (credit/attribution page). For non-Commons URLs, returns the url itself
+ * so the link still works — it just opens the image directly.
+ */
+function commonsPageUrlFor(imageUrl: string): string {
+  try {
+    const u = new URL(imageUrl);
+    if (u.hostname === 'upload.wikimedia.org') {
+      const parts = u.pathname.split('/').filter(Boolean);
+      const file = parts[parts.length - 1];
+      return `https://commons.wikimedia.org/wiki/File:${file}`;
+    }
+  } catch {
+    // fall through
+  }
+  return imageUrl;
 }

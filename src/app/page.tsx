@@ -4,6 +4,8 @@ import { BookOpen, Newspaper } from 'lucide-react';
 import HistoryTimeline from '@/components/HistoryTimeline';
 import HistoryNarrator from '@/components/HistoryNarrator';
 import HistoryRemotionPlayer from '@/components/HistoryRemotionPlayerLoader';
+import ClippingGallery from '@/components/ClippingGallery';
+import ArchiveSearchPanel from '@/components/ArchiveSearchPanel';
 import { HISTORY } from '@/lib/u-visa-history';
 import { TOTAL_DURATION, FPS } from '@/remotion/HistoryVideo';
 
@@ -119,6 +121,25 @@ export default function HomePage() {
         </div>
         <HistoryTimeline />
       </section>
+
+      {/* Gallery of period images */}
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Image gallery
+          </h2>
+          <p className="text-sm text-muted-foreground max-w-3xl">
+            Every image on this site is public-domain (US federal government
+            work) or Creative Commons. Click any tile for the full-size view
+            and attribution. The source file page on Wikimedia Commons is
+            linked from each lightbox.
+          </p>
+        </div>
+        <ClippingGallery />
+      </section>
+
+      {/* Archive search — direct links to real contemporaneous coverage */}
+      <ArchiveSearchPanel />
 
       {/* Methodology note */}
       <section className="rounded-lg border bg-muted/30 p-5 text-sm text-muted-foreground space-y-2">
