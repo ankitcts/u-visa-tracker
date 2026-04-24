@@ -98,11 +98,15 @@
   }
 }
 
-/* NewsFetchProgress animations — CSS-only so they run on the compositor
-   and can't be stalled by React re-rendering. The pipeline is 9 rows ×
-   450ms stagger + 700ms fill + 1200ms pause = 5500ms cycle. Each row's
-   animation-delay is set inline from its index so the whole reel
-   progresses down the column. */
+/* NewsFetchProgress animations — pure CSS. Each keyframe runs ONCE per
+   row with animation-fill-mode: forwards so the end state persists.
+   Per-row timing is set inline via animation-delay based on row index:
+     0:  Google News  (0ms)
+     1:  Reddit       (450ms)
+     ...
+     8:  Attaching thumbnails (3600ms)
+   Each row's fill takes 700ms, so the 9th row finishes at 4300ms and
+   every row stays in its "done" state from then on. */
 
 @keyframes shimmerSweep {
   0% {
@@ -113,71 +117,40 @@
   }
 }
 
-/* Fill from 0% to 100% over the first 700ms of the row's window, then
-   hold at 100% until the cycle restarts (at 5500ms). The ratios below
-   are the key frames within a single 5500ms cycle:
-     700 / 5500  = 12.7% → fill done
-     4300 / 5500 = 78.2% → pipeline completes; bar holds
-     4300..5500  → pause (bar still at 100%)
-     5500 loop   → back to 0%                                      */
 @keyframes rowFill {
-  0% {
+  from {
     width: 0%;
   }
-  12.73% {
+  to {
     width: 100%;
-  }
-  99.99% {
-    width: 100%;
-  }
-  100% {
-    width: 0%;
   }
 }
 
-/* Bubble background and icon color flip from muted → brand during the
-   fill window, then stay active through the pause. */
 @keyframes rowBubbleBg {
-  0% {
-    background-color: rgba(148, 163, 184, 0.15);
-  }
-  0.01%,
-  12.73% {
+  from {
     background-color: color-mix(in srgb, var(--row-color) 20%, transparent);
   }
-  78.18%,
-  99.99% {
-    background-color: color-mix(in srgb, var(--row-color) 25%, transparent);
-  }
-  100% {
-    background-color: rgba(148, 163, 184, 0.15);
+  to {
+    background-color: color-mix(in srgb, var(--row-color) 30%, transparent);
   }
 }
 
 @keyframes rowIconColor {
-  0% {
+  from {
     color: rgb(148, 163, 184);
   }
-  0.01%,
-  99.99% {
+  1%,
+  to {
     color: var(--row-color);
-  }
-  100% {
-    color: rgb(148, 163, 184);
   }
 }
 
-/* Spinner ring visible only during the fill window. */
 @keyframes rowSpinVisible {
-  0%,
-  12.73% {
-    opacity: 0;
-  }
-  0.01%,
-  12.72% {
+  from,
+  98% {
     opacity: 1;
   }
-  100% {
+  to {
     opacity: 0;
   }
 }
@@ -188,36 +161,27 @@
   }
 }
 
-/* Green check — pops in right before the bar completes and stays until
-   cycle restarts. */
 @keyframes rowTick {
-  0%,
-  2% {
+  from {
     opacity: 0;
     transform: scale(0.3);
   }
-  4%,
-  99.99% {
+  60% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  to {
     opacity: 1;
     transform: scale(1);
   }
-  100% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
 }
 
-/* Row loader spinner visible during fill window (before the tick). */
 @keyframes rowLoaderVisible {
-  0%,
-  12.73% {
-    opacity: 0;
-  }
-  0.01%,
-  12.5% {
+  from,
+  98% {
     opacity: 1;
   }
-  100% {
+  to {
     opacity: 0;
   }
 }

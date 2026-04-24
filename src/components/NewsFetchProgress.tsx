@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import {
   MapPin,
   Tag,
@@ -8,6 +9,7 @@ import {
   Check,
   Loader2,
   Database,
+  Info,
   type LucideIcon,
 } from 'lucide-react';
 import type { IconType } from 'react-icons';
@@ -19,14 +21,16 @@ import {
 } from 'react-icons/si';
 
 /**
- * CSS-only staggered progress loader. Every row uses a pair of keyframe
- * animations with per-row `animation-delay`, so progression happens on the
- * compositor — no useEffect, no rAF, no setInterval, no React state. The
- * counter re-renders driven by a single `useEffect` tick so it stays in
- * sync, but even that is non-critical: if the ticker froze, every bar would
- * still fill because the animation is entirely CSS.
+ * Scripted one-shot progress indicator for the /news Suspense fallback.
+ *
+ * The real data fetch happens on the server and resolves whenever it resolves;
+ * this widget is purely a visual affordance so the wait feels intentional.
+ * Each row animates from pending → loading → done on a pre-scripted 450ms
+ * stagger, ends at 4300ms with a green tick, and STAYS done. No loop.
+ *
+ * The counter "N/5 · M/4" mirrors the scripted timeline, not live fetch
+ * state — so we label it "Scripted" to be honest about that.
  */
-import { useEffect, useState } from 'react';
 
 interface Step {
   key: string;
@@ -53,38 +57,44 @@ const STAGES: Step[] = [
 const STAGGER_MS = 450;
 const FILL_MS = 700;
 const TOTAL_STEPS = SOURCES.length + STAGES.length;
-const PIPELINE_MS = (TOTAL_STEPS - 1) * STAGGER_MS + FILL_MS;
-const CYCLE_MS = PIPELINE_MS + 1200;
+const PIPELINE_END_MS = (TOTAL_STEPS - 1) * STAGGER_MS + FILL_MS;
 
 export default function NewsFetchProgress() {
-  // Drives only the counter "N/5 · M/4" — not the bars. Bars are pure CSS.
-  // So even if this effect fails to update, the motion still plays.
+  // Drives the counter only. Re-renders every 100ms until the scripted
+  // pipeline finishes, then stops. Bars are pure CSS and run regardless.
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
     const start = Date.now();
-    const id = setInterval(() => setElapsed(Date.now() - start), 80);
+    const id = setInterval(() => {
+      const e = Date.now() - start;
+      setElapsed(e);
+      if (e > PIPELINE_END_MS + 200) clearInterval(id);
+    }, 100);
     return () => clearInterval(id);
   }, []);
 
-  const cycleT = elapsed % CYCLE_MS;
   const doneAt = (i: number) => i * STAGGER_MS + FILL_MS;
-  const isDone = (i: number) =>
-    cycleT >= doneAt(i) && cycleT < PIPELINE_MS + 1200;
+  const isDoneAt = (i: number) => elapsed >= doneAt(i);
 
-  const sourcesDone = SOURCES.filter((_, i) => isDone(i)).length;
-  const stagesDone = STAGES.filter((_, i) => isDone(SOURCES.length + i)).length;
+  const sourcesDone = SOURCES.filter((_, i) => isDoneAt(i)).length;
+  const stagesDone = STAGES.filter((_, i) => isDoneAt(SOURCES.length + i)).length;
+
+  const pipelineComplete = elapsed >= PIPELINE_END_MS;
 
   return (
     <div className="flex h-full w-full flex-col p-4 md:p-6">
-      <div className="mb-4 flex items-center justify-between text-[10.5px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
+      <div className="mb-4 flex items-center justify-between gap-2 text-[10.5px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
         <span className="inline-flex items-center gap-2">
           <span className="relative h-2 w-2 rounded-full bg-green-500">
             <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-60" />
           </span>
-          Fetching live news
+          {pipelineComplete ? 'Rendering news' : 'Fetching live news'}
         </span>
-        <span className="font-mono tabular-nums text-foreground">
+        <span
+          className="font-mono tabular-nums text-foreground"
+          aria-live="polite"
+        >
           {sourcesDone}/{SOURCES.length} sources · {stagesDone}/{STAGES.length}{' '}
           stages
         </span>
@@ -112,6 +122,12 @@ export default function NewsFetchProgress() {
           </ul>
         </div>
       </div>
+
+      <p className="mt-4 inline-flex items-center gap-1 text-[10px] text-muted-foreground italic">
+        <Info className="h-3 w-3" />
+        Scripted pipeline indicator — the real fetch resolves independently
+        when upstream sources respond.
+      </p>
     </div>
   );
 }
@@ -119,6 +135,14 @@ export default function NewsFetchProgress() {
 function ProgressRow({ step, index }: { step: Step; index: number }) {
   const { Icon, label, color } = step;
   const delayMs = index * STAGGER_MS;
+
+  const oneShot = {
+    animationDuration: `${FILL_MS}ms`,
+    animationDelay: `${delayMs}ms`,
+    animationIterationCount: '1' as const,
+    animationFillMode: 'forwards' as const,
+    animationTimingFunction: 'ease-out',
+  };
 
   return (
     <li className="space-y-1">
@@ -128,19 +152,19 @@ function ProgressRow({ step, index }: { step: Step; index: number }) {
           style={
             {
               backgroundColor: 'rgba(148,163,184,0.15)',
-              animation: `rowBubbleBg ${CYCLE_MS}ms linear infinite`,
-              animationDelay: `${delayMs}ms`,
+              animationName: 'rowBubbleBg',
+              ...oneShot,
               ['--row-color' as string]: color,
             } as React.CSSProperties
           }
         >
           <Icon
-            className="h-3.5 w-3.5 row-icon"
+            className="h-3.5 w-3.5"
             style={
               {
                 color: 'rgb(148,163,184)',
-                animation: `rowIconColor ${CYCLE_MS}ms linear infinite`,
-                animationDelay: `${delayMs}ms`,
+                animationName: 'rowIconColor',
+                ...oneShot,
                 ['--row-color' as string]: color,
               } as React.CSSProperties
             }
@@ -151,33 +175,30 @@ function ProgressRow({ step, index }: { step: Step; index: number }) {
             style={{
               borderColor: `${color}33`,
               borderTopColor: color,
-              animation: `rowSpin 0.9s linear infinite, rowSpinVisible ${CYCLE_MS}ms linear infinite`,
-              animationDelay: `0s, ${delayMs}ms`,
               opacity: 0,
+              animation: `rowSpinVisible ${FILL_MS}ms ${delayMs}ms ease-out 1 forwards, rowSpin 0.9s linear infinite`,
             }}
           />
         </span>
 
-        <span className="row-label text-foreground">{label}</span>
+        <span className="text-foreground">{label}</span>
 
-        <span className="ml-auto inline-flex h-5 w-5 items-center justify-center">
+        <span className="ml-auto relative inline-flex h-5 w-5 items-center justify-center">
           <span
-            className="row-done inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-white shadow-sm"
+            className="absolute inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-white shadow-sm"
             style={{
               opacity: 0,
               transform: 'scale(0.3)',
-              animation: `rowTick ${CYCLE_MS}ms linear infinite`,
-              animationDelay: `${delayMs + FILL_MS - 150}ms`,
+              animation: `rowTick 280ms ${delayMs + FILL_MS - 140}ms cubic-bezier(0.34, 1.56, 0.64, 1) 1 forwards`,
             }}
           >
             <Check className="h-3 w-3" strokeWidth={3} />
           </span>
           <span
-            className="row-loader absolute"
+            className="absolute"
             style={{
-              animation: `rowLoaderVisible ${CYCLE_MS}ms linear infinite`,
-              animationDelay: `${delayMs}ms`,
               opacity: 0,
+              animation: `rowLoaderVisible ${FILL_MS}ms ${delayMs}ms linear 1 forwards`,
             }}
           >
             <Loader2 className="h-3.5 w-3.5 text-muted-foreground animate-spin" />
@@ -185,15 +206,16 @@ function ProgressRow({ step, index }: { step: Step; index: number }) {
         </span>
       </div>
 
-      {/* Progress bar — pure CSS, fills from 0 to 100% then holds until cycle restart */}
+      {/* Progress bar — fills once, holds at 100%. No loop. */}
       <div className="ml-9 h-1 overflow-hidden rounded-full bg-muted relative">
         <div
           className="h-full rounded-full relative overflow-hidden"
           style={{
             width: '0%',
             backgroundColor: color,
-            animation: `rowFill ${CYCLE_MS}ms linear infinite`,
-            animationDelay: `${delayMs}ms`,
+            animationName: 'rowFill',
+            ...oneShot,
+            animationTimingFunction: 'ease-out',
           }}
         >
           <span
@@ -202,7 +224,7 @@ function ProgressRow({ step, index }: { step: Step; index: number }) {
             style={{
               background:
                 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%)',
-              animation: 'shimmerSweep 0.9s linear infinite',
+              animation: `shimmerSweep 0.9s linear infinite, rowLoaderVisible ${FILL_MS}ms ${delayMs}ms linear 1 forwards`,
             }}
           />
         </div>
