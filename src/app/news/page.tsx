@@ -27,20 +27,26 @@ export default async function NewsPage() {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Live U-Visa News
-        </h1>
-        <p className="text-muted-foreground max-w-3xl">
-          Recent U-visa, immigration-fraud, and crime-victim-visa coverage,
-          geo-tagged by state where possible. Feed refreshes hourly; program
-          aggregate stats refresh daily. What the U visa IS (categories,
-          eligibility, process) lives at{' '}
-          <Link href="/u-visa" className="text-primary hover:underline">
-            /u-visa
-          </Link>
-          .
-        </p>
+      <header className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-semibold tracking-tight inline-flex items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full border border-red-500/40 bg-red-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-600 dark:text-red-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+              Live
+            </span>
+            U-Visa News
+          </h1>
+          <p className="text-sm text-muted-foreground max-w-2xl">
+            Geo-tagged U-visa and immigration-fraud coverage. Feed refreshes
+            hourly · aggregate stats refresh daily.
+          </p>
+        </div>
+        <Link
+          href="/u-visa"
+          className="text-xs text-muted-foreground hover:text-primary underline-offset-4 hover:underline shrink-0"
+        >
+          What is the U visa? →
+        </Link>
       </header>
 
       <NewsTicker limit={10} />

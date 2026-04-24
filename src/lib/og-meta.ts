@@ -122,18 +122,33 @@ export const fetchOgMeta = unstable_cache(
 );
 
 /** Concurrency-limited Promise.all so we don't open 120 sockets at once. */
-export async function enrichWithOg<T extends { link: string }>(
-  items: T[],
-  concurrency = 8,
-): Promise<(T & OgMeta)[]> {
+export async function enrichWithOg<
+  T extends {
+    link: string;
+    imageUrl?: string | null;
+    videoUrl?: string | null;
+  },
+>(items: T[], concurrency = 8): Promise<(T & OgMeta)[]> {
   const out: (T & OgMeta)[] = new Array(items.length);
   let cursor = 0;
   const worker = async () => {
     while (true) {
       const i = cursor++;
       if (i >= items.length) return;
-      const meta = await fetchOgMeta(items[i].link);
-      out[i] = { ...items[i], ...meta };
+      const src = items[i];
+      // Items that already carry imageUrl/videoUrl (e.g. YouTube feed) skip
+      // the network fetch — we already have everything we need.
+      if (src.imageUrl) {
+        out[i] = {
+          ...src,
+          imageUrl: src.imageUrl,
+          videoUrl: src.videoUrl ?? null,
+          resolvedUrl: src.link,
+        } as T & OgMeta;
+        continue;
+      }
+      const meta = await fetchOgMeta(src.link);
+      out[i] = { ...src, ...meta };
     }
   };
   await Promise.all(Array.from({ length: concurrency }, worker));

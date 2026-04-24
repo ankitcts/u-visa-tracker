@@ -12,14 +12,9 @@ export default async function NewsTicker({ limit = 10 }: { limit?: number }) {
   if (items.length === 0) return null;
 
   return (
-    <div className="group relative overflow-hidden border-y bg-card">
-      <div className="flex items-center gap-2 absolute top-0 bottom-0 left-0 px-4 bg-gradient-to-r from-card via-card to-transparent z-10">
-        <Radio className="h-4 w-4 text-destructive animate-pulse" />
-        <span className="text-xs font-semibold uppercase tracking-wide">
-          Live
-        </span>
-      </div>
-      <div className="flex gap-10 whitespace-nowrap py-3 animate-marquee group-hover:[animation-play-state:paused] pl-28">
+    <div className="group relative overflow-hidden rounded-md border bg-card">
+      {/* Scrolling lane — leaves room on the left for the fixed pill. */}
+      <div className="flex gap-10 whitespace-nowrap py-3 pl-[120px] pr-4 animate-marquee group-hover:[animation-play-state:paused]">
         {[...items, ...items].map((item, idx) => (
           <a
             key={`${item.link}-${idx}`}
@@ -34,6 +29,20 @@ export default async function NewsTicker({ limit = 10 }: { limit?: number }) {
             </span>
           </a>
         ))}
+      </div>
+      {/* LIVE pill anchored to the left, with a wider gradient fade-out so
+          the scrolling text never visibly overlaps the label. */}
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 z-20 flex items-center"
+        aria-hidden
+      >
+        <span className="h-full w-[140px] bg-gradient-to-r from-card via-card to-transparent" />
+      </div>
+      <div className="absolute inset-y-0 left-0 z-30 flex items-center gap-1.5 pl-3 pr-2">
+        <Radio className="h-4 w-4 text-destructive animate-pulse" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-destructive">
+          Live
+        </span>
       </div>
     </div>
   );

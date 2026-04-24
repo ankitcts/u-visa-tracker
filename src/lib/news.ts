@@ -10,6 +10,10 @@ export interface NewsItem {
   source: string;
   pubDate: string;
   description: string;
+  /** Pre-resolved thumbnail (e.g. YouTube). If present, og-meta fetch is skipped. */
+  imageUrl?: string | null;
+  /** Pre-resolved video URL (YouTube items set this directly). */
+  videoUrl?: string | null;
 }
 
 // Multiple angles to accumulate ≥100 distinct items after link+title dedupe.
@@ -246,6 +250,86 @@ function formatGdeltDate(s?: string): string {
   return `${yyyy}-${mm}-${dd}T${hh}:${mi}:${ss}Z`;
 }
 
+// ── YouTube channel RSS ────────────────────────────────────────────────
+// Public YouTube channel feeds (no API key, no rate limit). Each channel
+// returns its 15 newest uploads in Atom; we filter to U-visa/immigration-
+// relevant items locally by keyword match on title+description.
+const YOUTUBE_CHANNELS: { id: string; name: string }[] = [
+  { id: 'UC16niRr50-MSBwiO3YDb3RA', name: 'BBC News' },
+  { id: 'UCupvZG-5ko_eiXAupbDfxWw', name: 'CNN' },
+  { id: 'UCeY0bbntWzzVIaj2z3QigXg', name: 'NBC News' },
+  { id: 'UCBi2mrWuNuyYy4gbM6fU18Q', name: 'ABC News' },
+  { id: 'UC8p1vwvWtl6T73JiExfWs1g', name: 'CBS News' },
+  { id: 'UCXIJgqnII2ZOINSWNOGFThA', name: 'Fox News' },
+  { id: 'UC52X5wxOL_s5yw0dQk7NtgA', name: 'AP News' },
+  { id: 'UCK7tptUDHh-RYDsdxO1-5QQ', name: 'WSJ' },
+  { id: 'UCHd62-u_v4DvJ8TCFtpi4GA', name: 'Washington Post' },
+  { id: 'UCb--64Gl51jIEVE-GLDAVTg', name: 'C-SPAN' },
+];
+
+// Keyword filter for what counts as U-visa / immigration-fraud relevant.
+const YOUTUBE_KEYWORDS =
+  /\b(u[-\s]visa|u[-\s]nonimmigrant|i-?918|visa fraud|immigration fraud|marriage fraud|bona fide determination|USCIS|ICE raid|VAWA|crime victim visa|I-918B|immigration attorney .*(fraud|indict)|trafficking .*visa)\b/i;
+
+async function fetchYouTubeChannel(
+  channel: { id: string; name: string },
+  perChannelCap: number,
+): Promise<NewsItem[]> {
+  const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`;
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: REVALIDATE_SECONDS },
+      headers: { 'User-Agent': 'Mozilla/5.0 (u-visa-tracker; +youtube-feed)' },
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    const entries = extractAtomEntries(xml);
+    const items: NewsItem[] = [];
+    for (const raw of entries) {
+      const titleRaw = stripTags(extractFirst(raw, 'title'));
+      const title = decodeHtmlEntities(titleRaw);
+      // `<media:description>` holds the video description
+      const descMatch = raw.match(
+        /<media:description[^>]*>([\s\S]*?)<\/media:description>/,
+      );
+      const description = decodeHtmlEntities(
+        stripTags(descMatch ? descMatch[1] : ''),
+      )
+        .replace(/\s+/g, ' ')
+        .trim();
+      // Only keep videos that match our topical filter.
+      if (!YOUTUBE_KEYWORDS.test(`${title} ${description}`)) continue;
+
+      const videoIdMatch = raw.match(/<yt:videoId>([^<]+)<\/yt:videoId>/);
+      const videoId = videoIdMatch ? videoIdMatch[1] : '';
+      const published = extractFirst(raw, 'published');
+      // Grab the HD thumbnail from `<media:thumbnail url="..."/>`
+      const thumbMatch = raw.match(/<media:thumbnail[^>]*url="([^"]+)"/);
+      const thumb = thumbMatch ? thumbMatch[1] : videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
+
+      items.push({
+        title,
+        link: videoId
+          ? `https://www.youtube.com/watch?v=${videoId}`
+          : extractFirst(raw, 'link'),
+        source: `YouTube · ${channel.name}`,
+        pubDate: published || new Date().toISOString(),
+        description: description.slice(0, 280),
+        imageUrl: thumb,
+        videoUrl: videoId
+          ? `https://www.youtube.com/watch?v=${videoId}`
+          : null,
+      });
+
+      if (items.length >= perChannelCap) break;
+    }
+    return items;
+  } catch {
+    return [];
+  }
+}
+
 // ── Hacker News Algolia ────────────────────────────────────────────────
 async function fetchHackerNewsQuery(query: string, limit: number): Promise<NewsItem[]> {
   const url =
@@ -317,8 +401,8 @@ export async function fetchUVisaNews(limit = 12): Promise<NewsItem[]> {
   const perQueryCap = Math.max(30, Math.ceil((limit * 3) / FEED_QUERIES.length));
 
   // Run every available source in parallel. Each source has failure isolation
-  // — if Google News 503s, Reddit/GDELT/HN still populate the feed.
-  const [googleBatches, redditBatches, gdeltBatches, hnBatches] =
+  // — if Google News 503s, Reddit/GDELT/HN/YouTube still populate the feed.
+  const [googleBatches, redditBatches, gdeltBatches, hnBatches, ytBatches] =
     await Promise.all([
       Promise.all(FEED_QUERIES.map((q) => fetchOneQuery(q, perQueryCap))),
       Promise.all(
@@ -332,12 +416,16 @@ export async function fetchUVisaNews(limit = 12): Promise<NewsItem[]> {
           fetchHackerNewsQuery(q, 20),
         ),
       ),
+      Promise.all(
+        YOUTUBE_CHANNELS.map((c) => fetchYouTubeChannel(c, 5)),
+      ),
     ]);
   const batches = [
     ...googleBatches,
     ...redditBatches,
     ...gdeltBatches,
     ...hnBatches,
+    ...ytBatches,
   ];
 
   // Dedupe by link, then by normalized title.
