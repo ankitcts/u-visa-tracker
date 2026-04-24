@@ -25,14 +25,18 @@ export interface HistoryEvent {
   citations?: { label: string; url?: string }[];
   /** Secondary-source articles: press coverage, analysis, archive searches. */
   articles?: { outlet: string; headline: string; url: string }[];
-  /** Public-domain / CC-licensed historical image for the timeline card. */
-  image?: {
-    url: string;
-    caption: string;
-    credit: string;
-    license: string;
-  };
+  /** Primary public-domain / CC-licensed historical image for the card. */
+  image?: HistoryImage;
+  /** Additional images (portraits, alternate angles) — shown in the gallery. */
+  extraImages?: HistoryImage[];
   highlight?: boolean; // pivotal events
+}
+
+export interface HistoryImage {
+  url: string;
+  caption: string;
+  credit: string;
+  license: string;
 }
 
 export const INTRO_NARRATION =
@@ -66,6 +70,22 @@ export const HISTORY: HistoryEvent[] = [
       credit: 'White House photo / Wikimedia Commons',
       license: 'Public domain (US federal government work)',
     },
+    extraImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/7/74/Joe_Biden%2C_official_103rd_Congress_photo.png',
+        caption:
+          'Sen. Joe Biden (D-DE), 103rd Congress official portrait — principal author of the original Violence Against Women Act.',
+        credit: 'U.S. Congress / Wikimedia Commons',
+        license: 'Public domain (US federal government work)',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/U.S._Department_of_Justice_headquarters%2C_August_12%2C_2006.jpg',
+        caption:
+          'Robert F. Kennedy Department of Justice Building, Washington D.C. — headquarters of the federal agency that enforces VAWA protections.',
+        credit: 'Coolcaesar / Wikimedia Commons',
+        license: 'CC BY-SA 3.0',
+      },
+    ],
   },
   {
     year: 1999,
@@ -108,6 +128,29 @@ export const HISTORY: HistoryEvent[] = [
       credit: 'Bob McNeely / White House / Wikimedia Commons',
       license: 'Public domain (US federal government work)',
     },
+    extraImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Paul_Wellstone%2C_official_Senate_photo_portrait.jpg',
+        caption:
+          'Sen. Paul Wellstone (D-MN) — Senate co-sponsor of the trafficking and crime-victim provisions that became the U visa.',
+        credit: 'U.S. Senate / Wikimedia Commons',
+        license: 'Public domain (US federal government work)',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/9/95/Sam_Brownback_official_Senate_portrait.jpg',
+        caption:
+          'Sen. Sam Brownback (R-KS) — the bipartisan Senate partner on the VTVPA anti-trafficking title.',
+        credit: 'U.S. Senate / Wikimedia Commons',
+        license: 'Public domain (US federal government work)',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/0/09/Chris_Smith%2C_official_109th_Congress_photo.jpg',
+        caption:
+          'Rep. Christopher H. Smith (R-NJ) — House sponsor of the Trafficking Victims Protection Act.',
+        credit: 'U.S. Congress / Wikimedia Commons',
+        license: 'Public domain (US federal government work)',
+      },
+    ],
   },
   {
     year: 2002,
@@ -133,6 +176,13 @@ export const HISTORY: HistoryEvent[] = [
     citations: [
       { label: 'Pub. L. 109-162' },
     ],
+    image: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/d/dc/Trafficking_in_Persons_Report_2005.png',
+      caption:
+        'U.S. State Department Trafficking in Persons Report 2005 — the federal annual global ranking of trafficking response, which kept U-visa policy debates visible on the Hill.',
+      credit: 'State Dept. data; map by JovanCormac / Wikimedia Commons',
+      license: 'CC BY-SA 3.0 / GFDL',
+    },
   },
   {
     year: 2007,
@@ -212,6 +262,22 @@ export const HISTORY: HistoryEvent[] = [
       credit: 'U.S. Dept. of the Interior / Wikimedia Commons',
       license: 'CC BY-SA 2.0',
     },
+    extraImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/1/16/VAWA_%288537344527%29.jpg',
+        caption:
+          'VAWA 2013 signing — Obama with Vice President Biden and bipartisan congressional leadership, Dept. of the Interior.',
+        credit: 'U.S. Dept. of the Interior / Wikimedia Commons',
+        license: 'CC BY-SA 2.0',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/6/63/VAWA_%288537344589%29.jpg',
+        caption:
+          'VAWA 2013 signing ceremony, alternate angle — Obama with Biden and Attorney General Eric Holder.',
+        credit: 'U.S. Dept. of the Interior / Wikimedia Commons',
+        license: 'CC BY-SA 2.0',
+      },
+    ],
   },
   {
     year: 2014,
@@ -311,6 +377,15 @@ export const HISTORY: HistoryEvent[] = [
       credit: 'Jetta Disco / DHS / Wikimedia Commons',
       license: 'Public domain (US DHS work)',
     },
+    extraImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/6/66/DHS_Secretary_Alejandro_Mayorkas_Testifies_During_a_Senate_Homeland_Security_and_Government_Affairs_Committee_Hearing_on_18_April_2024_-_1.jpg',
+        caption:
+          'DHS Secretary Alejandro Mayorkas testifying before the Senate Homeland Security Committee, April 18, 2024 — U-visa backlog and processing times were a recurring topic.',
+        credit: 'Tia Dufour / DHS / Wikimedia Commons',
+        license: 'Public domain (US federal government work)',
+      },
+    ],
   },
   {
     year: 2025,

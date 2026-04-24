@@ -21,14 +21,30 @@ interface GalleryImage {
 }
 
 export default function ClippingGallery() {
-  const images: GalleryImage[] = HISTORY.filter((e) => e.image).map((e) => ({
-    year: e.year,
-    url: e.image!.url,
-    caption: e.image!.caption,
-    credit: e.image!.credit,
-    license: e.image!.license,
-    eventTitle: e.title,
-  }));
+  const images: GalleryImage[] = HISTORY.flatMap((e) => {
+    const rows: GalleryImage[] = [];
+    if (e.image) {
+      rows.push({
+        year: e.year,
+        url: e.image.url,
+        caption: e.image.caption,
+        credit: e.image.credit,
+        license: e.image.license,
+        eventTitle: e.title,
+      });
+    }
+    for (const extra of e.extraImages ?? []) {
+      rows.push({
+        year: e.year,
+        url: extra.url,
+        caption: extra.caption,
+        credit: extra.credit,
+        license: extra.license,
+        eventTitle: e.title,
+      });
+    }
+    return rows;
+  });
 
   const [active, setActive] = useState<GalleryImage | null>(null);
 
