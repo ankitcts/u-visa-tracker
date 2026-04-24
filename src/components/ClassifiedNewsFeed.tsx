@@ -1,4 +1,4 @@
-import { ExternalLink, Sparkles } from 'lucide-react';
+import { ExternalLink, Sparkles, PlayCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { fetchUVisaNews, relativeTime } from '@/lib/news';
@@ -60,8 +60,32 @@ export default async function ClassifiedNewsFeed({
                   href={item.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="block group space-y-1.5"
+                  className="block group"
                 >
+                  <div className="flex gap-3">
+                    {item.imageUrl && (
+                      <span className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md border bg-muted">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.imageUrl}
+                          alt=""
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.visibility = 'hidden';
+                          }}
+                        />
+                        {item.videoUrl && (
+                          <span
+                            aria-label="Article contains video"
+                            className="absolute inset-0 flex items-center justify-center bg-black/30"
+                          >
+                            <PlayCircle className="h-7 w-7 text-white drop-shadow" />
+                          </span>
+                        )}
+                      </span>
+                    )}
+                    <div className="min-w-0 flex-1 space-y-1.5">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-medium group-hover:text-primary inline-flex items-center gap-1.5">
                       {item.country && (
@@ -103,6 +127,8 @@ export default async function ClassifiedNewsFeed({
                         📍 {item.state}
                       </span>
                     )}
+                  </div>
+                    </div>
                   </div>
                 </a>
               </CardContent>

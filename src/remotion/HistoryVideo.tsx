@@ -11,23 +11,50 @@ import {
   useVideoConfig,
 } from 'remotion';
 import { HISTORY, KIND_META, type EventKind } from '@/lib/u-visa-history';
-import manifest from '../../public/narration/manifest.json';
+
+// Per-voice manifests live under public/narration/<voice>/manifest.json.
+// Pre-import all generated voices so Remotion can select at runtime with no
+// async fetch. The `voiceKey` input prop picks which manifest drives the scene
+// durations and <Audio> sources.
+import ariaManifest from '../../public/narration/aria/manifest.json';
+import jennyManifest from '../../public/narration/jenny/manifest.json';
+import michelleManifest from '../../public/narration/michelle/manifest.json';
+import soniaManifest from '../../public/narration/sonia/manifest.json';
+import archiveClippings from '../../public/narration/archive-clippings.json';
 
 // ──────────────────────────────────────────────────────────────────────────
-// Each scene's duration is driven by the length of its narration audio.
-// The manifest is built by `npm run narrate` and stores measured durations.
 export const FPS = 30;
-const PADDING_SEC = 0.4; // brief beat after each narration clip
+const PADDING_SEC = 0.4;
 
-type ManifestEntry = { filename: string; duration: number | null };
+export type ManifestFile = {
+  filename: string;
+  duration: number | null;
+  year?: number;
+  title?: string;
+};
+type VoiceManifest = {
+  voice: string;
+  voiceKey: string;
+  files: ManifestFile[];
+};
 
-const MANIFEST = manifest as ManifestEntry[];
-const INTRO_ENTRY = MANIFEST[0];
-const OUTRO_ENTRY = MANIFEST[MANIFEST.length - 1];
-const EVENT_ENTRIES = MANIFEST.slice(1, MANIFEST.length - 1);
+const VOICE_MANIFESTS: Record<string, VoiceManifest> = {
+  aria: ariaManifest as VoiceManifest,
+  jenny: jennyManifest as VoiceManifest,
+  michelle: michelleManifest as VoiceManifest,
+  sonia: soniaManifest as VoiceManifest,
+};
 
-// Fallback duration (seconds) if afinfo didn't provide one.
-function durOf(e: ManifestEntry | undefined, fallback: number): number {
+export const AVAILABLE_VOICES: { key: string; label: string }[] = [
+  { key: 'aria', label: 'Aria (US, warm)' },
+  { key: 'jenny', label: 'Jenny (US, friendly)' },
+  { key: 'michelle', label: 'Michelle (US, newscaster)' },
+  { key: 'sonia', label: 'Sonia (UK, warm)' },
+];
+
+export const DEFAULT_VOICE_KEY = 'aria';
+
+function durOf(e: ManifestFile | undefined, fallback: number): number {
   if (!e || e.duration == null) return fallback;
   return e.duration + PADDING_SEC;
 }
@@ -36,15 +63,39 @@ function secToFrames(sec: number): number {
   return Math.max(1, Math.round(sec * FPS));
 }
 
-export const INTRO_DURATION = secToFrames(durOf(INTRO_ENTRY, 5));
-export const OUTRO_DURATION = secToFrames(durOf(OUTRO_ENTRY, 5));
-export const EVENT_DURATIONS: number[] = HISTORY.map((_, i) =>
-  secToFrames(durOf(EVENT_ENTRIES[i], 8)),
-);
-export const TOTAL_DURATION =
-  INTRO_DURATION +
-  EVENT_DURATIONS.reduce((a, b) => a + b, 0) +
-  OUTRO_DURATION;
+/**
+ * Durations depend on the chosen voice (different voices speak at different
+ * paces). We base the canonical timing on the DEFAULT voice so the external
+ * Player always passes the right `durationInFrames`. The per-voice manifests
+ * agree to within ~5%, and the per-scene fade-out uses the active scene's
+ * own frame count so mismatches are imperceptible.
+ */
+function computeTimings(voiceKey: string) {
+  const vm = VOICE_MANIFESTS[voiceKey] ?? VOICE_MANIFESTS[DEFAULT_VOICE_KEY];
+  const files = vm.files;
+  const introEntry = files[0];
+  const outroEntry = files[files.length - 1];
+  const eventEntries = files.slice(1, -1);
+
+  const introDur = secToFrames(durOf(introEntry, 5));
+  const outroDur = secToFrames(durOf(outroEntry, 5));
+  const eventDurs = HISTORY.map((_, i) =>
+    secToFrames(durOf(eventEntries[i], 8)),
+  );
+  const total =
+    introDur + eventDurs.reduce((a, b) => a + b, 0) + outroDur;
+  return { introDur, outroDur, eventDurs, total, introEntry, outroEntry, eventEntries };
+}
+
+const DEFAULT_TIMINGS = computeTimings(DEFAULT_VOICE_KEY);
+
+// Exports used by the <Player> outside this composition. We fix the length
+// to the default voice's timing; voices within ~5% of each other mean
+// switching voices at the Player is seamless.
+export const INTRO_DURATION = DEFAULT_TIMINGS.introDur;
+export const OUTRO_DURATION = DEFAULT_TIMINGS.outroDur;
+export const EVENT_DURATIONS: number[] = DEFAULT_TIMINGS.eventDurs;
+export const TOTAL_DURATION = DEFAULT_TIMINGS.total;
 
 export const VIDEO_WIDTH = 1280;
 export const VIDEO_HEIGHT = 720;
@@ -64,23 +115,33 @@ const KIND_LABEL_LONG: Record<EventKind, string> = {
   coverage: 'Press Coverage',
 };
 
-export default function HistoryVideo() {
-  let cursor = 0;
+export default function HistoryVideo({
+  voiceKey = DEFAULT_VOICE_KEY,
+}: {
+  voiceKey?: string;
+}) {
+  const vm = VOICE_MANIFESTS[voiceKey] ?? VOICE_MANIFESTS[DEFAULT_VOICE_KEY];
+  const key = vm.voiceKey;
+  const timings = DEFAULT_TIMINGS; // length-agreed frames across voices
+  const { introDur, outroDur, eventDurs, introEntry, outroEntry, eventEntries } = timings;
 
   return (
     <AbsoluteFill style={{ backgroundColor: PAPER_BG }}>
-      {/* Intro */}
-      <Sequence from={cursor} durationInFrames={INTRO_DURATION}>
+      <Sequence from={0} durationInFrames={introDur}>
         <IntroScene />
-        {INTRO_ENTRY && (
-          <Audio src={staticFile(`narration/${INTRO_ENTRY.filename}`)} />
+        {introEntry && (
+          <Audio src={staticFile(`narration/${key}/${introEntry.filename}`)} />
         )}
       </Sequence>
 
       {HISTORY.map((event, i) => {
-        const start = INTRO_DURATION + sum(EVENT_DURATIONS.slice(0, i));
-        const duration = EVENT_DURATIONS[i];
-        const audioEntry = EVENT_ENTRIES[i];
+        const start = introDur + sum(eventDurs.slice(0, i));
+        const duration = eventDurs[i];
+        const audioEntry = eventEntries[i];
+        const archiveItems =
+          (archiveClippings as Record<string, ArchiveItem[]>)[
+            String(event.year)
+          ] ?? [];
         return (
           <Sequence
             key={`${event.year}-${event.title}`}
@@ -97,25 +158,27 @@ export default function HistoryVideo() {
               index={i}
               total={HISTORY.length}
               sceneDuration={duration}
+              archiveItems={archiveItems}
             />
             {audioEntry && (
-              <Audio src={staticFile(`narration/${audioEntry.filename}`)} />
+              <Audio
+                src={staticFile(`narration/${key}/${audioEntry.filename}`)}
+              />
             )}
           </Sequence>
         );
       })}
 
       <Sequence
-        from={INTRO_DURATION + sum(EVENT_DURATIONS)}
-        durationInFrames={OUTRO_DURATION}
+        from={introDur + sum(eventDurs)}
+        durationInFrames={outroDur}
       >
         <OutroScene />
-        {OUTRO_ENTRY && (
-          <Audio src={staticFile(`narration/${OUTRO_ENTRY.filename}`)} />
+        {outroEntry && (
+          <Audio src={staticFile(`narration/${key}/${outroEntry.filename}`)} />
         )}
       </Sequence>
 
-      {/* Newspaper texture overlay */}
       <AbsoluteFill
         style={{
           pointerEvents: 'none',
@@ -126,13 +189,119 @@ export default function HistoryVideo() {
       />
     </AbsoluteFill>
   );
-
-  // unused binding reference; keeps the unused-var linter quiet in stricter configs
-  cursor;
 }
+
+type ArchiveItem = {
+  identifier: string;
+  title: string;
+  date: string | null;
+  mediatype: string;
+  itemUrl: string;
+  thumbnailUrl: string;
+};
 
 function sum(xs: number[]): number {
   return xs.reduce((a, b) => a + b, 0);
+}
+
+function ArchiveOverlay({
+  items,
+  sceneDuration,
+  frame,
+}: {
+  items: ArchiveItem[];
+  sceneDuration: number;
+  frame: number;
+}) {
+  const shown = items.slice(0, 3);
+  // Reveal the overlay halfway through the scene, fade out near the end.
+  const reveal = interpolate(
+    frame,
+    [Math.floor(sceneDuration * 0.45), Math.floor(sceneDuration * 0.6)],
+    [0, 1],
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
+  );
+  const fadeOut = interpolate(
+    frame,
+    [sceneDuration - 30, sceneDuration - 4],
+    [1, 0],
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
+  );
+  const opacity = reveal * fadeOut;
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: 100,
+        bottom: 50,
+        display: 'flex',
+        gap: 18,
+        opacity,
+        transform: `translateY(${(1 - reveal) * 20}px)`,
+      }}
+    >
+      {shown.map((item, i) => (
+        <div
+          key={item.identifier}
+          style={{
+            width: 180,
+            height: 100,
+            backgroundColor: '#ffffff',
+            border: '1px solid rgba(120,100,60,0.35)',
+            borderRadius: 4,
+            padding: 8,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+            transform: `rotate(${(i - 1) * 1.5}deg)`,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              fontFamily: '"Georgia", "Times New Roman", serif',
+              fontSize: 9,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: '#8a7548',
+              fontWeight: 700,
+            }}
+          >
+            archive.org · {item.mediatype}
+          </div>
+          <div
+            style={{
+              fontFamily: '"Georgia", "Times New Roman", serif',
+              fontSize: 11,
+              lineHeight: 1.25,
+              color: '#1d1a14',
+              display: '-webkit-box',
+              WebkitLineClamp: 4,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {item.title}
+          </div>
+          {item.date && (
+            <div
+              style={{
+                marginTop: 'auto',
+                fontFamily: '"Georgia", "Times New Roman", serif',
+                fontSize: 9,
+                color: '#6b6352',
+                fontStyle: 'italic',
+              }}
+            >
+              {String(item.date).slice(0, 10)}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function IntroScene() {
@@ -290,6 +459,7 @@ function EventScene({
   index,
   total,
   sceneDuration,
+  archiveItems = [],
 }: {
   year: number;
   date?: string;
@@ -300,6 +470,7 @@ function EventScene({
   index: number;
   total: number;
   sceneDuration: number;
+  archiveItems?: ArchiveItem[];
 }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -482,6 +653,15 @@ function EventScene({
       >
         {body}
       </p>
+
+      {/* Archive overlay — shows attributed IA items when available */}
+      {archiveItems.length > 0 && (
+        <ArchiveOverlay
+          items={archiveItems}
+          sceneDuration={sceneDuration}
+          frame={frame}
+        />
+      )}
 
       {/* Progress meter */}
       <div

@@ -16,7 +16,8 @@
     "test:ci": "jest --ci --forceExit",
     "typecheck": "tsc --noEmit",
     "fetch": "node scripts/fetch-uscis.mjs",
-    "narrate": "node scripts/generate-narration.mjs"
+    "narrate": "node scripts/generate-narration.mjs",
+    "archive": "node scripts/fetch-archive-clippings.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",

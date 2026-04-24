@@ -9,7 +9,7 @@ import {
 } from 'react-simple-maps';
 import { geoCentroid } from 'd3-geo';
 import { motion, AnimatePresence } from 'motion/react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, PlayCircle } from 'lucide-react';
 import { FIPS_TO_USPS, USPS_TO_NAME } from '@/lib/us-states';
 import { STATE_CERT_SHARES } from '@/lib/data';
 import { relativeTime } from '@/lib/news';
@@ -375,11 +375,34 @@ function AllNewsPanel({
                 className="flex items-start gap-2 group"
                 onClick={(e) => e.stopPropagation()}
               >
-                <span
-                  className="mt-1 h-2 w-2 rounded-full shrink-0"
-                  style={{ backgroundColor: TAG_COLOR[item.tag] }}
-                  aria-hidden
-                />
+                {item.imageUrl ? (
+                  <span className="relative mt-0.5 h-12 w-12 shrink-0 overflow-hidden rounded-md border bg-muted">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.imageUrl}
+                      alt=""
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.visibility = 'hidden';
+                      }}
+                    />
+                    {item.videoUrl && (
+                      <span
+                        aria-label="Article contains video"
+                        className="absolute inset-0 flex items-center justify-center bg-black/30"
+                      >
+                        <PlayCircle className="h-5 w-5 text-white drop-shadow" />
+                      </span>
+                    )}
+                  </span>
+                ) : (
+                  <span
+                    className="mt-1 h-2 w-2 rounded-full shrink-0"
+                    style={{ backgroundColor: TAG_COLOR[item.tag] }}
+                    aria-hidden
+                  />
+                )}
                 <div className="min-w-0 flex-1">
                   <p className="text-[13px] font-medium leading-snug line-clamp-2 group-hover:text-primary">
                     {item.country && (

@@ -5,6 +5,7 @@ import {
   inferTagFromItem,
   inferCountryFromItem,
 } from './geotag';
+import { enrichWithOg } from './og-meta';
 
 const VALID_STATES = new Set([
   'AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN',
@@ -43,6 +44,10 @@ export interface ClassifiedNewsItem extends NewsItem {
   state?: string | null;
   /** ISO 3166-1 alpha-2 country code ("US","IN","MX","NG"…) or null. */
   country?: string | null;
+  /** og:image / twitter:image from the article page — small thumbnail. */
+  imageUrl?: string | null;
+  /** og:video / twitter:player — present on articles with embedded video. */
+  videoUrl?: string | null;
 }
 
 const DEFAULT_BASE = 'https://api.groq.com/openai/v1';
@@ -84,10 +89,8 @@ export async function classifyNews(
   }
 
   // Rule-based fallback for items the LLM left unlocated or defaulted to
-  // "general" tag (happens when the classifier is rate-limited and the code
-  // path falls back to `tag: 'general' as NewsTag`). Pure local scan of
-  // headline/description/publisher — zero LLM tokens.
-  return classified.map((item) => {
+  // "general" tag. Pure local scan — zero LLM tokens.
+  const enriched = classified.map((item) => {
     const state = item.state ?? inferStateFromItem(item);
     const tag =
       item.tag !== 'general' ? item.tag : inferTagFromItem(item) ?? 'general';
@@ -95,6 +98,16 @@ export async function classifyNews(
       item.country ?? inferCountryFromItem({ ...item, state });
     return { ...item, state, tag, country };
   });
+
+  // Fetch og:image / og:video per article (cached 6h per URL). If the fetch
+  // layer fails, the items fall through with imageUrl=null and the UI falls
+  // back to the old flag-only header.
+  try {
+    const withOg = await enrichWithOg(enriched, 8);
+    return withOg;
+  } catch {
+    return enriched;
+  }
 }
 
 const classifyNewsCached = unstable_cache(
