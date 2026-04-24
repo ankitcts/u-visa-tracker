@@ -21,6 +21,10 @@ import {
 } from '@/lib/news-classifier';
 import { flagEmoji, countryNote } from '@/lib/geotag';
 import { relativeTime } from '@/lib/news';
+import VideoLightbox, {
+  isYouTubeUrl,
+  type VideoLightboxItem,
+} from './VideoLightbox';
 
 type ViewMode = 'grid' | 'list';
 type TagFilter = 'all' | NewsTag;
@@ -56,6 +60,25 @@ export default function InteractiveNewsFeed({
   const [country, setCountry] = useState<CountryFilter>('all');
   const [query, setQuery] = useState('');
   const [view, setView] = useState<ViewMode>('grid');
+  const [lightbox, setLightbox] = useState<VideoLightboxItem | null>(null);
+
+  function openVideo(
+    e: React.MouseEvent,
+    item: ClassifiedNewsItem,
+  ): boolean {
+    // Returns true if we handled the click (opened lightbox); false if the
+    // caller should let the <a> navigate normally.
+    if (!item.videoUrl || !isYouTubeUrl(item.videoUrl)) return false;
+    e.preventDefault();
+    e.stopPropagation();
+    setLightbox({
+      title: item.title,
+      source: item.source,
+      videoUrl: item.videoUrl,
+      articleUrl: item.link,
+    });
+    return true;
+  }
 
   // Top 8 countries by item count (for the filter row).
   const topCountries = useMemo(() => {
@@ -275,7 +298,10 @@ export default function InteractiveNewsFeed({
 
       {/* Hero */}
       {hero && view === 'grid' && filtered.length > 0 && (
-        <HeroCard item={hero} />
+        <HeroCard
+          item={hero}
+          onClick={(e) => openVideo(e, hero)}
+        />
       )}
 
       {/* Body */}
@@ -283,7 +309,11 @@ export default function InteractiveNewsFeed({
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence initial={false}>
             {rest.slice(0, 60).map((item) => (
-              <NewsCard key={item.link} item={item} />
+              <NewsCard
+                key={item.link}
+                item={item}
+                onClick={(e) => openVideo(e, item)}
+              />
             ))}
           </AnimatePresence>
         </div>
@@ -291,11 +321,18 @@ export default function InteractiveNewsFeed({
         <ul className="divide-y rounded-xl border bg-card">
           <AnimatePresence initial={false}>
             {filtered.slice(0, 80).map((item) => (
-              <NewsListRow key={item.link} item={item} />
+              <NewsListRow
+                key={item.link}
+                item={item}
+                onClick={(e) => openVideo(e, item)}
+              />
             ))}
           </AnimatePresence>
         </ul>
       )}
+
+      {/* Inline video lightbox — opens when a YouTube-backed card is clicked */}
+      <VideoLightbox item={lightbox} onClose={() => setLightbox(null)} />
 
       {/* Footer counter */}
       <p className="text-xs text-muted-foreground text-center">
@@ -316,17 +353,25 @@ export default function InteractiveNewsFeed({
   );
 }
 
-function HeroCard({ item }: { item: ClassifiedNewsItem }) {
+function HeroCard({
+  item,
+  onClick,
+}: {
+  item: ClassifiedNewsItem;
+  onClick?: (e: React.MouseEvent) => void;
+}) {
+  const embeddable = isYouTubeUrl(item.videoUrl);
   return (
     <motion.a
       href={item.link}
-      target="_blank"
+      target={embeddable ? undefined : '_blank'}
       rel="noreferrer"
+      onClick={onClick}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
-      className="group relative block overflow-hidden rounded-2xl border bg-card shadow-sm hover:shadow-md transition-shadow"
+      className="group relative block overflow-hidden rounded-2xl border bg-card shadow-sm hover:shadow-md transition-shadow cursor-pointer"
     >
       <div className="grid md:grid-cols-[1.3fr_1fr]">
         {item.imageUrl ? (
@@ -395,19 +440,27 @@ function HeroCard({ item }: { item: ClassifiedNewsItem }) {
   );
 }
 
-function NewsCard({ item }: { item: ClassifiedNewsItem }) {
+function NewsCard({
+  item,
+  onClick,
+}: {
+  item: ClassifiedNewsItem;
+  onClick?: (e: React.MouseEvent) => void;
+}) {
+  const embeddable = isYouTubeUrl(item.videoUrl);
   return (
     <motion.a
       href={item.link}
-      target="_blank"
+      target={embeddable ? undefined : '_blank'}
       rel="noreferrer"
+      onClick={onClick}
       layout
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       whileHover={{ y: -3 }}
       transition={{ duration: 0.2 }}
-      className="group flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm hover:border-primary/50 hover:shadow-md transition-all"
+      className="group flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm hover:border-primary/50 hover:shadow-md transition-all cursor-pointer"
     >
       {item.imageUrl ? (
         <div className="relative aspect-[16/9] bg-muted overflow-hidden">
@@ -472,7 +525,14 @@ function NewsCard({ item }: { item: ClassifiedNewsItem }) {
   );
 }
 
-function NewsListRow({ item }: { item: ClassifiedNewsItem }) {
+function NewsListRow({
+  item,
+  onClick,
+}: {
+  item: ClassifiedNewsItem;
+  onClick?: (e: React.MouseEvent) => void;
+}) {
+  const embeddable = isYouTubeUrl(item.videoUrl);
   return (
     <motion.li
       layout
@@ -507,9 +567,10 @@ function NewsListRow({ item }: { item: ClassifiedNewsItem }) {
       )}
       <a
         href={item.link}
-        target="_blank"
+        target={embeddable ? undefined : '_blank'}
         rel="noreferrer"
-        className="group min-w-0 flex-1"
+        onClick={onClick}
+        className="group min-w-0 flex-1 cursor-pointer"
       >
         <p className="text-sm font-medium leading-snug line-clamp-2 group-hover:text-primary">
           {item.country && (
