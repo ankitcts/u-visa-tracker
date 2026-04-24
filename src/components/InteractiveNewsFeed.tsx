@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
@@ -61,6 +61,13 @@ export default function InteractiveNewsFeed({
   const [query, setQuery] = useState('');
   const [view, setView] = useState<ViewMode>('grid');
   const [lightbox, setLightbox] = useState<VideoLightboxItem | null>(null);
+  const PAGE = 24;
+  const [visible, setVisible] = useState<number>(PAGE);
+
+  // Reset pagination whenever the user narrows the result set via filters or
+  // switches view — avoids stale "Show more" button state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setVisible(PAGE), [tag, country, query, view]);
 
   function openVideo(
     e: React.MouseEvent,
@@ -308,7 +315,7 @@ export default function InteractiveNewsFeed({
       {view === 'grid' ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence initial={false}>
-            {rest.slice(0, 60).map((item) => (
+            {rest.slice(0, visible).map((item) => (
               <NewsCard
                 key={item.link}
                 item={item}
@@ -320,7 +327,7 @@ export default function InteractiveNewsFeed({
       ) : (
         <ul className="divide-y rounded-xl border bg-card">
           <AnimatePresence initial={false}>
-            {filtered.slice(0, 80).map((item) => (
+            {filtered.slice(0, visible).map((item) => (
               <NewsListRow
                 key={item.link}
                 item={item}
@@ -331,6 +338,21 @@ export default function InteractiveNewsFeed({
         </ul>
       )}
 
+      {/* Show more / Show less — pagination in batches of PAGE */}
+      <ShowMoreControl
+        visible={visible}
+        total={view === 'grid' ? rest.length : filtered.length}
+        step={PAGE}
+        onMore={() => setVisible((v) => v + PAGE)}
+        onAll={() => setVisible(view === 'grid' ? rest.length : filtered.length)}
+        onReset={() => {
+          setVisible(PAGE);
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}
+      />
+
       {/* Inline video lightbox — opens when a YouTube-backed card is clicked */}
       <VideoLightbox item={lightbox} onClose={() => setLightbox(null)} />
 
@@ -339,8 +361,10 @@ export default function InteractiveNewsFeed({
         Showing{' '}
         <span className="font-medium text-foreground">
           {Math.min(
-            view === 'grid' ? rest.length + (hero ? 1 : 0) : filtered.length,
-            view === 'grid' ? 61 : 80,
+            view === 'grid'
+              ? Math.min(visible, rest.length) + (hero ? 1 : 0)
+              : Math.min(visible, filtered.length),
+            filtered.length,
           )}
         </span>{' '}
         of {filtered.length}{' '}
@@ -349,6 +373,63 @@ export default function InteractiveNewsFeed({
           : 'filtered articles'}
         {items.length !== filtered.length && ` (${items.length} total)`}
       </p>
+    </div>
+  );
+}
+
+function ShowMoreControl({
+  visible,
+  total,
+  step,
+  onMore,
+  onAll,
+  onReset,
+}: {
+  visible: number;
+  total: number;
+  step: number;
+  onMore: () => void;
+  onAll: () => void;
+  onReset: () => void;
+}) {
+  if (total === 0) return null;
+  const hasMore = visible < total;
+  const remaining = Math.max(0, total - visible);
+  const nextBatch = Math.min(step, remaining);
+
+  return (
+    <div className="flex flex-col items-center gap-2 py-2">
+      {hasMore ? (
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={onMore}
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:opacity-90 transition-opacity"
+          >
+            Show {nextBatch} more
+            <span className="rounded-full bg-primary-foreground/20 px-1.5 py-0.5 text-[10px] tabular-nums">
+              +{nextBatch}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={onAll}
+            className="inline-flex items-center gap-1 rounded-full border px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            Show all {total}
+          </button>
+        </div>
+      ) : (
+        total > step && (
+          <button
+            type="button"
+            onClick={onReset}
+            className="inline-flex items-center gap-1 rounded-full border px-4 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            ↑ Collapse
+          </button>
+        )
+      )}
     </div>
   );
 }

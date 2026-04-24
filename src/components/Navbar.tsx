@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ShieldCheck, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ShareButtons from './ShareButtons';
 
 const LINKS = [
   { href: '/', label: 'History' },
@@ -48,6 +49,7 @@ export default function Navbar() {
           <ShieldCheck className="h-5 w-5 text-primary" />
           <span>U Visa Tracker</span>
         </Link>
+        <div className="flex items-center gap-3">
         <ul className="flex flex-wrap gap-1 text-sm">
           {LINKS.map((l) => {
             const active = isActive(l.href, pathname);
@@ -85,6 +87,8 @@ export default function Navbar() {
             );
           })}
         </ul>
+          <ShareButtons />
+        </div>
       </nav>
     </header>
   );

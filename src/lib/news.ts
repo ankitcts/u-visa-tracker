@@ -213,7 +213,7 @@ async function fetchGdeltQuery(query: string, limit: number): Promise<NewsItem[]
     const res = await fetch(url, {
       next: { revalidate: REVALIDATE_SECONDS },
       headers: { 'User-Agent': 'u-visa-tracker-news/1.0' },
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(5000), // fail fast — GDELT is flaky
     });
     if (!res.ok) return [];
     const json = (await res.json()) as {
@@ -268,8 +268,11 @@ const YOUTUBE_CHANNELS: { id: string; name: string }[] = [
 ];
 
 // Keyword filter for what counts as U-visa / immigration-fraud relevant.
+// Broadened to include general immigration / asylum / deportation coverage so
+// mainstream channels contribute real items — narrower filters gave zero
+// hits because BBC/CNN/etc. rarely produce U-visa-specific videos.
 const YOUTUBE_KEYWORDS =
-  /\b(u[-\s]visa|u[-\s]nonimmigrant|i-?918|visa fraud|immigration fraud|marriage fraud|bona fide determination|USCIS|ICE raid|VAWA|crime victim visa|I-918B|immigration attorney .*(fraud|indict)|trafficking .*visa)\b/i;
+  /\b(u[-\s]visa|u[-\s]nonimmigrant|i-?918|visa fraud|immigration fraud|marriage fraud|bona fide determination|ICE raid|VAWA|crime victim visa|I-918B|trafficking|asylum|deportation|immigration (?:policy|court|hearing|crackdown|raid|enforcement|attorney))\b/i;
 
 async function fetchYouTubeChannel(
   channel: { id: string; name: string },

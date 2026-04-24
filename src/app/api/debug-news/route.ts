@@ -21,6 +21,26 @@ export async function GET() {
         }, {}),
       ).sort((a, b) => b[1] - a[1]),
     ),
+    sourceBreakdown: Object.fromEntries(
+      Object.entries(
+        classified.reduce<Record<string, number>>((acc, c) => {
+          const s = c.source;
+          const key = s.startsWith('r/')
+            ? 'reddit'
+            : s.startsWith('YouTube')
+              ? 'youtube'
+              : s.startsWith('HN')
+                ? 'hackernews'
+                : s.includes('gdelt') || s.includes('.com') || s.includes('.org') || s.includes('.net')
+                  ? 'gdelt'
+                  : s === 'Google News'
+                    ? 'google'
+                    : s;
+          acc[key] = (acc[key] ?? 0) + 1;
+          return acc;
+        }, {}),
+      ).sort((a, b) => b[1] - a[1]),
+    ),
     sample: classified.slice(0, 20).map((c) => ({
       title: c.title,
       source: c.source,
