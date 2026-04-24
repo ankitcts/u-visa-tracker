@@ -208,12 +208,48 @@ function TimelineItem({
         >
           {event.title}
         </h3>
+
+        {event.image && (
+          <figure
+            className="float-right ml-4 mb-2 w-44 md:w-56 rounded-sm overflow-hidden border border-[#c8bb96] dark:border-[#5a5040] bg-white shadow-sm"
+            style={{ shapeOutside: 'margin-box' }}
+          >
+            <div className="aspect-[4/3] bg-[#f4ecd8] flex items-center justify-center overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={event.image.url}
+                alt={event.image.caption}
+                loading="lazy"
+                className="w-full h-full object-cover"
+                style={{
+                  filter: 'sepia(0.08) saturate(0.95)',
+                }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.visibility = 'hidden';
+                }}
+              />
+            </div>
+            <figcaption
+              className="px-2 py-1.5 text-[10.5px] leading-snug text-foreground/70 border-t border-dashed border-[#c8bb96] dark:border-[#5a5040]"
+              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+            >
+              <span className="block italic">{event.image.caption}</span>
+              <span className="block mt-0.5 text-[9px] uppercase tracking-[0.1em] text-muted-foreground">
+                {event.image.credit} · {event.image.license}
+              </span>
+            </figcaption>
+          </figure>
+        )}
+
         <p
           className="text-[13.5px] leading-relaxed text-foreground/80"
           style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
         >
           {event.body}
         </p>
+
+        {/* Clear float before the citation/archive rows */}
+        {event.image && <div className="clear-both" />}
 
         {event.citations && event.citations.length > 0 && (
           <div className="mt-4 pt-3 border-t border-dashed border-[#c8bb96] dark:border-[#5a5040] flex flex-wrap gap-x-4 gap-y-1">

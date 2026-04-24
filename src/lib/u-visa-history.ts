@@ -25,6 +25,13 @@ export interface HistoryEvent {
   citations?: { label: string; url?: string }[];
   /** Secondary-source articles: press coverage, analysis, archive searches. */
   articles?: { outlet: string; headline: string; url: string }[];
+  /** Public-domain / CC-licensed historical image for the timeline card. */
+  image?: {
+    url: string;
+    caption: string;
+    credit: string;
+    license: string;
+  };
   highlight?: boolean; // pivotal events
 }
 
@@ -52,6 +59,13 @@ export const HISTORY: HistoryEvent[] = [
       { outlet: 'Newspapers.com archive', headline: 'Front-page coverage of VAWA passing, Sep 1994', url: 'https://www.newspapers.com/search/results/?query=%22Violence%20Against%20Women%20Act%22&dr_year=1994-1994' },
       { outlet: 'Internet Archive', headline: 'Digitized clippings, books and reports — VAWA 1994', url: 'https://archive.org/search?query=%22Violence+Against+Women+Act%22+1994&sort=-date' },
     ],
+    image: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Bill_Clinton_signing_the_Federal_Assault_Weapons_Ban.png',
+      caption:
+        'President Bill Clinton signs the Violent Crime Control and Law Enforcement Act of 1994 — the bill that contained VAWA Title IV.',
+      credit: 'White House photo / Wikimedia Commons',
+      license: 'Public domain (US federal government work)',
+    },
   },
   {
     year: 1999,
@@ -87,6 +101,13 @@ export const HISTORY: HistoryEvent[] = [
       { outlet: 'Newspapers.com archive', headline: 'Oct 2000 front pages — VTVPA signed into law', url: 'https://www.newspapers.com/search/results/?query=%22Victims+of+Trafficking%22&dr_year=2000-2000' },
       { outlet: 'Internet Archive', headline: 'Digitized reports & coverage — VTVPA 2000', url: 'https://archive.org/search?query=%22Victims+of+Trafficking+and+Violence+Protection+Act%22' },
     ],
+    image: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Bill_Clinton.jpg',
+      caption:
+        'President Bill Clinton, who signed the Victims of Trafficking and Violence Protection Act on October 28, 2000.',
+      credit: 'Bob McNeely / White House / Wikimedia Commons',
+      license: 'Public domain (US federal government work)',
+    },
   },
   {
     year: 2002,
@@ -132,6 +153,13 @@ export const HISTORY: HistoryEvent[] = [
       { outlet: 'USCIS', headline: 'Form I-918 — Petition for U Nonimmigrant Status', url: 'https://www.uscis.gov/i-918' },
       { outlet: 'Newspapers.com archive', headline: 'Sep–Oct 2007 coverage — U-visa interim rule', url: 'https://www.newspapers.com/search/results/?query=%22U+visa%22+%22interim+rule%22&dr_year=2007-2007' },
     ],
+    image: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/a/a3/USCIS_logo_English.svg',
+      caption:
+        'U.S. Citizenship and Immigration Services — the agency that issued the U-visa interim rule on September 17, 2007.',
+      credit: 'USCIS / Wikimedia Commons',
+      license: 'Public domain (US DHS work, 17 U.S.C. § 105)',
+    },
   },
   {
     year: 2008,
@@ -157,6 +185,13 @@ export const HISTORY: HistoryEvent[] = [
     citations: [
       { label: 'USCIS FY2010 annual data (principal approvals = 10,073)' },
     ],
+    image: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/8/80/USCIS_HQ_Groundbreaking_Ceremony_%2838096348641%29.jpg',
+      caption:
+        'USCIS — the agency first hit the statutory 10,000 U-1 cap in FY2010 and has never re-opened headroom since.',
+      credit: 'Jetta Disco / DHS / Wikimedia Commons',
+      license: 'Public domain (US DHS work)',
+    },
   },
   {
     year: 2013,
@@ -170,6 +205,13 @@ export const HISTORY: HistoryEvent[] = [
     citations: [
       { label: 'Pub. L. 113-4' },
     ],
+    image: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/VAWA_%288537344577%29.jpg',
+      caption:
+        'President Barack Obama signs the Violence Against Women Reauthorization Act of 2013 at the Department of the Interior, March 7, 2013.',
+      credit: 'U.S. Dept. of the Interior / Wikimedia Commons',
+      license: 'CC BY-SA 2.0',
+    },
   },
   {
     year: 2014,
@@ -218,6 +260,13 @@ export const HISTORY: HistoryEvent[] = [
       { outlet: 'USCIS Policy Manual', headline: 'Volume 3, Part C, Chapter 5 — Bona Fide Determination', url: 'https://www.uscis.gov/policy-manual/volume-3-part-c-chapter-5' },
       { outlet: 'Newspapers.com archive', headline: 'June 2021 coverage — Bona Fide Determination policy', url: 'https://www.newspapers.com/search/results/?query=%22Bona+Fide+Determination%22+%22U+visa%22&dr_year=2021-2021' },
     ],
+    image: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/b/be/Alejandro_Mayorkas_%28portrait%29.jpg',
+      caption:
+        'DHS Secretary Alejandro Mayorkas, who announced USCIS Policy Memorandum PM-602-0184 creating the Bona Fide Determination process in June 2021.',
+      credit: 'Benjamin Applebaum / DHS / Wikimedia Commons',
+      license: 'CC BY-SA 4.0 (also PD as US federal work)',
+    },
   },
   {
     year: 2022,
@@ -236,6 +285,13 @@ export const HISTORY: HistoryEvent[] = [
       { outlet: 'CourtListener', headline: 'Barrios Garcia v. DHS — 6th Cir. opinion', url: 'https://www.courtlistener.com/opinion/9267430/barrios-garcia-v-mayorkas/' },
       { outlet: 'Newspapers.com archive', headline: 'Jan–Feb 2022 coverage — Sixth Circuit Barrios Garcia ruling', url: 'https://www.newspapers.com/search/results/?query=%22Barrios+Garcia%22+%22U+visa%22&dr_year=2022-2022' },
     ],
+    image: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/9/94/Potter_Stewart_US_Federal_Courthouse%2C_Cincinnati%2C_OH_%2832278864447%29.jpg',
+      caption:
+        'Potter Stewart U.S. Courthouse, Cincinnati — seat of the Sixth Circuit, which decided Barrios Garcia v. DHS on January 27, 2022.',
+      credit: 'Wikimedia Commons',
+      license: 'CC0 1.0 (public domain dedication)',
+    },
   },
   {
     year: 2024,
@@ -248,6 +304,13 @@ export const HISTORY: HistoryEvent[] = [
     citations: [
       { label: 'USCIS I-918 quarterly data, FY2024' },
     ],
+    image: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/8/80/USCIS_HQ_Groundbreaking_Ceremony_%2838096348641%29.jpg',
+      caption:
+        'USCIS Headquarters in Camp Springs, Maryland — the agency processing a quarter-million pending U-visa petitions.',
+      credit: 'Jetta Disco / DHS / Wikimedia Commons',
+      license: 'Public domain (US DHS work)',
+    },
   },
   {
     year: 2025,
