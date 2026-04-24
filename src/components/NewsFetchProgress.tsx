@@ -55,8 +55,10 @@ const STAGES: Step[] = [
   { key: 'image', label: 'Attaching thumbnails', Icon: ImageIcon, color: '#10b981' },
 ];
 
-// Each "tick" is ~450ms. A step is loading for 2 ticks (~900ms), then done.
-const TICK_MS = 450;
+// Each "tick" is ~220ms. Each step spends 2 ticks (~440ms) in the loading
+// state, so a single source completes in under half a second and the whole
+// 5-source + 4-stage pipeline finishes in ~3.5s — visible, but never a drag.
+const TICK_MS = 220;
 const LOADING_TICKS = 2;
 
 export default function NewsFetchProgress() {
@@ -230,9 +232,9 @@ function ProgressRow({
       </div>
 
       {/* Per-row progress bar */}
-      <div className="ml-9 h-1 overflow-hidden rounded-full bg-muted">
+      <div className="ml-9 h-1 overflow-hidden rounded-full bg-muted relative">
         <motion.div
-          className="h-full rounded-full"
+          className="h-full rounded-full relative overflow-hidden"
           style={{ backgroundColor: color }}
           initial={false}
           animate={{
@@ -244,10 +246,27 @@ function ProgressRow({
                   : '100%',
           }}
           transition={{
-            duration: status === 'done' ? 0.25 : 0.45,
+            duration: status === 'done' ? 0.2 : 0.3,
             ease: 'easeOut',
           }}
-        />
+        >
+          {status === 'loading' && (
+            <motion.span
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%)',
+              }}
+              animate={{ x: ['-100%', '100%'] }}
+              transition={{
+                duration: 0.9,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+            />
+          )}
+        </motion.div>
       </div>
     </li>
   );
