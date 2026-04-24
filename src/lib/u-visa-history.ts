@@ -236,7 +236,7 @@ export const HISTORY: HistoryEvent[] = [
       { label: 'USCIS FY2010 annual data (principal approvals = 10,073)' },
     ],
     image: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/8/80/USCIS_HQ_Groundbreaking_Ceremony_%2838096348641%29.jpg',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/USCIS_HQ_Groundbreaking_Ceremony_%2838096348641%29.jpg',
       caption:
         'USCIS — the agency first hit the statutory 10,000 U-1 cap in FY2010 and has never re-opened headroom since.',
       credit: 'Jetta Disco / DHS / Wikimedia Commons',
@@ -371,7 +371,7 @@ export const HISTORY: HistoryEvent[] = [
       { label: 'USCIS I-918 quarterly data, FY2024' },
     ],
     image: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/8/80/USCIS_HQ_Groundbreaking_Ceremony_%2838096348641%29.jpg',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/USCIS_HQ_Groundbreaking_Ceremony_%2838096348641%29.jpg',
       caption:
         'USCIS Headquarters in Camp Springs, Maryland — the agency processing a quarter-million pending U-visa petitions.',
       credit: 'Jetta Disco / DHS / Wikimedia Commons',

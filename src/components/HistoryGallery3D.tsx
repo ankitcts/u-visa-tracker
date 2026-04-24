@@ -29,11 +29,17 @@ interface GallerySlide {
 }
 
 function flattenHistoryImages(): GallerySlide[] {
+  // three.js TextureLoader handles raster formats reliably but chokes on SVGs
+  // (no intrinsic dimensions → NaN aspect → broken plane). Filter them out —
+  // the grid gallery below still shows every SVG with full attribution.
+  const isRaster = (url: string) =>
+    /\.(jpe?g|png|webp|gif|avif)(\?.*)?$/i.test(url);
   const out: GallerySlide[] = [];
   for (const e of HISTORY) {
-    if (e.image) out.push(toSlide(e.year, e.title, e.image));
+    if (e.image && isRaster(e.image.url))
+      out.push(toSlide(e.year, e.title, e.image));
     for (const extra of e.extraImages ?? []) {
-      out.push(toSlide(e.year, e.title, extra));
+      if (isRaster(extra.url)) out.push(toSlide(e.year, e.title, extra));
     }
   }
   return out;
