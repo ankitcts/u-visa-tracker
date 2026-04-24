@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import ChatBot from '@/components/ChatBot';
+import FloatingSideNav from '@/components/FloatingSideNav';
 import { Analytics } from '@vercel/analytics/react';
 import { GradientDots } from '@/components/ui/gradient-dots';
 
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="max-w-6xl mx-auto px-4 py-6">{children}</main>
             <Footer />
             <ChatBot />
+            <FloatingSideNav />
           </div>
           <Analytics />
         </ThemeProvider>

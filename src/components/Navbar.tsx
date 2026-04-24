@@ -17,8 +17,8 @@ const LINKS = [
   { href: '/geography', label: 'Geography' },
   { href: '/integrity', label: 'Integrity' },
   { href: '/litigation', label: 'Litigation' },
-  { href: '/about', label: 'About' },
-  { href: '/sources', label: 'Sources' },
+  // About + Sources moved to the floating side-nav and footer so the main
+  // nav stays on one line.
 ];
 
 function isActive(href: string, pathname: string): boolean {
@@ -40,29 +40,30 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <nav className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <nav className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
         <Link
           href="/"
-          className="flex items-center gap-2 font-semibold text-foreground"
+          className="inline-flex items-center gap-1.5 font-semibold text-foreground shrink-0"
           onClick={() => setPending('/')}
         >
           <ShieldCheck className="h-5 w-5 text-primary" />
-          <span>U Visa Tracker</span>
+          <span className="hidden sm:inline whitespace-nowrap">U Visa Tracker</span>
+          <span className="sm:hidden">UVT</span>
         </Link>
-        <div className="flex items-center gap-3">
-        <ul className="flex flex-wrap gap-1 text-sm">
+        {/* Primary nav — scrolls horizontally on narrow screens instead of wrapping */}
+        <ul className="flex-1 min-w-0 flex items-center gap-0.5 text-sm overflow-x-auto scrollbar-thin whitespace-nowrap">
           {LINKS.map((l) => {
             const active = isActive(l.href, pathname);
             const isPending = pending === l.href && !active;
             return (
-              <li key={l.href}>
+              <li key={l.href} className="shrink-0">
                 <Link
                   href={l.href}
                   aria-current={active ? 'page' : undefined}
                   aria-busy={isPending || undefined}
                   onClick={() => setPending(l.href)}
                   className={cn(
-                    'relative inline-flex h-9 items-center gap-1.5 rounded-md px-3 transition-colors',
+                    'relative inline-flex h-9 items-center gap-1 rounded-md px-2.5 transition-colors',
                     active
                       ? 'bg-primary/10 text-primary font-medium'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground',
@@ -79,7 +80,7 @@ export default function Navbar() {
                   {active && (
                     <span
                       aria-hidden="true"
-                      className="absolute left-3 right-3 -bottom-[13px] h-0.5 bg-primary rounded-full"
+                      className="absolute left-2.5 right-2.5 -bottom-[13px] h-0.5 bg-primary rounded-full"
                     />
                   )}
                 </Link>
@@ -87,6 +88,7 @@ export default function Navbar() {
             );
           })}
         </ul>
+        <div className="shrink-0">
           <ShareButtons />
         </div>
       </nav>

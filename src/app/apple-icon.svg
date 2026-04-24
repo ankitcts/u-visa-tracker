@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#1e40af"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="36" fill="url(#bg)"/>
+  <path
+    d="M90 28 L146 46 V82 Q146 128 90 152 Q34 128 34 82 V46 Z"
+    fill="rgba(255,255,255,0.12)"
+    stroke="#ffffff"
+    stroke-width="3"
+    stroke-linejoin="round"
+  />
+  <text
+    x="90"
+    y="122"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="96"
+    font-weight="700"
+    fill="#fff"
+    letter-spacing="-3"
+  >U</text>
+  <circle cx="136" cy="52" r="10" fill="#ef4444"/>
+  <circle cx="136" cy="52" r="5" fill="#fff"/>
+</svg>
