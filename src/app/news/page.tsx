@@ -33,20 +33,18 @@ export const revalidate = 3600;
 export default function NewsPage() {
   return (
     <div className="space-y-8">
-      <header className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-red-500/40 bg-red-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-red-600 dark:text-red-400 leading-none">
-            <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+      <header className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-red-500/40 bg-red-500/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-red-600 dark:text-red-400 leading-none">
+            <span className="h-1 w-1 rounded-full bg-red-500 animate-pulse" />
             Live
           </span>
-          <div className="min-w-0">
-            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight leading-none">
-              U-Visa News
-            </h1>
-            <p className="mt-1.5 text-xs text-muted-foreground">
-              Geo-tagged coverage · refreshes hourly
-            </p>
-          </div>
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight leading-none">
+            U-Visa News
+          </h1>
+          <span className="hidden sm:inline text-xs text-muted-foreground ml-2">
+            Geo-tagged · refreshes hourly
+          </span>
         </div>
         <Link
           href="/u-visa"

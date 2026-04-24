@@ -2,19 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import {
-  Globe,
-  MessageSquare,
-  Database,
-  Hash,
-  PlayCircle,
   MapPin,
   Tag,
   Flag,
   Image as ImageIcon,
   Check,
   Loader2,
+  Database,
   type LucideIcon,
 } from 'lucide-react';
+import type { IconType } from 'react-icons';
+import {
+  SiGooglenews,
+  SiReddit,
+  SiYcombinator,
+  SiYoutube,
+} from 'react-icons/si';
 
 /**
  * Animated live-status widget for the `/news` Suspense fallback.
@@ -29,16 +32,19 @@ type Status = 'pending' | 'loading' | 'done';
 interface Step {
   key: string;
   label: string;
-  Icon: LucideIcon;
+  Icon: LucideIcon | IconType;
   color: string;
 }
 
 const SOURCES: Step[] = [
-  { key: 'google', label: 'Google News', Icon: Globe, color: '#4285f4' },
-  { key: 'reddit', label: 'Reddit', Icon: MessageSquare, color: '#ff4500' },
+  // Official brand marks from simple-icons (via react-icons/si) where we have
+  // them. GDELT has no simple-icons entry; using Lucide's Database glyph with
+  // its brand green (#10b981).
+  { key: 'google', label: 'Google News', Icon: SiGooglenews, color: '#4285f4' },
+  { key: 'reddit', label: 'Reddit', Icon: SiReddit, color: '#ff4500' },
   { key: 'gdelt', label: 'GDELT', Icon: Database, color: '#10b981' },
-  { key: 'hn', label: 'Hacker News', Icon: Hash, color: '#ff6600' },
-  { key: 'youtube', label: 'YouTube', Icon: PlayCircle, color: '#ef4444' },
+  { key: 'hn', label: 'Hacker News', Icon: SiYcombinator, color: '#ff6600' },
+  { key: 'youtube', label: 'YouTube', Icon: SiYoutube, color: '#ff0000' },
 ];
 
 const STAGES: Step[] = [
