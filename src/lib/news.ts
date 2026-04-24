@@ -515,6 +515,51 @@ export const getNewsLastUpdated = _unstable_cache(
   { revalidate: 60 * 60, tags: ['news-classify'] }, // hourly bucket
 );
 
+/**
+ * Per-source wrappers used by the SSE stream endpoint (`/api/news/stream`)
+ * so the client-side loader can observe real per-source completion. Each
+ * one runs all of that source's queries and returns the aggregated items.
+ * Underlying fetches are cached via `unstable_cache` / `next.revalidate`, so
+ * these calls share their result with the main `fetchUVisaNews` aggregator.
+ */
+export async function fetchAllGoogle(perQueryCap = 30): Promise<NewsItem[]> {
+  const batches = await Promise.all(
+    FEED_QUERIES.map((q) => fetchOneQuery(q, perQueryCap)),
+  );
+  return batches.flat();
+}
+
+export async function fetchAllReddit(perQueryCap = 15): Promise<NewsItem[]> {
+  const batches = await Promise.all(
+    REDDIT_QUERIES.map((r) =>
+      fetchRedditQuery(r.subreddit, r.query, perQueryCap),
+    ),
+  );
+  return batches.flat();
+}
+
+export async function fetchAllGdelt(perQueryCap = 50): Promise<NewsItem[]> {
+  const batches = await Promise.all(
+    GDELT_QUERIES.map((q) => fetchGdeltQuery(q, perQueryCap)),
+  );
+  return batches.flat();
+}
+
+export async function fetchAllHackerNews(perQueryCap = 20): Promise<NewsItem[]> {
+  const queries = ['"U visa"', '"I-918"', '"visa fraud"'];
+  const batches = await Promise.all(
+    queries.map((q) => fetchHackerNewsQuery(q, perQueryCap)),
+  );
+  return batches.flat();
+}
+
+export async function fetchAllYouTube(perChannelCap = 5): Promise<NewsItem[]> {
+  const batches = await Promise.all(
+    YOUTUBE_CHANNELS.map((c) => fetchYouTubeChannel(c, perChannelCap)),
+  );
+  return batches.flat();
+}
+
 export function relativeTime(iso: string): string {
   const t = new Date(iso).getTime();
   if (Number.isNaN(t)) return '';
