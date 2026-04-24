@@ -45,6 +45,8 @@ interface GeoFeature {
 
 type GroupedNews = Record<string, ClassifiedNewsItem[]>;
 
+type ColorMode = 'news' | 'cert';
+
 export default function USNewsMap({
   news,
   lastUpdated,
@@ -52,31 +54,78 @@ export default function USNewsMap({
   news: ClassifiedNewsItem[];
   lastUpdated?: string;
 }) {
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [pinned, setPinned] = useState<string | null>(null);
+  const [tagFilter, setTagFilter] = useState<NewsTag | null>(null);
+  const [colorMode, setColorMode] = useState<ColorMode>('news');
+  const active = pinned ?? hovered;
+
+  const filteredNews = useMemo(
+    () =>
+      tagFilter ? news.filter((it) => it.tag === tagFilter) : news,
+    [news, tagFilter],
+  );
+
   const grouped = useMemo<GroupedNews>(() => {
     const out: GroupedNews = {};
-    for (const item of news) {
+    for (const item of filteredNews) {
       if (item.state && /^[A-Z]{2}$/.test(item.state)) {
         (out[item.state] ??= []).push(item);
       }
     }
     return out;
+  }, [filteredNews]);
+
+  // News-volume heat — log-scaled so one state with 10 items doesn't wash
+  // out the rest.
+  const maxCount = useMemo(
+    () => Math.max(1, ...Object.values(grouped).map((a) => a.length)),
+    [grouped],
+  );
+
+  // Top 5 states by news count — leaderboard data.
+  const leaderboard = useMemo(
+    () =>
+      Object.entries(grouped)
+        .map(([state, items]) => ({ state, items }))
+        .sort((a, b) => b.items.length - a.items.length)
+        .slice(0, 5),
+    [grouped],
+  );
+
+  // Tag distribution across located news (for the clickable legend counts).
+  const tagCounts = useMemo(() => {
+    const out: Partial<Record<NewsTag, number>> = {};
+    for (const item of news) {
+      if (!item.state) continue;
+      out[item.tag] = (out[item.tag] ?? 0) + 1;
+    }
+    return out;
   }, [news]);
 
-  const [hovered, setHovered] = useState<string | null>(null);
-  const [pinned, setPinned] = useState<string | null>(null);
-  const active = pinned ?? hovered;
+  // Country breakdown for located items (flag strip under the map).
+  const countryCounts = useMemo(() => {
+    const out: Record<string, number> = {};
+    for (const item of filteredNews) {
+      if (!item.state || !item.country) continue;
+      out[item.country] = (out[item.country] ?? 0) + 1;
+    }
+    return Object.entries(out)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6);
+  }, [filteredNews]);
 
   const locatedCount = Object.values(grouped).reduce(
     (n, arr) => n + arr.length,
     0,
   );
-
   const total = news.length;
   const unlocated = total - locatedCount;
+  const statesCovered = Object.keys(grouped).length;
 
   return (
     <div className="relative w-full rounded-xl border bg-card/60 backdrop-blur-sm overflow-hidden">
-      <div className="flex items-center justify-between gap-3 px-3 pt-2 pb-1">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-3 pt-2 pb-2">
         <div className="min-w-0">
           <h2 className="text-base font-semibold tracking-tight inline-flex items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-full border border-red-500/40 bg-red-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-600 dark:text-red-400">
@@ -85,22 +134,58 @@ export default function USNewsMap({
             </span>
             U-Visa News
           </h2>
-          <p className="text-[11px] text-muted-foreground leading-tight">
-            <span className="text-foreground font-medium">{total}</span> items
-            ·{' '}
-            <span className="text-foreground font-medium">{locatedCount}</span>{' '}
-            located on map · {unlocated} national/unlocated · past 7 days
-            {lastUpdated && (
-              <>
-                {' · '}
-                <span title={new Date(lastUpdated).toLocaleString()}>
-                  updated {formatLastUpdated(lastUpdated)}
-                </span>
-              </>
-            )}
-          </p>
+          {lastUpdated && (
+            <span
+              className="text-[10.5px] text-muted-foreground"
+              title={new Date(lastUpdated).toLocaleString()}
+            >
+              · updated {formatLastUpdated(lastUpdated)}
+            </span>
+          )}
         </div>
-        <Legend />
+        <div className="inline-flex items-center rounded-full border bg-background p-0.5 text-[11px]">
+          <button
+            type="button"
+            onClick={() => setColorMode('news')}
+            aria-pressed={colorMode === 'news'}
+            className={`rounded-full px-2.5 py-1 transition-colors ${
+              colorMode === 'news'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            News heat
+          </button>
+          <button
+            type="button"
+            onClick={() => setColorMode('cert')}
+            aria-pressed={colorMode === 'cert'}
+            className={`rounded-full px-2.5 py-1 transition-colors ${
+              colorMode === 'cert'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Cert share (FY12–18)
+          </button>
+        </div>
+      </div>
+
+      {/* Stat bar */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-3 pb-2">
+        <StatPill label="Total items" value={total} />
+        <StatPill label="On the map" value={locatedCount} highlight />
+        <StatPill label="States covered" value={statesCovered} />
+        <StatPill label="Unlocated" value={unlocated} muted />
+      </div>
+
+      {/* Clickable tag legend */}
+      <div className="px-3 pb-2">
+        <ClickableLegend
+          active={tagFilter}
+          counts={tagCounts}
+          onChange={setTagFilter}
+        />
       </div>
 
       <div className="grid gap-0 lg:grid-cols-[1fr_320px]">
@@ -121,8 +206,11 @@ export default function USNewsMap({
               geographies.map((geo) => {
                 const usps = FIPS_TO_USPS[geo.id];
                 const share = usps ? CERT_SHARE[usps] ?? 0 : 0;
-                const fill = shadeForShare(share);
-                const isActive = active === usps;
+                const newsCount = usps ? grouped[usps]?.length ?? 0 : 0;
+                const fill =
+                  colorMode === 'news'
+                    ? shadeForNews(newsCount, maxCount)
+                    : shadeForShare(share);
                 return (
                   <Geography
                     key={geo.rsmKey}
@@ -147,7 +235,7 @@ export default function USNewsMap({
                         stroke: '#ffffff',
                         strokeWidth: 0.8,
                         outline: 'none',
-                        cursor: grouped[usps]?.length ? 'pointer' : 'default',
+                        cursor: newsCount ? 'pointer' : 'default',
                       },
                       pressed: {
                         fill: '#cbd5e1',
@@ -156,11 +244,45 @@ export default function USNewsMap({
                     }}
                     aria-label={
                       usps
-                        ? `${USPS_TO_NAME[usps] ?? usps}${share ? `, ${share}% of certifications` : ''}${grouped[usps]?.length ? `, ${grouped[usps].length} news items` : ''}`
+                        ? `${USPS_TO_NAME[usps] ?? usps}${share ? `, ${share}% of certifications` : ''}${newsCount ? `, ${newsCount} news items` : ''}`
                         : undefined
                     }
                   />
                 );
+              })
+            }
+          </Geographies>
+
+          {/* State code labels on larger states */}
+          <Geographies geography={GEO_DATA}>
+            {({ geographies }: { geographies: GeoFeature[] }) =>
+              geographies.flatMap((geo) => {
+                const usps = FIPS_TO_USPS[geo.id];
+                if (!usps) return [];
+                if (SKIP_LABEL.has(usps)) return [];
+                const [lon, lat] = geoCentroid(geo as never) as [
+                  number,
+                  number,
+                ];
+                if (!Number.isFinite(lon) || !Number.isFinite(lat)) return [];
+                const hasNews = !!grouped[usps]?.length;
+                return [
+                  <Marker
+                    key={`lbl-${usps}`}
+                    coordinates={[lon, lat]}
+                  >
+                    <text
+                      textAnchor="middle"
+                      y={-9}
+                      fontSize={8}
+                      fontWeight={700}
+                      fill={hasNews ? '#1e293b' : '#94a3b8'}
+                      style={{ pointerEvents: 'none' }}
+                    >
+                      {usps}
+                    </text>
+                  </Marker>,
+                ];
               })
             }
           </Geographies>
@@ -317,13 +439,76 @@ export default function USNewsMap({
 
         {/* Side panel — every news item, located or not */}
         <AllNewsPanel
-          news={news}
+          news={filteredNews}
           activeState={active}
           setHovered={setHovered}
           setPinned={setPinned}
           lastUpdated={lastUpdated}
         />
       </div>
+
+      {/* Leaderboard + country strip */}
+      {(leaderboard.length > 0 || countryCounts.length > 0) && (
+        <div className="border-t bg-background/40 px-3 py-3 grid gap-3 md:grid-cols-[1fr_auto] items-start">
+          {leaderboard.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+                Top states · by news volume
+              </p>
+              <ol className="flex flex-wrap gap-1.5">
+                {leaderboard.map(({ state, items }, i) => (
+                  <li key={state}>
+                    <button
+                      type="button"
+                      onMouseEnter={() => setHovered(state)}
+                      onMouseLeave={() => setHovered(null)}
+                      onClick={() =>
+                        setPinned((p) => (p === state ? null : state))
+                      }
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                        active === state
+                          ? 'bg-foreground text-background border-foreground'
+                          : 'bg-background hover:bg-accent'
+                      }`}
+                    >
+                      <span className="font-mono tabular-nums text-[10px] opacity-60">
+                        #{i + 1}
+                      </span>
+                      <span className="font-semibold">{state}</span>
+                      <span className="text-[10px] opacity-70">
+                        {USPS_TO_NAME[state] ?? ''}
+                      </span>
+                      <span className="rounded-full bg-primary/10 text-primary px-1.5 text-[10px] font-bold tabular-nums">
+                        {items.length}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+          {countryCounts.length > 0 && (
+            <div className="space-y-1.5 md:text-right">
+              <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+                Nationalities in located news
+              </p>
+              <ul className="flex flex-wrap gap-1.5 md:justify-end">
+                {countryCounts.map(([cc, n]) => (
+                  <li
+                    key={cc}
+                    className="inline-flex items-center gap-1 rounded-full border bg-background px-2 py-0.5 text-xs"
+                    title={countryNote(cc)}
+                  >
+                    <span aria-hidden>{flagEmoji(cc)}</span>
+                    <span>{cc}</span>
+                    <span className="opacity-60 tabular-nums">{n}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -501,4 +686,119 @@ function shadeForShare(share: number): string {
   if (share < 10) return '#a5b4fc';
   if (share < 20) return '#818cf8';
   return '#6366f1';
+}
+
+// Log-scaled news-volume heat ramp. 0 → neutral slate, then cool → warm.
+function shadeForNews(count: number, max: number): string {
+  if (count <= 0) return '#f1f5f9';
+  const t = Math.log(count + 1) / Math.log(Math.max(2, max + 1));
+  if (t < 0.2) return '#fef3c7'; // amber-50
+  if (t < 0.4) return '#fde68a'; // amber-200
+  if (t < 0.6) return '#fca5a5'; // red-300
+  if (t < 0.8) return '#f87171'; // red-400
+  return '#ef4444'; // red-500
+}
+
+// Very small / narrow states where a USPS code label would overflow or
+// overlap its neighbors (DC, RI, DE, NJ, NH, VT, MD, CT, MA). We skip
+// labeling these; hover/click still works fine.
+const SKIP_LABEL = new Set(['DC', 'RI', 'DE', 'NJ', 'NH', 'VT', 'MD', 'CT', 'MA']);
+
+function StatPill({
+  label,
+  value,
+  highlight,
+  muted,
+}: {
+  label: string;
+  value: number | string;
+  highlight?: boolean;
+  muted?: boolean;
+}) {
+  return (
+    <div
+      className={`rounded-lg border px-3 py-2 text-xs ${
+        highlight
+          ? 'border-primary/50 bg-primary/5'
+          : muted
+          ? 'border-border bg-muted/30'
+          : 'border-border bg-background/60'
+      }`}
+    >
+      <div
+        className={`text-[10px] uppercase tracking-wider ${
+          muted ? 'text-muted-foreground' : 'text-muted-foreground'
+        }`}
+      >
+        {label}
+      </div>
+      <div
+        className={`font-mono tabular-nums text-lg font-semibold ${
+          highlight ? 'text-primary' : muted ? 'text-muted-foreground' : ''
+        }`}
+      >
+        {typeof value === 'number' ? value.toLocaleString() : value}
+      </div>
+    </div>
+  );
+}
+
+function ClickableLegend({
+  active,
+  counts,
+  onChange,
+}: {
+  active: NewsTag | null;
+  counts: Partial<Record<NewsTag, number>>;
+  onChange: (tag: NewsTag | null) => void;
+}) {
+  const tags: NewsTag[] = [
+    'fraud-concern',
+    'litigation',
+    'policy-change',
+    'data-report',
+    'commentary',
+    'general',
+  ];
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+      <span className="text-muted-foreground mr-1">Filter markers:</span>
+      <button
+        type="button"
+        onClick={() => onChange(null)}
+        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 transition-colors ${
+          active === null
+            ? 'bg-foreground text-background border-foreground'
+            : 'bg-background hover:bg-accent'
+        }`}
+      >
+        All
+      </button>
+      {tags.map((t) => {
+        const n = counts[t] ?? 0;
+        const isActive = active === t;
+        return (
+          <button
+            key={t}
+            type="button"
+            onClick={() => onChange(isActive ? null : t)}
+            aria-pressed={isActive}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 transition-colors ${
+              isActive
+                ? 'bg-foreground text-background border-foreground'
+                : 'bg-background hover:bg-accent'
+            } ${n === 0 ? 'opacity-50' : ''}`}
+            disabled={n === 0}
+          >
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: TAG_COLOR[t] }}
+            />
+            {TAG_LABELS[t]}
+            <span className="tabular-nums opacity-70">{n}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
 }
