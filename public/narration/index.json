@@ -1,0 +1,28 @@
+{
+  "voices": [
+    {
+      "voice": "en-US-AriaNeural",
+      "key": "aria",
+      "label": "Aria (US, warm)",
+      "files": 18
+    },
+    {
+      "voice": "en-US-JennyNeural",
+      "key": "jenny",
+      "label": "Jenny (US, friendly)",
+      "files": 18
+    },
+    {
+      "voice": "en-US-MichelleNeural",
+      "key": "michelle",
+      "label": "Michelle (US, newscaster)",
+      "files": 18
+    },
+    {
+      "voice": "en-GB-SoniaNeural",
+      "key": "sonia",
+      "label": "Sonia (UK, warm)",
+      "files": 18
+    }
+  ]
+}

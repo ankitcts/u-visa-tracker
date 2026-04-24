@@ -106,9 +106,9 @@ export const HISTORY: HistoryEvent[] = [
     title: 'VAWA 2005 reauthorization',
     kind: 'law',
     body:
-      'The Violence Against Women Reauthorization Act of 2005 added minor clarifications to the still-unimplemented U-visa provisions and directed DHS to issue final regulations. Sen. Joe Biden was a lead sponsor; Rep. Chris Smith carried the House version.',
+      'The Violence Against Women Reauthorization Act of 2005 (Pub. L. 109-162) added minor clarifications to the still-unimplemented U-visa provisions and directed DHS to issue regulations. House lead was Rep. F. James Sensenbrenner (H.R. 3402); Senate companion efforts were led by Sen. Arlen Specter. Longtime VAWA champion Sen. Joe Biden cosponsored.',
     narration:
-      "By 2005, the U visa had been law for five years, and not a single one had been issued. Congress — this time under the banner of reauthorizing the Violence Against Women Act — returned to the text and sharpened it. Senator Joe Biden, the original VAWA author, was a lead sponsor. In the House, Republican Chris Smith of New Jersey carried the companion bill. The reauthorization tightened a handful of definitions. It told the Department of Homeland Security, in plain language, to issue the final regulations and start the program. That directive was a small act of institutional impatience. The statute was on the books. Victims were coming forward. Law-enforcement letters were being written. And still, no visa existed to stamp into a passport. The message from Congress was simple. You have had long enough.",
+      "By 2005, the U visa had been law for five years, and not a single one had been issued. Congress — this time under the banner of reauthorizing the Violence Against Women Act — returned to the text and sharpened it. Wisconsin Republican F. James Sensenbrenner carried House Resolution 3402. On the Senate side, Republican Arlen Specter led the reauthorization effort. Senator Joe Biden, the original VAWA author from 1994, signed on as a cosponsor, as he did for every VAWA bill of his career. The reauthorization tightened a handful of definitions. It told the Department of Homeland Security, in plain language, to issue the regulations and start the program. That directive was a small act of institutional impatience. The statute was on the books. Victims were coming forward. Law-enforcement letters were being written. And still, no visa existed to stamp into a passport. The message from Congress was simple. You have had long enough.",
     citations: [
       { label: 'Pub. L. 109-162' },
     ],
@@ -116,21 +116,21 @@ export const HISTORY: HistoryEvent[] = [
   {
     year: 2007,
     date: 'September 17, 2007',
-    title: 'U-visa final rule published; applications begin',
+    title: 'U-visa interim rule published; applications begin',
     kind: 'rule',
     highlight: true,
     body:
-      'Seven years after enactment, DHS/USCIS published the final rule implementing the U nonimmigrant visa classification in 8 CFR 214.14. USCIS began accepting Form I-918 petitions immediately. The rule implemented the 10,000 annual cap on principal approvals, codified the I-918 Supplement B law-enforcement certification, and defined qualifying criminal activities.',
+      'Seven years after enactment, DHS/USCIS published the interim rule implementing the U nonimmigrant visa classification in 8 CFR 214.14 (72 Fed. Reg. 53014). USCIS began accepting Form I-918 petitions immediately. The rule implemented the 10,000 annual cap on principal approvals, codified the I-918 Supplement B law-enforcement certification, and defined qualifying criminal activities.',
     narration:
       "September 17th, 2007. Seven years after the law was signed, the Department of Homeland Security finally published the rule. Seventy-two Federal Register 53014. Inside the dense grey columns of that notice was the operating manual for the entire program. A new form, the I-918. Its centerpiece — Supplement B — the law-enforcement certification, signed by a police chief or prosecutor, attesting that the petitioner had been a victim and had helped with the case. The regulation codified the ten-thousand cap, listed the qualifying crimes, and set the evidentiary standards. USCIS began accepting applications immediately. For the first time since the bill had passed, a trafficked worker in a Georgia poultry plant, a stabbing victim in Los Angeles, a domestic-abuse survivor in Queens — each could file actual paperwork, by name, and ask for protection on the letterhead of the United States government.",
     citations: [
-      { label: '72 Fed. Reg. 53014', url: 'https://www.federalregister.gov/documents/2007/09/17/E7-18202/new-classification-for-victims-of-criminal-activity-eligibility-for-u-nonimmigrant-status' },
+      { label: '72 Fed. Reg. 53014', url: 'https://www.federalregister.gov/documents/2007/09/17/E7-17807/new-classification-for-victims-of-criminal-activity-eligibility-for-u-nonimmigrant-status' },
       { label: '8 CFR 214.14', url: 'https://www.law.cornell.edu/cfr/text/8/214.14' },
     ],
     articles: [
-      { outlet: 'Federal Register', headline: 'Final rule — New Classification for Victims of Criminal Activity', url: 'https://www.federalregister.gov/documents/2007/09/17/E7-18202/new-classification-for-victims-of-criminal-activity-eligibility-for-u-nonimmigrant-status' },
+      { outlet: 'Federal Register', headline: 'Interim rule — New Classification for Victims of Criminal Activity', url: 'https://www.federalregister.gov/documents/2007/09/17/E7-17807/new-classification-for-victims-of-criminal-activity-eligibility-for-u-nonimmigrant-status' },
       { outlet: 'USCIS', headline: 'Form I-918 — Petition for U Nonimmigrant Status', url: 'https://www.uscis.gov/i-918' },
-      { outlet: 'Newspapers.com archive', headline: 'Sep–Oct 2007 coverage — U-visa final rule', url: 'https://www.newspapers.com/search/results/?query=%22U+visa%22+%22final+rule%22&dr_year=2007-2007' },
+      { outlet: 'Newspapers.com archive', headline: 'Sep–Oct 2007 coverage — U-visa interim rule', url: 'https://www.newspapers.com/search/results/?query=%22U+visa%22+%22interim+rule%22&dr_year=2007-2007' },
     ],
   },
   {
@@ -222,7 +222,7 @@ export const HISTORY: HistoryEvent[] = [
   {
     year: 2022,
     date: 'January 27, 2022',
-    title: 'Barrios Garcia v. Mayorkas (6th Cir.)',
+    title: 'Barrios Garcia v. DHS (6th Cir.)',
     kind: 'court',
     highlight: true,
     body:
@@ -230,10 +230,10 @@ export const HISTORY: HistoryEvent[] = [
     narration:
       "Seven months after the agency rewrote its own procedures, the courts weighed in. January 27th, 2022. The United States Court of Appeals for the Sixth Circuit handed down Barrios Garcia versus Mayorkas, naming the Secretary of Homeland Security himself. The plaintiffs were U-visa petitioners whose files had sat for years without so much as a glance. The question was whether the agency could simply sit on an approvable case indefinitely. The court said no. The duty to place eligible petitioners on the waitlist, and to grant deferred action and work authorization within a reasonable time, was not discretionary. It was mandatory. The opinion did not dismantle the backlog. Congress alone could do that. But it set a legal floor. It told the agency that silence, forever, was not a lawful answer. Litigation over U-visa delays has, ever since, leaned on this ruling.",
     citations: [
-      { label: 'Barrios Garcia v. Mayorkas, 25 F.4th 430 (6th Cir. 2022)', url: 'https://www.courtlistener.com/opinion/9267430/barrios-garcia-v-mayorkas/' },
+      { label: 'Barrios Garcia v. U.S. Department of Homeland Security, 25 F.4th 430 (6th Cir. 2022)', url: 'https://www.courtlistener.com/opinion/9267430/barrios-garcia-v-mayorkas/' },
     ],
     articles: [
-      { outlet: 'CourtListener', headline: 'Barrios Garcia v. Mayorkas — 6th Cir. opinion', url: 'https://www.courtlistener.com/opinion/9267430/barrios-garcia-v-mayorkas/' },
+      { outlet: 'CourtListener', headline: 'Barrios Garcia v. DHS — 6th Cir. opinion', url: 'https://www.courtlistener.com/opinion/9267430/barrios-garcia-v-mayorkas/' },
       { outlet: 'Newspapers.com archive', headline: 'Jan–Feb 2022 coverage — Sixth Circuit Barrios Garcia ruling', url: 'https://www.newspapers.com/search/results/?query=%22Barrios+Garcia%22+%22U+visa%22&dr_year=2022-2022' },
     ],
   },
