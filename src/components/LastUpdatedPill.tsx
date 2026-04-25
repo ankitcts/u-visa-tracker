@@ -35,9 +35,6 @@ export default async function LastUpdatedPill({
           <LocalTimestamp iso={iso} />
         </span>
       </span>
-      <span className="text-muted-foreground/70 ml-1 text-[10px] uppercase tracking-wider">
-        · daily
-      </span>
     </div>
   );
 }
