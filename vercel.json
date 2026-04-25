@@ -3,6 +3,12 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["iad1"],
+  "crons": [
+    {
+      "path": "/api/cron/refresh",
+      "schedule": "0 6 * * *"
+    }
+  ],
   "git": {
     "deploymentEnabled": {
       "main": false,
