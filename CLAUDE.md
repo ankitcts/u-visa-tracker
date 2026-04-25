@@ -7,10 +7,23 @@ This project uses the **`release-pipeline`** skill. Invoke it whenever the user 
 - Branches: `feature/<slug>`, `bug/<slug>`, or `hotfix/<slug>` — never commit to `main`.
 - Before any push, ASK the user whether the change is a feature, bug, or hotfix.
 - After push → open PR → merge to `main` → ask the user to cut an RC.
-- **RC tags** (e.g. `v0.4.0-rc.1`) deploy to Vercel **PREVIEW** via `.github/workflows/deploy-rc.yml`, then alias to **https://u-visa-tracker.vercel.app** for verification.
-- **Final release tags** (e.g. `v0.4.0`) deploy to Vercel **PRODUCTION** via `.github/workflows/deploy-release.yml`, which is what serves **https://uvisatracker.com**.
+- **Do NOT delete the source branch on merge.** Keep `feature/`, `bug/`, and `hotfix/` branches around after squash-merge so the per-branch history is preserved on the remote (use `gh pr merge --squash`, not `--squash --delete-branch`).
+- **RC tags** (e.g. `v1.1.0-rc.1`) deploy to Vercel **PREVIEW** via `.github/workflows/deploy-rc.yml`, then alias to **https://u-visa-tracker.vercel.app** for verification.
+- **Final release tags** (e.g. `v1.1.0`) deploy to Vercel **PRODUCTION** via `.github/workflows/deploy-release.yml`, which is what serves **https://uvisatracker.com**.
 - `main` pushes and feature branches do NOT auto-deploy.
 - See `~/.claude/skills/release-pipeline/SKILL.md` for the full workflow.
+
+## Direct-push protection on `main`
+
+GitHub branch protection requires Pro on private repos, so we run two free guards instead:
+
+1. **Local pre-push hook** at `.githooks/pre-push` blocks `git push origin main` from any clone that opts in. Activate once per clone:
+   ```bash
+   git config core.hooksPath .githooks
+   ```
+2. **CI guard** at `.github/workflows/no-direct-push-to-main.yml` runs on every push to `main` and fails the run if the head commit isn't a PR squash-merge (`...(#NN)` subject) or a real merge commit. This catches anything that bypassed the local hook.
+
+Emergency override for the local hook: `PROTECT_MAIN_OVERRIDE=1 git push origin main` (CI guard still fires — that's by design).
 
 ## Scope guardrails (READ FIRST)
 

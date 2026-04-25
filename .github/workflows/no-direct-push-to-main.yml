@@ -1,0 +1,53 @@
+name: Guard against direct pushes to main
+
+# Defense-in-depth complement to .githooks/pre-push. The local hook
+# blocks accidents on this machine; this CI guard catches anything that
+# slipped through (different clone, override flag, web edit, etc.) by
+# failing loudly on any push to main whose head commit is NOT a PR
+# merge or a tag.
+#
+# A real prevention layer requires GitHub branch protection or
+# rulesets, both gated behind GitHub Pro for private repos. Until that
+# decision is made (upgrade to Pro, or make the repo public), this
+# workflow is the loudest free signal.
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main with at least 2 commits of history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Verify head commit came from a PR merge
+        env:
+          PUSHER: ${{ github.event.pusher.name }}
+          BEFORE: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          subject=$(git log -1 --pretty=%s "$HEAD_SHA")
+          parents=$(git log -1 --pretty=%P "$HEAD_SHA" | wc -w | tr -d ' ')
+          echo "head sha:     $HEAD_SHA"
+          echo "head subject: $subject"
+          echo "parent count: $parents"
+          echo "pusher:       $PUSHER"
+
+          # Accept if: subject ends with `(#NN)` (squash-merge convention)
+          # OR commit has multiple parents (real merge commit)
+          if [[ "$subject" =~ \(#[0-9]+\)$ ]] || [ "$parents" -gt 1 ]; then
+            echo "::notice::OK — head commit is a PR merge."
+            exit 0
+          fi
+
+          echo "::error::Direct push to main detected. Subject does not match PR-squash pattern '...(#NN)' and is not a multi-parent merge."
+          echo "::error::Pusher: $PUSHER"
+          echo "::error::Use a feature/bug/hotfix branch + PR per the release-pipeline skill."
+          echo "::error::If this was an emergency, the override flag (PROTECT_MAIN_OVERRIDE=1) bypasses the local pre-push hook but cannot bypass this CI guard — by design."
+          exit 1
