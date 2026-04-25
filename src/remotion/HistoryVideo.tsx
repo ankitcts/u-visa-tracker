@@ -79,12 +79,47 @@ function computeTimings(voiceKey: string) {
 
   const introDur = secToFrames(durOf(introEntry, 5));
   const outroDur = secToFrames(durOf(outroEntry, 5));
-  const eventDurs = HISTORY.map((_, i) =>
-    secToFrames(durOf(eventEntries[i], 8)),
-  );
+
+  // Match audio entries to events by year FIRST, then title prefix — that way
+  // adding events doesn't shift audio off-by-one. Events with no matching
+  // narration get a default 8s silent scene until `npm run narrate` regenerates.
+  const eventEntriesByEvent = HISTORY.map((event) => {
+    const sameYear = eventEntries.filter((e) => e.year === event.year);
+    if (sameYear.length === 0) return undefined;
+    if (sameYear.length === 1) return sameYear[0];
+    // Multiple in same year — pick the one whose title shares the longest prefix
+    const norm = (s: string | undefined) =>
+      (s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const target = norm(event.title);
+    return sameYear.reduce<typeof sameYear[number] | undefined>(
+      (best, candidate) => {
+        const candTitle = norm(candidate.title);
+        const score = sharedPrefix(target, candTitle);
+        const bestScore = best ? sharedPrefix(target, norm(best.title)) : -1;
+        return score > bestScore ? candidate : best;
+      },
+      undefined,
+    );
+  });
+
+  const eventDurs = eventEntriesByEvent.map((e) => secToFrames(durOf(e, 8)));
   const total =
     introDur + eventDurs.reduce((a, b) => a + b, 0) + outroDur;
-  return { introDur, outroDur, eventDurs, total, introEntry, outroEntry, eventEntries };
+  return {
+    introDur,
+    outroDur,
+    eventDurs,
+    total,
+    introEntry,
+    outroEntry,
+    eventEntries: eventEntriesByEvent,
+  };
+}
+
+function sharedPrefix(a: string, b: string): number {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return i;
 }
 
 const DEFAULT_TIMINGS = computeTimings(DEFAULT_VOICE_KEY);

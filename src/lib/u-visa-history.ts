@@ -165,6 +165,23 @@ export const HISTORY: HistoryEvent[] = [
     ],
   },
   {
+    year: 2003,
+    date: 'December 19, 2003',
+    title: 'TVPRA 2003 — first reauthorization',
+    kind: 'law',
+    body:
+      'The Trafficking Victims Protection Reauthorization Act of 2003 (H.R. 2620, Pub. L. 108-193) was the first reauthorization of TVPA, signed by President George W. Bush. It extended funding for victim services, sharpened criminal penalties for traffickers, and refined eligibility criteria — keeping the trafficking-and-crime-victim framework alive while the U-visa regulations remained unwritten.',
+    narration:
+      "December 2003. President George W. Bush signs the Trafficking Victims Protection Reauthorization Act — the first reauthorization of the underlying statute that contained the U-visa text. The U visa itself still had no implementing rule. But the parent framework was renewed, sharpened, and given more money. It was a quiet vote of confidence, three years into a long wait, that Congress had not forgotten what it had created.",
+    citations: [
+      { label: 'Pub. L. 108-193', url: 'https://www.congress.gov/bill/108th-congress/house-bill/2620' },
+    ],
+    articles: [
+      { outlet: 'Congress.gov', headline: 'H.R. 2620 — Trafficking Victims Protection Reauthorization Act of 2003', url: 'https://www.congress.gov/bill/108th-congress/house-bill/2620' },
+      { outlet: 'Newspapers.com archive', headline: 'Dec 2003 coverage — TVPRA reauth', url: 'https://www.newspapers.com/search/results/?query=%22Trafficking+Victims+Protection+Reauthorization%22&dr_year=2003-2003' },
+    ],
+  },
+  {
     year: 2005,
     date: 'January 5, 2006',
     title: 'VAWA 2005 reauthorization',
@@ -221,6 +238,24 @@ export const HISTORY: HistoryEvent[] = [
       "In the first full fiscal year of adjudications, the numbers were modest. USCIS received 6,835 principal petitions. It approved 5,825. The program was running well under its ten-thousand ceiling. There was room. For a brief window, a U-visa petitioner could expect an answer in a matter of months. And the early press coverage was mostly a success story. Reporters found prosecutors — in Denver, in Houston, in small towns across the South — who said, on the record, that cases had been won because a witness felt safe enough to testify. The visa was doing what it had been designed to do. But quietly, inside the system, word was traveling. Advocacy networks were training attorneys. Police departments were learning to sign the certifications. Applications, each year, were climbing. The cap, for now, still held. For now.",
     citations: [
       { label: 'USCIS I-918 quarterly data, FY2009' },
+    ],
+  },
+  {
+    year: 2008,
+    date: 'December 23, 2008',
+    title: 'William Wilberforce TVPRA — major reauthorization',
+    kind: 'law',
+    highlight: true,
+    body:
+      'The William Wilberforce Trafficking Victims Protection Reauthorization Act of 2008 (Pub. L. 110-457), signed by President George W. Bush in his final weeks in office, was the most significant statutory expansion of the T and U visa programs since their creation. It strengthened victim protections, clarified eligibility for derivative family members, expanded continued-presence and work-authorization rules, and addressed the age-out problem that had threatened to deny relief to children whose petitions languished into adulthood.',
+    narration:
+      "December 23, 2008. In his final month in office, President George W. Bush signs the William Wilberforce Trafficking Victims Protection Reauthorization Act — named for the British abolitionist whose moral framework had inspired the original 2000 law. Its provisions read like a list of every problem advocates had spotted in eight years of practice. Children of petitioners were aging out before their cases were decided — fix that. Derivative spouses and parents had ambiguous status — clarify it. Continued-presence and work-authorization rules were a patchwork — make them coherent. The law did not raise the U-visa cap. But it widened the doorway for everyone already inside.",
+    citations: [
+      { label: 'Pub. L. 110-457', url: 'https://www.congress.gov/bill/110th-congress/house-bill/7311' },
+    ],
+    articles: [
+      { outlet: 'Congress.gov', headline: 'H.R. 7311 — William Wilberforce TVPRA of 2008', url: 'https://www.congress.gov/bill/110th-congress/house-bill/7311' },
+      { outlet: 'Newspapers.com archive', headline: 'Dec 2008 coverage — Wilberforce TVPRA signed', url: 'https://www.newspapers.com/search/results/?query=%22Wilberforce%22+%22Trafficking+Victims%22&dr_year=2008-2008' },
     ],
   },
   {
@@ -301,6 +336,23 @@ export const HISTORY: HistoryEvent[] = [
     ],
   },
   {
+    year: 2019,
+    date: 'February 15, 2019',
+    title: 'VAWA expires; reauthorization stalls',
+    kind: 'milestone',
+    body:
+      'After short-term extensions through January 2019, VAWA\'s programmatic authorization lapsed on February 15, 2019. The House passed an updated reauthorization (H.R. 1585) in April 2019, but the bill stalled in the Senate over disputes about firearms restrictions and tribal-court jurisdiction. The U-visa program itself, which operates on permanent statutory authority, continued — but planned program improvements waited three years until VAWA 2022 finally passed.',
+    narration:
+      "February 2019. For the first time since 1994, the Violence Against Women Act lapsed. The U visa kept running — its statutory authority is permanent, separate from VAWA\'s funding bill. But the planned improvements, the new protections, the modernization of victim services, all of it waited. The House passed a reauthorization that spring; the Senate did not take it up. Disagreements over firearms provisions and tribal-court jurisdiction had dragged the bill into a stalemate. For three years, advocates would watch a backlog grow under a framework Congress had stopped renewing.",
+    citations: [
+      { label: 'H.R. 1585, 116th Congress', url: 'https://www.congress.gov/bill/116th-congress/house-bill/1585' },
+    ],
+    articles: [
+      { outlet: 'Congress.gov', headline: 'H.R. 1585 — VAWA Reauthorization Act of 2019 (passed House)', url: 'https://www.congress.gov/bill/116th-congress/house-bill/1585' },
+      { outlet: 'Newspapers.com archive', headline: '2019 coverage — VAWA reauthorization stalls', url: 'https://www.newspapers.com/search/results/?query=%22Violence+Against+Women%22+reauthorization&dr_year=2019-2019' },
+    ],
+  },
+  {
     year: 2020,
     title: 'Pending backlog tops 177,000',
     kind: 'milestone',
@@ -358,6 +410,25 @@ export const HISTORY: HistoryEvent[] = [
       credit: 'Wikimedia Commons',
       license: 'CC0 1.0 (public domain dedication)',
     },
+  },
+  {
+    year: 2022,
+    date: 'March 15, 2022',
+    title: 'VAWA Reauthorization Act of 2022 signed',
+    kind: 'law',
+    highlight: true,
+    body:
+      'After three years of legislative deadlock, the Violence Against Women Act Reauthorization Act of 2022 was signed by President Joe Biden as Title XII of the Consolidated Appropriations Act of 2022 (Pub. L. 117-103). It expanded tribal-jurisdiction protections over non-Native abusers, addressed cyberstalking and image-based abuse, and continued funding for the victim-services infrastructure that supplements U-visa work. Biden — whose original 1994 VAWA had created the framework the U visa was built on — signed the modern reauthorization 28 years later.',
+    narration:
+      "March 15, 2022. President Joe Biden — the principal author of the original 1994 VAWA — signs the Violence Against Women Act Reauthorization of 2022 as part of an omnibus appropriations bill. Twenty-eight years after his first VAWA, the framework was renewed once more. Tribal-court jurisdiction expanded. Cyberstalking joined the qualifying list. Funding for shelters, prosecutors, and the legal-aid networks that file U-visa petitions was renewed for another five years. The law did not raise the U-visa cap — only Congress acting on the cap statute itself can do that — but it kept the support infrastructure intact, the back-office work, the trainings, the certifications, the partnerships with police that make a U-visa petition possible in the first place.",
+    citations: [
+      { label: 'Pub. L. 117-103, Title XII', url: 'https://www.congress.gov/bill/117th-congress/house-bill/2471' },
+    ],
+    articles: [
+      { outlet: 'Congress.gov', headline: 'H.R. 2471 — Consolidated Appropriations Act, 2022 (carrying VAWA reauth)', url: 'https://www.congress.gov/bill/117th-congress/house-bill/2471' },
+      { outlet: 'White House Briefing Room', headline: 'Statement on signing the VAWA Reauthorization Act of 2022', url: 'https://www.whitehouse.gov/briefing-room/statements-releases/2022/03/15/fact-sheet-reauthorization-of-the-violence-against-women-act-vawa/' },
+      { outlet: 'Newspapers.com archive', headline: 'Mar 2022 coverage — VAWA 2022 reauth signed', url: 'https://www.newspapers.com/search/results/?query=%22Violence+Against+Women%22+reauthorization&dr_year=2022-2022' },
+    ],
   },
   {
     year: 2024,
