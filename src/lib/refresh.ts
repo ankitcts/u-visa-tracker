@@ -1,35 +1,45 @@
 /**
- * Daily-refresh timestamp helper.
+ * Last-updated helpers.
  *
- * `getPageLastUpdated()` caches the current Date at a 24-hour bucket via
- * `unstable_cache`, so every page calling it inside the same UTC day sees
- * the same value. The first request *after* 24h elapses regenerates the
- * cache — i.e. each page effectively shows "last updated" timestamps that
- * tick forward once a day.
+ * The displayed "last refreshed" timestamp is sourced from
+ * `unstable_cache(new Date())` keyed per-route and tagged with
+ * `daily-refresh`. The Vercel Cron at /api/cron/refresh calls
+ * `revalidateTag('daily-refresh')` once a night, which busts the cache;
+ * the next request to any data page regenerates a fresh ISO timestamp.
  *
- * For true scheduled nightly refresh (regardless of traffic), pair this
- * with a Vercel Cron entry (`vercel.json` -> "crons") that pings each
- * route once a day at e.g. 03:00 UTC.
+ * History and live news bypass this — the History timeline is
+ * intentionally static (a curated archive), and /news has its own
+ * `getNewsLastUpdated()` that records the actual feed-fetch time.
+ *
+ * The ISO string is rendered in UTC server-side and re-formatted in the
+ * visitor's local timezone by the <LocalTimestamp> client component, so
+ * a refresh at 03:00 UTC reads as "Apr 25, 8:00 PM" for an EDT visitor
+ * and "Apr 25, 5:00 PM" for a PDT visitor.
  */
 import { unstable_cache } from 'next/cache';
 
-const REVALIDATE_DAILY_SECONDS = 60 * 60 * 24; // 24h
+const REVALIDATE_DAILY_SECONDS = 60 * 60 * 24;
 
-export const getPageLastUpdated = unstable_cache(
-  async () => new Date().toISOString(),
-  ['u-visa-page-last-updated-v1'],
-  { revalidate: REVALIDATE_DAILY_SECONDS, tags: ['daily-refresh'] },
-);
+const cachedRouteStamp = (routeKey: string) =>
+  unstable_cache(
+    async () => new Date().toISOString(),
+    [`u-visa-route-last-updated-v2`, routeKey],
+    { revalidate: REVALIDATE_DAILY_SECONDS, tags: ['daily-refresh', routeKey] },
+  );
 
 /**
- * Per-route variant that buckets independently — so /dashboard's daily
- * timestamp doesn't drag /backlog's or vice versa. Each route's first
- * request after midnight UTC produces a fresh "last updated" stamp.
+ * Return the ISO-8601 timestamp of the last data refresh for the given
+ * route. Server-only.
+ *
+ *   - Daily-refreshed routes (dashboard/backlog/analyze/geography/
+ *     integrity/litigation/u-visa/about/sources/archives/disclaimer/
+ *     privacy/terms) → tag-revalidated by the cron.
+ *
+ * Pages that should NOT use this helper (use page-local logic instead):
+ *   - `/`        — history page is intentionally static.
+ *   - `/news`    — uses getNewsLastUpdated() which records the actual
+ *                  feed-fetch time, not the daily refresh tick.
  */
-export function getRouteLastUpdated(routeKey: string) {
-  return unstable_cache(
-    async () => new Date().toISOString(),
-    [`u-visa-route-last-updated-v1`, routeKey],
-    { revalidate: REVALIDATE_DAILY_SECONDS, tags: ['daily-refresh', routeKey] },
-  )();
+export async function getRouteLastUpdated(routeKey: string): Promise<string> {
+  return cachedRouteStamp(routeKey)();
 }
