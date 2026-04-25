@@ -2,15 +2,16 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Info, BookOpen, ChevronRight, X } from 'lucide-react';
+import { Info, BookOpen, Archive, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
  * Floating secondary-nav widget docked to the left edge of the viewport.
- * Collapsed by default to a thin tab; expands to reveal the About + Sources
- * links so the main Navbar can stay on one line.
+ * Collapsed by default to a thin tab; expands to reveal secondary links
+ * (Archives / About / Sources) so the main Navbar can stay on one line.
  */
 const ITEMS = [
+  { href: '/archives', label: 'Archive Search', Icon: Archive },
   { href: '/about', label: 'About', Icon: Info },
   { href: '/sources', label: 'Sources', Icon: BookOpen },
 ];

@@ -11,7 +11,6 @@ const LINKS = [
   { href: '/', label: 'History' },
   { href: '/u-visa', label: 'U Visa' },
   { href: '/news', label: 'Live News' },
-  { href: '/archives', label: 'Archives' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/analyze', label: 'Analyze' },
   { href: '/backlog', label: 'Backlog' },
@@ -21,6 +20,7 @@ const LINKS = [
 ];
 
 const FOOTER_LINKS = [
+  { href: '/archives', label: 'Archive Search' },
   { href: '/about', label: 'About' },
   { href: '/sources', label: 'Sources' },
 ];
