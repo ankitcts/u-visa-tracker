@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DATA_SOURCES } from '@/lib/data';
-import ArchiveSearchPanel from '@/components/ArchiveSearchPanel';
 
 export const metadata: Metadata = {
   title: 'Data Sources',
@@ -51,9 +51,24 @@ export default function SourcesPage() {
         ))}
       </ul>
 
-      {/* Archive search panel — pre-built URLs into every free public archive
-          covering the U-visa era */}
-      <ArchiveSearchPanel />
+      <section className="rounded-xl border bg-muted/20 p-5 flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-1">
+          <h2 className="text-base font-semibold tracking-tight">
+            Looking for newspaper coverage?
+          </h2>
+          <p className="text-sm text-muted-foreground max-w-2xl">
+            17 newspaper, government, and court archives with pre-built
+            U-visa-history searches live on the Archive Search tab.
+          </p>
+        </div>
+        <Link
+          href="/archives"
+          className="inline-flex items-center gap-1 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:opacity-90"
+        >
+          Browse archive search
+          <span aria-hidden>→</span>
+        </Link>
+      </section>
 
       <section className="prose-page">
         <h2>What is NOT available and why</h2>

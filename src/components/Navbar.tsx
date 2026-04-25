@@ -11,6 +11,7 @@ const LINKS = [
   { href: '/', label: 'History' },
   { href: '/u-visa', label: 'U Visa' },
   { href: '/news', label: 'Live News' },
+  { href: '/archives', label: 'Archives' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/analyze', label: 'Analyze' },
   { href: '/backlog', label: 'Backlog' },

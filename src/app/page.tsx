@@ -6,7 +6,6 @@ import HistoryNarrator from '@/components/HistoryNarrator';
 import HistoryRemotionPlayer from '@/components/HistoryRemotionPlayerLoader';
 import ClippingGallery from '@/components/ClippingGallery';
 import HistoryGallery3D from '@/components/HistoryGallery3D';
-import ArchiveSearchPanel from '@/components/ArchiveSearchPanel';
 import { HISTORY } from '@/lib/u-visa-history';
 
 export const metadata: Metadata = {
@@ -153,8 +152,26 @@ export default function HomePage() {
         <ClippingGallery />
       </section>
 
-      {/* Archive search — direct links to real contemporaneous coverage */}
-      <ArchiveSearchPanel />
+      {/* Archive search lives on its own /archives tab */}
+      <section className="rounded-xl border bg-muted/20 p-5 md:p-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-1">
+          <h2 className="text-base font-semibold tracking-tight">
+            Search the archives yourself
+          </h2>
+          <p className="text-sm text-muted-foreground max-w-2xl">
+            Pre-built searches across 17 free and subscription archives —
+            Newspapers.com, ProQuest, Chronicling America, Internet Archive,
+            Federal Register, Congress.gov, CourtListener, GovInfo, and more.
+          </p>
+        </div>
+        <Link
+          href="/archives"
+          className="inline-flex items-center gap-1 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:opacity-90"
+        >
+          Open archive search
+          <span aria-hidden>→</span>
+        </Link>
+      </section>
 
       {/* Methodology note */}
       <section className="rounded-lg border bg-muted/30 p-5 text-sm text-muted-foreground space-y-2">
