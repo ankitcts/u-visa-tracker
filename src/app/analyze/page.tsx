@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: 'Analyze U Visa Data — By Year and By State',
   description:
     'Interactively filter U-visa aggregate data by fiscal year range and by state. Covers FY2009–FY2025 filings and FY2012–FY2018 certification breakdowns from public USCIS reports.',
+  alternates: { canonical: '/analyze' },
 };
 
 export default function AnalyzePage() {
@@ -24,7 +25,7 @@ export default function AnalyzePage() {
           </h1>
           <LastUpdatedPill routeKey="analyze" />
         </div>
-        <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
+        <p className="text-muted-foreground w-full text-justify">
           Drill into the aggregate U-visa data with year and state filters.
           Because USCIS publishes annual filing volumes{' '}
           <em>separately</em> from state-level certification breakdowns, this

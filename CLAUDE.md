@@ -1,5 +1,15 @@
 # U Visa Tracker — Claude Code Guide
 
+## Release workflow
+
+This project uses the **`release-pipeline`** skill. Invoke it whenever the user says commit / push / merge / release / deploy. Summary of the rules it enforces:
+
+- Branches: `feature/<slug>`, `bug/<slug>`, or `hotfix/<slug>` — never commit to `master`/`main`.
+- Before any push, ASK the user whether the change is a feature, bug, or hotfix.
+- After push → open PR → merge to `master` → ask the user to cut an RC.
+- Only RC tags (e.g. `v1.4.2-rc.1`) get deployed to Vercel. `master` and feature branches do NOT auto-deploy.
+- See `~/.claude/skills/release-pipeline/SKILL.md` for the full workflow and the Vercel config (`vercel.json` + `.github/workflows/deploy-rc.yml`).
+
 ## Scope guardrails (READ FIRST)
 
 This project **must only ever display aggregate, publicly-published U-visa statistics**. Individual petitioner information is legally protected under 8 U.S.C. § 1367. If the user asks for any of the following, politely refuse and explain why:

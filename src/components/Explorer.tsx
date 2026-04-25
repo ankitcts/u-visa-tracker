@@ -170,74 +170,78 @@ function OverviewTab({
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Filters</CardTitle>
-          <p className="text-xs text-muted-foreground">
-            Per-year filtering applies to{' '}
-            <strong>USCIS quarterly volumes</strong> (receipts, approvals,
-            denials, pending). Per-state certification data is only published
-            as an aggregate for FY2012–FY2018 in the 2020 Trends Report —
-            USCIS does not publish true state × year cross-tabs, so the
-            By-State and By-Year tabs will clearly mark estimates.
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
-            <YearPicker
-              label="From fiscal year"
-              value={fromYear}
-              setValue={(v) => {
-                setFromYear(v);
-                if (v > toYear) setToYear(v);
-              }}
-              options={allYears}
-            />
-            <YearPicker
-              label="To fiscal year"
-              value={toYear}
-              setValue={(v) => {
-                setToYear(v);
-                if (v < fromYear) setFromYear(v);
-              }}
-              options={allYears}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setFromYear(minYear);
-                setToYear(maxYear);
-              }}
-            >
-              Reset
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setFromYear(2012);
-                setToYear(2018);
-              }}
-            >
-              Trends window (FY12–18)
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setFromYear(maxYear - 4);
-                setToYear(maxYear);
-              }}
-            >
-              Last 5 FYs
-            </Button>
+      <Card className="relative pt-5">
+        <span className="absolute -top-2.5 left-4 px-2 bg-card text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          Filters
+        </span>
+        <CardContent className="pt-3">
+          {/* Mobile: stacked. sm+: pickers inline + presets wrap to right */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
+              <YearPicker
+                label="From FY"
+                value={fromYear}
+                setValue={(v) => {
+                  setFromYear(v);
+                  if (v > toYear) setToYear(v);
+                }}
+                options={allYears}
+                triggerClassName="w-full sm:w-28"
+              />
+              <YearPicker
+                label="To FY"
+                value={toYear}
+                setValue={(v) => {
+                  setToYear(v);
+                  if (v < fromYear) setFromYear(v);
+                }}
+                options={allYears}
+                triggerClassName="w-full sm:w-28"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2 sm:ml-auto sm:items-end">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setFromYear(minYear);
+                  setToYear(maxYear);
+                }}
+              >
+                Reset
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setFromYear(2012);
+                  setToYear(2018);
+                }}
+              >
+                FY12–18
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setFromYear(maxYear - 4);
+                  setToYear(maxYear);
+                }}
+              >
+                Last 5 FYs
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
+      <p className="text-xs text-muted-foreground w-full text-justify -mt-2">
+        Per-year filtering applies to{' '}
+        <strong>USCIS quarterly volumes</strong> (receipts, approvals,
+        denials, pending). Per-state certification data is only published
+        as an aggregate for FY2012–FY2018 in the 2020 Trends Report — USCIS
+        does not publish true state × year cross-tabs, so the By-State and
+        By-Year tabs will clearly mark estimates.
+      </p>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard label="Years" value={`FY${fromYear}–FY${toYear}`} />
@@ -399,34 +403,51 @@ function StateTab({
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>State drill-down</CardTitle>
-          <p className="text-xs text-muted-foreground">
-            The only published per-state figure is an <em>aggregate</em> share
-            across FY2012–FY2018. Per-year numbers below are{' '}
-            <strong>estimates</strong> computed as (state share %) × (national
-            I-918 receipts that FY). Treat them as rough order-of-magnitude.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="md:max-w-sm space-y-1.5">
-            <Label>State</Label>
-            <Select value={selectedState} onValueChange={setSelectedState}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {states.map((s) => (
-                  <SelectItem key={s.abbr} value={s.state}>
-                    {s.state} ({s.share}%)
-                  </SelectItem>
+      <Card className="relative pt-5">
+        <span className="absolute -top-2.5 left-4 px-2 bg-card text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          State drill-down
+        </span>
+        <CardContent className="pt-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+            <div className="space-y-1.5 w-full sm:w-auto">
+              <Label className="text-xs">State</Label>
+              <Select value={selectedState} onValueChange={setSelectedState}>
+                <SelectTrigger className="w-full sm:w-56">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {states.map((s) => (
+                    <SelectItem key={s.abbr} value={s.state}>
+                      {s.state} ({s.share}%)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-wrap gap-2 sm:ml-auto sm:items-end">
+              {[...states]
+                .sort((a, b) => b.share - a.share)
+                .slice(0, 3)
+                .map((s) => (
+                  <Button
+                    key={s.abbr}
+                    size="sm"
+                    variant={s.state === selectedState ? 'default' : 'outline'}
+                    onClick={() => setSelectedState(s.state)}
+                  >
+                    {s.abbr}
+                  </Button>
                 ))}
-              </SelectContent>
-            </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
+      <p className="text-xs text-muted-foreground w-full text-justify -mt-2">
+        The only published per-state figure is an <em>aggregate</em> share
+        across FY2012–FY2018. Per-year numbers below are{' '}
+        <strong>estimates</strong> computed as (state share %) × (national
+        I-918 receipts that FY). Treat them as rough order-of-magnitude.
+      </p>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard
@@ -655,37 +676,62 @@ function YearTab({
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Year drill-down</CardTitle>
-          <p className="text-xs text-muted-foreground">
-            Pick a fiscal year to see its national volumes plus an{' '}
-            <strong>estimated</strong> per-state breakdown. State shares are
-            applied uniformly across years because USCIS has not published
-            state × year cross-tabs outside the FY12–18 aggregate.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="md:max-w-sm space-y-1.5">
-            <Label>Fiscal year</Label>
-            <Select
-              value={String(focusYear)}
-              onValueChange={(v) => setFocusYear(Number(v))}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((y) => (
-                  <SelectItem key={y} value={String(y)}>
-                    FY{y}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <Card className="relative pt-5">
+        <span className="absolute -top-2.5 left-4 px-2 bg-card text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          Year drill-down
+        </span>
+        <CardContent className="pt-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+            <div className="space-y-1.5 w-full sm:w-auto">
+              <Label className="text-xs">Fiscal year</Label>
+              <Select
+                value={String(focusYear)}
+                onValueChange={(v) => setFocusYear(Number(v))}
+              >
+                <SelectTrigger className="w-full sm:w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((y) => (
+                    <SelectItem key={y} value={String(y)}>
+                      FY{y}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-wrap gap-2 sm:ml-auto sm:items-end">
+              <Button
+                size="sm"
+                variant={focusYear === years[0] ? 'default' : 'outline'}
+                onClick={() => setFocusYear(years[0])}
+              >
+                Latest
+              </Button>
+              <Button
+                size="sm"
+                variant={focusYear === 2018 ? 'default' : 'outline'}
+                onClick={() => setFocusYear(2018)}
+              >
+                FY2018
+              </Button>
+              <Button
+                size="sm"
+                variant={focusYear === 2012 ? 'default' : 'outline'}
+                onClick={() => setFocusYear(2012)}
+              >
+                FY2012
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
+      <p className="text-xs text-muted-foreground w-full text-justify -mt-2">
+        Pick a fiscal year to see its national volumes plus an{' '}
+        <strong>estimated</strong> per-state breakdown. State shares are
+        applied uniformly across years because USCIS has not published
+        state × year cross-tabs outside the FY12–18 aggregate.
+      </p>
 
       {p && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -819,20 +865,22 @@ function YearPicker({
   value,
   setValue,
   options,
+  triggerClassName,
 }: {
   label: string;
   value: number;
   setValue: (v: number) => void;
   options: number[];
+  triggerClassName?: string;
 }) {
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
+      <Label className="text-xs">{label}</Label>
       <Select
         value={String(value)}
         onValueChange={(v) => setValue(Number(v))}
       >
-        <SelectTrigger>
+        <SelectTrigger className={triggerClassName}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

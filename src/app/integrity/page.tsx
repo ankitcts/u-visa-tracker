@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   title: 'Program Integrity & Concerns — USCIS-Reported Signals',
   description:
     'USCIS-reported program-integrity signals for the U visa: rising share of likely ineligible filings, missing certification fields, case examples. All figures from the 2020 USCIS Trends Report.',
+  alternates: { canonical: '/integrity' },
 };
 
 export const revalidate = 3600;
@@ -45,7 +46,7 @@ export default function IntegrityPage() {
         <h1 className="text-3xl font-semibold tracking-tight">
           Program Integrity &amp; Concerns
         </h1>
-        <p className="text-muted-foreground max-w-3xl">
+        <p className="text-muted-foreground w-full text-justify">
           The only data on this page comes from USCIS&apos;s own 2020 research
           report on the U-visa program. USCIS calls these &quot;fraud and
           benefit-integrity concerns&quot; and describes many of the filings
@@ -283,7 +284,7 @@ export default function IntegrityPage() {
         <ClassifiedNewsFeed filter={['fraud-concern', 'litigation', 'policy-change']} />
       </section>
 
-      <section className="prose-page">
+      <section className="prose-page !max-w-none w-full [&>p]:text-justify [&_li]:text-justify">
         <h2>Important caveats</h2>
         <ul className="list-disc pl-6 space-y-2">
           <li>

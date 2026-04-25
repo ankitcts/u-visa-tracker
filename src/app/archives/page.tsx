@@ -3,11 +3,13 @@ import Link from 'next/link';
 import { Archive } from 'lucide-react';
 import ArchiveSearchPanel from '@/components/ArchiveSearchPanel';
 import LastUpdatedPill from '@/components/LastUpdatedPill';
+import AdSenseSlot from '@/components/AdSenseSlot';
 
 export const metadata: Metadata = {
   title: 'Archive Search — Newspapers, Federal Register, Court Opinions',
   description:
     'One-click pre-built searches across 17 free and subscription archives covering U-visa history (1994–present): Newspapers.com, NewspaperArchive, ProQuest Historical, Internet Archive, Chronicling America, Federal Register, Congress.gov, CourtListener, GovInfo, and more.',
+  alternates: { canonical: '/archives' },
 };
 
 export default function ArchivesPage() {
@@ -46,6 +48,8 @@ export default function ArchivesPage() {
       </header>
 
       <ArchiveSearchPanel />
+
+      <AdSenseSlot slot="1234567892" />
     </div>
   );
 }

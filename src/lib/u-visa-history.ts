@@ -364,15 +364,16 @@ export const HISTORY: HistoryEvent[] = [
   {
     year: 2021,
     date: 'June 14, 2021',
-    title: 'Bona Fide Determination policy (PM-602-0184)',
+    title: 'Bona Fide Determination policy (PA-2021-13)',
     kind: 'policy',
     highlight: true,
     body:
-      'USCIS issued Policy Memorandum PM-602-0184 creating the Bona Fide Determination process. Petitioners whose applications clear preliminary screening receive a 4-year employment authorization document and deferred action while they wait for full adjudication and a visa number. This was the most significant administrative change to U-visa processing since 2007.',
+      'USCIS issued Policy Alert PA-2021-13, updating Volume 3, Part C, Chapter 5 of the Policy Manual to create the Bona Fide Determination process. Petitioners whose applications clear preliminary screening receive a 4-year employment authorization document and deferred action while they wait for full adjudication and a visa number. This was the most significant administrative change to U-visa processing since 2007.',
     narration:
-      "On June 14th, 2021, USCIS answered. Policy Memorandum 602-0184 — the Bona Fide Determination process. The idea was elegant, and overdue. Before fully adjudicating a U-visa petition, an officer could make a preliminary check. Were the basics present — the law-enforcement certification, a personal statement, the fingerprint clearance? If so, and if the petitioner did not pose a safety risk, she could be granted what the agency called bona fide determination status. With it came a four-year work permit and deferred action. Not a visa. Not permanent. But no longer limbo. For a program that had moved almost nothing, administratively, since the 2007 final rule, this was the largest procedural change in more than a decade. It did not raise the cap. It could not. But it quietly reshaped what a petitioner actually experienced, year to year, while waiting.",
+      "On June 14th, 2021, USCIS answered. Policy Alert PA-2021-13 added a new chapter to the Policy Manual — the Bona Fide Determination process. The idea was elegant, and overdue. Before fully adjudicating a U-visa petition, an officer could make a preliminary check. Were the basics present — the law-enforcement certification, a personal statement, the fingerprint clearance? If so, and if the petitioner did not pose a safety risk, she could be granted what the agency called bona fide determination status. With it came a four-year work permit and deferred action. Not a visa. Not permanent. But no longer limbo. For a program that had moved almost nothing, administratively, since the 2007 final rule, this was the largest procedural change in more than a decade. It did not raise the cap. It could not. But it quietly reshaped what a petitioner actually experienced, year to year, while waiting.",
     citations: [
-      { label: 'USCIS PM-602-0184 · Bona Fide Determination policy', url: 'https://www.uscis.gov/policy-manual/volume-3-part-c-chapter-5' },
+      { label: 'USCIS Policy Alert PA-2021-13 · Bona Fide Determination policy', url: 'https://www.uscis.gov/sites/default/files/document/policy-manual-updates/20210614-VictimsOfCrimes.pdf' },
+      { label: 'Policy Manual · Vol. 3, Pt. C, Ch. 5', url: 'https://www.uscis.gov/policy-manual/volume-3-part-c-chapter-5' },
     ],
     articles: [
       { outlet: 'USCIS Policy Manual', headline: 'Volume 3, Part C, Chapter 5 — Bona Fide Determination', url: 'https://www.uscis.gov/policy-manual/volume-3-part-c-chapter-5' },
@@ -381,7 +382,7 @@ export const HISTORY: HistoryEvent[] = [
     image: {
       url: 'https://upload.wikimedia.org/wikipedia/commons/b/be/Alejandro_Mayorkas_%28portrait%29.jpg',
       caption:
-        'DHS Secretary Alejandro Mayorkas, who announced USCIS Policy Memorandum PM-602-0184 creating the Bona Fide Determination process in June 2021.',
+        'DHS Secretary Alejandro Mayorkas, who announced the Bona Fide Determination policy (USCIS Policy Alert PA-2021-13) in June 2021.',
       credit: 'Benjamin Applebaum / DHS / Wikimedia Commons',
       license: 'CC BY-SA 4.0 (also PD as US federal work)',
     },
