@@ -1,7 +1,13 @@
-name: Deploy RC to Vercel
+name: Deploy RC to Vercel preview
 
 # Triggers ONLY on release-candidate tag pushes (e.g. v1.4.2-rc.1).
-# Final release tags (v1.4.2) and main pushes do not deploy — by design.
+# Deploys to Vercel PREVIEW (not production) and aliases the latest
+# preview to u-visa-tracker.vercel.app so the team can verify on a
+# stable URL before promoting to production.
+#
+# Final release tags (v1.4.2) trigger deploy-release.yml instead, which
+# is what actually serves uvisatracker.com.
+#
 # See ~/.claude/skills/release-pipeline/SKILL.md for the full workflow.
 
 on:
@@ -15,12 +21,13 @@ concurrency:
 
 jobs:
   deploy:
-    name: Build & deploy ${{ github.ref_name }} to Vercel production
+    name: Build & deploy ${{ github.ref_name }} to Vercel preview
     runs-on: ubuntu-latest
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      PREVIEW_ALIAS: u-visa-tracker.vercel.app
     steps:
       - name: Check out tag
         uses: actions/checkout@v4
@@ -45,25 +52,34 @@ jobs:
             echo "$v length=${#val}"
           done
 
-      - name: Pull Vercel project metadata (production)
-        run: vercel pull --yes --environment=production
+      - name: Pull Vercel project metadata (preview)
+        run: vercel pull --yes --environment=preview
 
-      - name: Build with Vercel
-        run: vercel build --prod
+      - name: Build (preview)
+        run: vercel build
 
-      - name: Deploy prebuilt artifact to production
+      - name: Deploy prebuilt artifact to preview
         id: deploy
         run: |
-          url=$(vercel deploy --prebuilt --prod)
+          url=$(vercel deploy --prebuilt)
           echo "deployment-url=$url" >> "$GITHUB_OUTPUT"
-          echo "Deployed $GITHUB_REF_NAME to $url"
+          echo "Deployed $GITHUB_REF_NAME (preview) to $url"
+
+      - name: Alias preview to ${{ env.PREVIEW_ALIAS }}
+        id: alias
+        run: |
+          vercel alias set "${{ steps.deploy.outputs.deployment-url }}" "$PREVIEW_ALIAS"
+          echo "preview-alias-url=https://${PREVIEW_ALIAS}" >> "$GITHUB_OUTPUT"
 
       - name: Annotate run summary
         run: |
           {
-            echo "### RC deploy complete"
+            echo "### RC preview deploy complete"
             echo ""
             echo "- Tag: \`${{ github.ref_name }}\`"
             echo "- Commit: \`${{ github.sha }}\`"
-            echo "- URL: ${{ steps.deploy.outputs.deployment-url }}"
+            echo "- Preview URL: ${{ steps.deploy.outputs.deployment-url }}"
+            echo "- Stable alias: ${{ steps.alias.outputs.preview-alias-url }}"
+            echo ""
+            echo "Verify at the stable alias before cutting the matching final tag (\`v*\`) to promote to production."
           } >> "$GITHUB_STEP_SUMMARY"

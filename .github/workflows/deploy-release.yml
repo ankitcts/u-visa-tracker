@@ -1,0 +1,76 @@
+name: Deploy release to Vercel production
+
+# Triggers ONLY on final-release tag pushes (e.g. v1.4.2, v0.3.0).
+# Explicitly excludes RC tags (v*-rc.*) — those go through
+# deploy-rc.yml to PREVIEW.
+#
+# Builds and deploys to Vercel PRODUCTION, which is what serves
+# uvisatracker.com. Always run AFTER verifying the matching RC at
+# https://u-visa-tracker.vercel.app.
+#
+# See ~/.claude/skills/release-pipeline/SKILL.md for the full workflow.
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+concurrency:
+  group: vercel-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & deploy ${{ github.ref_name }} to Vercel production
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - name: Check out tag
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Sanity-check secrets are populated (no values printed)
+        run: |
+          for v in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            val="${!v}"
+            if [ -z "$val" ]; then
+              echo "::error::Secret $v is empty or unset in the runner env"
+              exit 1
+            fi
+            echo "$v length=${#val}"
+          done
+
+      - name: Pull Vercel project metadata (production)
+        run: vercel pull --yes --environment=production
+
+      - name: Build (production)
+        run: vercel build --prod
+
+      - name: Deploy prebuilt artifact to production
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod)
+          echo "deployment-url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed $GITHUB_REF_NAME (production) to $url"
+
+      - name: Annotate run summary
+        run: |
+          {
+            echo "### Production release deploy complete"
+            echo ""
+            echo "- Tag: \`${{ github.ref_name }}\`"
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo "- Deployment URL: ${{ steps.deploy.outputs.deployment-url }}"
+            echo "- Live: https://uvisatracker.com"
+          } >> "$GITHUB_STEP_SUMMARY"
