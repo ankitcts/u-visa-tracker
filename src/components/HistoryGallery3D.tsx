@@ -248,22 +248,51 @@ export default function HistoryGallery3D() {
   useEffect(() => {
     const node = reelRootRef.current;
     if (!node) return;
+    // Multi-threshold observer with a 100px top/bottom margin so the
+    // mute fires *before* the reel fully leaves the viewport on mobile,
+    // where fast scroll can otherwise skip past a single threshold tick.
     const observer = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           if (userOverrideRef.current) continue;
           if (narrationActiveRef.current) continue;
-          if (e.isIntersecting && !ambient) {
+          if (e.isIntersecting && e.intersectionRatio >= 0.2 && !ambient) {
             startAmbient();
-          } else if (!e.isIntersecting && ambient) {
+          } else if (e.intersectionRatio < 0.05 && ambient) {
             stopAmbient();
           }
         }
       },
-      { threshold: 0.3 },
+      {
+        threshold: [0, 0.05, 0.2, 0.5, 0.8, 1],
+        rootMargin: '0px 0px -100px 0px',
+      },
     );
     observer.observe(node);
-    return () => observer.disconnect();
+
+    // Stop the music whenever the page is hidden — covers tab switch,
+    // app background on mobile, screen lock, etc. The observer alone
+    // can't catch these because the element technically stays in
+    // the layout viewport.
+    const onVisibility = () => {
+      if (userOverrideRef.current) return;
+      if (document.visibilityState === 'hidden' && ambient) {
+        stopAmbient();
+      }
+    };
+    // pagehide fires for iOS Safari bfcache page transitions where
+    // visibilitychange sometimes doesn't.
+    const onPageHide = () => {
+      if (ambient) stopAmbient();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pagehide', onPageHide);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pagehide', onPageHide);
+    };
   }, [ambient, startAmbient, stopAmbient]);
 
   if (slides.length === 0) return null;

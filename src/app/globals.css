@@ -313,3 +313,29 @@
   margin-top: 4px;
   padding-top: 4px;
 }
+
+/* ───────────────────────────────────────────────────────────────────
+   Narrator pill positioning — kept in CSS rather than Tailwind so the
+   prettier-plugin-tailwindcss class sorter doesn't strip the responsive
+   sm: prefixes. On mobile the pill sits above the floating chatbot
+   button (bottom-5/right-5, ~56px tall); on sm+ it floats centered at
+   the bottom.
+   ─────────────────────────────────────────────────────────────────── */
+.uvt-narrator-pill {
+  position: fixed;
+  bottom: 6rem; /* mobile: clears 56px chatbot + 24px gap */
+  left: 1rem;
+  right: 5rem; /* leave room for the chatbot at right */
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (min-width: 640px) {
+  .uvt-narrator-pill {
+    bottom: 1.5rem;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
