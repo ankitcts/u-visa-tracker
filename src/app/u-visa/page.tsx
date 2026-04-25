@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/u-visa' },
 };
 
-export const revalidate = 60 * 60 * 24; // page-level ISR: refresh daily
+export const revalidate = 86400; // page-level ISR: refresh daily (24h)
 
 export default function UVisaPage() {
   const latest = latestPending(ANNUAL_PRINCIPAL);

@@ -7,7 +7,7 @@ module.exports = {
     '^motion/react$': '<rootDir>/src/__tests__/__mocks__/motion-react.tsx',
   },
   setupFiles: ['<rootDir>/jest.polyfills.js'],
-  setupFilesAfterEach: ['<rootDir>/jest.setup.tsx'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.tsx'],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json' }],
   },
