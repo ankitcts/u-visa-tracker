@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Block direct pushes to main. Enforced locally — works on any clone
+# that runs `git config core.hooksPath .githooks` (see README / CLAUDE.md).
+#
+# Allowed: pushing tags, pushing feature/bug/hotfix branches, pushing
+# the result of a PR merge done on github.com (those land via the
+# server, not via this hook). Blocked: `git push origin main` from a
+# local commit that didn't come through a PR.
+#
+# Emergency override (USE SPARINGLY): re-run the push with
+#   PROTECT_MAIN_OVERRIDE=1 git push ...
+
+set -euo pipefail
+
+protected_branch="main"
+override="${PROTECT_MAIN_OVERRIDE:-}"
+
+# stdin format from git: <local_ref> <local_sha> <remote_ref> <remote_sha>
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/heads/"$protected_branch")
+      if [ "$override" = "1" ]; then
+        printf '\033[33m[pre-push]\033[0m PROTECT_MAIN_OVERRIDE=1 — allowing direct push to %s. Use sparingly.\n' "$protected_branch" >&2
+        continue
+      fi
+      cat >&2 <<EOF
+[pre-push] Direct push to '${protected_branch}' is blocked by .githooks/pre-push.
+
+  All changes must land via PR:
+    1. git checkout -b feature/<slug>   (or bug/<slug>, hotfix/<slug>)
+    2. commit your work
+    3. git push -u origin <branch>
+    4. gh pr create   (or open in browser)
+    5. merge via GitHub
+
+  If this is a true emergency and you understand the consequences:
+    PROTECT_MAIN_OVERRIDE=1 git push origin ${protected_branch}
+
+  See ~/.claude/skills/release-pipeline/SKILL.md for the full flow.
+EOF
+      exit 1
+      ;;
+  esac
+done
+
+exit 0
