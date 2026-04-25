@@ -1,196 +1,271 @@
-import { ExternalLink, Archive } from 'lucide-react';
+'use client';
+
+import { useMemo, useState } from 'react';
+import { ExternalLink, Archive, Filter } from 'lucide-react';
+import {
+  ARCHIVE_SOURCES,
+  ARCHIVE_QUERIES,
+  ACCESS_LABEL,
+  ACCESS_COLOR,
+  type ArchiveAccess,
+  type ArchiveSource,
+} from '@/lib/archive-sources';
 
 /**
- * Pre-built search URLs across every reliable free US archive that covers
- * the U-visa era. Users click to jump straight to the archive — we don't
- * embed copyrighted results.
+ * Panel that surfaces every archive in our catalog (lib/archive-sources.ts)
+ * with one-click pre-built searches across every pivotal U-visa moment.
  *
- * Chronicling America (Library of Congress) covers pre-1963 only and
- * therefore can't host U-visa clippings; it's omitted here to avoid a
- * misleading "no results" experience.
+ * Two view modes:
+ *   - By source — every archive listed with all relevant pre-built queries
+ *   - By event  — pivotal events listed with one search button per archive
+ *
+ * Filterable by access type (free / freemium / paid / library-card).
  */
-const ARCHIVES: {
-  name: string;
-  description: string;
-  searches: { label: string; url: string }[];
-}[] = [
-  {
-    name: 'Newspapers.com',
-    description:
-      'Digitized US newspaper scans, 1700s–present. Free-tier users see thumbnails; subscription required for full-page images. Real period front pages.',
-    searches: [
-      {
-        label: 'VAWA 1994',
-        url: 'https://www.newspapers.com/search/results/?query=%22Violence+Against+Women+Act%22&dr_year=1994-1994',
-      },
-      {
-        label: 'VTVPA signing (Oct 2000)',
-        url: 'https://www.newspapers.com/search/results/?query=%22Victims+of+Trafficking%22&dr_year=2000-2000',
-      },
-      {
-        label: 'U-visa interim rule 2007',
-        url: 'https://www.newspapers.com/search/results/?query=%22U+visa%22+%22interim+rule%22&dr_year=2007-2007',
-      },
-      {
-        label: 'VAWA 2013 reauth',
-        url: 'https://www.newspapers.com/search/results/?query=%22Violence+Against+Women%22&dr_year=2013-2013',
-      },
-      {
-        label: 'Bona Fide Determination 2021',
-        url: 'https://www.newspapers.com/search/results/?query=%22Bona+Fide+Determination%22&dr_year=2021-2021',
-      },
-      {
-        label: 'Barrios Garcia 2022',
-        url: 'https://www.newspapers.com/search/results/?query=%22Barrios+Garcia%22+%22U+visa%22&dr_year=2022-2022',
-      },
-    ],
-  },
-  {
-    name: 'Internet Archive',
-    description:
-      'Free full-text search across millions of scanned books, government reports, C-SPAN clips, and digital captures.',
-    searches: [
-      {
-        label: 'VTVPA reports & hearings',
-        url: 'https://archive.org/search?query=%22Victims+of+Trafficking+and+Violence+Protection+Act%22',
-      },
-      {
-        label: 'U-visa / I-918',
-        url: 'https://archive.org/search?query=%22U+visa%22+OR+%22I-918%22',
-      },
-      {
-        label: 'USCIS / INS crime-victim',
-        url: 'https://archive.org/search?query=USCIS+%22crime+victim%22+visa',
-      },
-      {
-        label: 'C-SPAN human-trafficking hearings',
-        url: 'https://archive.org/search?query=C-SPAN+%22human+trafficking%22+hearing',
-      },
-    ],
-  },
-  {
-    name: 'CourtListener',
-    description:
-      'Free-Law-Project database of every federal court opinion. Primary source for U-visa litigation.',
-    searches: [
-      {
-        label: 'Barrios Garcia v. DHS (6th Cir. 2022)',
-        url: 'https://www.courtlistener.com/opinion/9267430/barrios-garcia-v-mayorkas/',
-      },
-      {
-        label: 'All U-visa litigation',
-        url: 'https://www.courtlistener.com/?q=%22U+visa%22&type=o',
-      },
-      {
-        label: 'USCIS delay litigation',
-        url: 'https://www.courtlistener.com/?q=%22U+visa%22+delay&type=o',
-      },
-    ],
-  },
-  {
-    name: 'Federal Register',
-    description:
-      'Official daily journal of the US government. Every U-visa rule, policy memo, and Fed. Reg. notice.',
-    searches: [
-      {
-        label: '2007 Interim Rule (72 FR 53014)',
-        url: 'https://www.federalregister.gov/documents/2007/09/17/E7-17807/new-classification-for-victims-of-criminal-activity-eligibility-for-u-nonimmigrant-status',
-      },
-      {
-        label: 'All U-visa / U nonimmigrant notices',
-        url: 'https://www.federalregister.gov/documents/search?conditions%5Bterm%5D=%22U+nonimmigrant%22',
-      },
-      {
-        label: 'Form I-918 revisions',
-        url: 'https://www.federalregister.gov/documents/search?conditions%5Bterm%5D=%22Form+I-918%22',
-      },
-    ],
-  },
-  {
-    name: 'Congress.gov',
-    description:
-      'Official legislative record. Bill text, sponsor lists, committee reports, roll-call votes.',
-    searches: [
-      {
-        label: 'H.R. 3244 — VTVPA 2000',
-        url: 'https://www.congress.gov/bill/106th-congress/house-bill/3244',
-      },
-      {
-        label: 'H.R. 3355 — VCCLEA/VAWA 1994',
-        url: 'https://www.congress.gov/bill/103rd-congress/house-bill/3355',
-      },
-      {
-        label: 'All U-visa bills',
-        url: 'https://www.congress.gov/search?q=%22U+visa%22&searchResultViewType=expanded',
-      },
-    ],
-  },
-  {
-    name: 'GovInfo',
-    description:
-      'Public documents from all three branches — Congressional Record, CRS reports, GAO studies.',
-    searches: [
-      {
-        label: 'CRS reports on U-visa',
-        url: 'https://www.govinfo.gov/app/search?query=%22U+visa%22',
-      },
-      {
-        label: 'TVPRA reauthorizations',
-        url: 'https://www.govinfo.gov/app/search?query=%22Trafficking+Victims+Protection+Reauthorization%22',
-      },
-    ],
-  },
+type ViewMode = 'source' | 'event';
+
+const ALL_ACCESS: ArchiveAccess[] = [
+  'free',
+  'freemium',
+  'paid',
+  'institutional',
+  'free-with-account',
 ];
 
 export default function ArchiveSearchPanel() {
+  const [view, setView] = useState<ViewMode>('source');
+  const [access, setAccess] = useState<Set<ArchiveAccess>>(
+    new Set(ALL_ACCESS),
+  );
+
+  const visibleSources = useMemo(
+    () => ARCHIVE_SOURCES.filter((s) => access.has(s.access)),
+    [access],
+  );
+
+  function toggleAccess(a: ArchiveAccess) {
+    setAccess((prev) => {
+      const next = new Set(prev);
+      if (next.has(a)) next.delete(a);
+      else next.add(a);
+      return next;
+    });
+  }
+
   return (
     <section className="rounded-xl border bg-muted/20 p-5 md:p-6 space-y-4">
-      <div className="flex items-center gap-2">
-        <Archive className="h-4 w-4 text-primary" />
-        <h2 className="text-base font-semibold tracking-tight">
-          Search the archive yourself
-        </h2>
-      </div>
-      <p className="text-sm text-muted-foreground max-w-3xl">
-        We don&apos;t reproduce copyrighted newspaper scans. These are
-        pre-built searches against every reliable free U.S. archive that
-        covers the U-visa era — click any button to open the real
-        contemporaneous record in a new tab.
-      </p>
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {ARCHIVES.map((a) => (
-          <article
-            key={a.name}
-            className="rounded-lg border bg-background p-4 space-y-3"
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Archive className="h-4 w-4 text-primary" />
+          <h2 className="text-base font-semibold tracking-tight">
+            Search the archives yourself
+          </h2>
+          <span className="rounded-full border bg-background px-2 py-0.5 text-[10px] font-mono tabular-nums text-muted-foreground">
+            {visibleSources.length}/{ARCHIVE_SOURCES.length} sources
+          </span>
+        </div>
+
+        {/* View toggle */}
+        <div className="inline-flex items-center rounded-full border bg-background p-0.5 text-[11px]">
+          <button
+            type="button"
+            onClick={() => setView('source')}
+            aria-pressed={view === 'source'}
+            className={`rounded-full px-2.5 py-1 transition-colors ${
+              view === 'source'
+                ? 'bg-foreground text-background'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
-            <header className="space-y-1">
-              <h3 className="text-sm font-semibold">{a.name}</h3>
-              <p className="text-[12px] leading-snug text-muted-foreground">
-                {a.description}
-              </p>
-            </header>
-            <ul className="space-y-1">
-              {a.searches.map((s) => (
-                <li key={s.url}>
+            By source
+          </button>
+          <button
+            type="button"
+            onClick={() => setView('event')}
+            aria-pressed={view === 'event'}
+            className={`rounded-full px-2.5 py-1 transition-colors ${
+              view === 'event'
+                ? 'bg-foreground text-background'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            By event
+          </button>
+        </div>
+      </div>
+
+      <p className="text-sm text-muted-foreground max-w-3xl">
+        Every link below is a deep search into the archive&apos;s own UI — we
+        don&apos;t reproduce copyrighted clippings here. Coverage notes (date
+        range, geography, access tier) are visible inline so you can pick the
+        right archive without trial and error.
+      </p>
+
+      {/* Access filter chips */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold inline-flex items-center gap-1">
+          <Filter className="h-3 w-3" /> Access
+        </span>
+        {ALL_ACCESS.map((a) => {
+          const on = access.has(a);
+          return (
+            <button
+              key={a}
+              type="button"
+              onClick={() => toggleAccess(a)}
+              aria-pressed={on}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] transition-colors ${
+                on
+                  ? 'bg-background text-foreground'
+                  : 'bg-muted/40 text-muted-foreground line-through'
+              }`}
+            >
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: ACCESS_COLOR[a] }}
+              />
+              {ACCESS_LABEL[a]}
+            </button>
+          );
+        })}
+      </div>
+
+      {view === 'source' ? (
+        <SourceView sources={visibleSources} />
+      ) : (
+        <EventView sources={visibleSources} />
+      )}
+
+      <p className="text-[11px] text-muted-foreground italic">
+        Note: Chronicling America (LoC) and FBIS only cover pre-1963 / pre-1996
+        material respectively, so they&apos;re marked &ldquo;pre-U-visa&rdquo;
+        and only useful for background research.
+      </p>
+    </section>
+  );
+}
+
+function SourceView({ sources }: { sources: ArchiveSource[] }) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {sources.map((s) => (
+        <article
+          key={s.id}
+          className="rounded-lg border bg-background p-4 space-y-3 flex flex-col"
+        >
+          <header className="space-y-1.5">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-sm font-semibold leading-tight">{s.name}</h3>
+              <span
+                className="inline-flex items-center gap-1 rounded-full border px-1.5 py-0 text-[9px] uppercase tracking-wider shrink-0"
+                style={{
+                  borderColor: ACCESS_COLOR[s.access],
+                  color: ACCESS_COLOR[s.access],
+                }}
+              >
+                <span
+                  className="h-1 w-1 rounded-full"
+                  style={{ backgroundColor: ACCESS_COLOR[s.access] }}
+                />
+                {ACCESS_LABEL[s.access]}
+              </span>
+            </div>
+            <p className="text-[12px] leading-snug text-muted-foreground">
+              {s.description}
+            </p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground/80 font-mono tabular-nums flex flex-wrap gap-x-2">
+              <span>{s.geography}</span>
+              {(s.yearsFrom || s.yearsTo) && (
+                <span>
+                  · {s.yearsFrom ?? '?'}–{s.yearsTo ?? 'present'}
+                </span>
+              )}
+              {s.preUVisaOnly && (
+                <span className="text-amber-600 dark:text-amber-400">
+                  · pre-U-visa
+                </span>
+              )}
+            </p>
+          </header>
+
+          <ul className="space-y-1 mt-auto pt-1 border-t">
+            <li>
+              <a
+                href={s.homeUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex items-center gap-1 text-[12px] font-semibold text-primary hover:underline"
+              >
+                Browse archive
+                <ExternalLink className="h-3 w-3 opacity-60" />
+              </a>
+            </li>
+            {ARCHIVE_QUERIES.filter((q) =>
+              s.preUVisaOnly ? q.era !== 'modern' : true,
+            )
+              .slice(0, 5)
+              .map((q) => (
+                <li key={q.label}>
                   <a
-                    href={s.url}
+                    href={s.searchUrl(q.query, q.yearFrom, q.yearTo)}
                     target="_blank"
                     rel="noreferrer"
-                    className="group inline-flex items-center gap-1 text-[13px] text-foreground/80 hover:text-primary hover:underline underline-offset-4"
+                    className="group inline-flex items-center gap-1 text-[12.5px] text-foreground/80 hover:text-primary hover:underline underline-offset-4"
                   >
-                    {s.label}
-                    <ExternalLink className="h-3 w-3 opacity-40 group-hover:opacity-100" />
+                    {q.label}
+                    <ExternalLink className="h-3 w-3 opacity-30 group-hover:opacity-100" />
                   </a>
                 </li>
               ))}
-            </ul>
-          </article>
-        ))}
-      </div>
-      <p className="text-[11px] text-muted-foreground italic">
-        Note: Library of Congress Chronicling America is excluded — it only
-        covers pre-1963 US newspapers, predating the U-visa era (2000–present).
-      </p>
-    </section>
+          </ul>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function EventView({ sources }: { sources: ArchiveSource[] }) {
+  return (
+    <div className="space-y-3">
+      {ARCHIVE_QUERIES.map((q) => (
+        <article
+          key={q.label}
+          className="rounded-lg border bg-background p-4 space-y-2"
+        >
+          <header className="flex items-baseline gap-2 flex-wrap">
+            <h3 className="text-sm font-semibold leading-tight">{q.label}</h3>
+            {q.yearFrom && (
+              <span className="text-[11px] font-mono tabular-nums text-muted-foreground">
+                {q.yearFrom}
+                {q.yearTo && q.yearTo !== q.yearFrom ? `–${q.yearTo}` : ''}
+              </span>
+            )}
+            <code className="text-[10.5px] text-muted-foreground bg-muted/50 rounded px-1 py-0.5 font-mono">
+              {q.query}
+            </code>
+          </header>
+          <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
+            {sources
+              .filter((s) => (s.preUVisaOnly ? q.era !== 'modern' : true))
+              .map((s) => (
+                <li key={s.id}>
+                  <a
+                    href={s.searchUrl(q.query, q.yearFrom, q.yearTo)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex items-center gap-1 text-[12px] text-foreground/80 hover:text-primary hover:underline underline-offset-4"
+                  >
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: ACCESS_COLOR[s.access] }}
+                    />
+                    {s.name}
+                    <ExternalLink className="h-3 w-3 opacity-30 group-hover:opacity-100" />
+                  </a>
+                </li>
+              ))}
+          </ul>
+        </article>
+      ))}
+    </div>
   );
 }
