@@ -100,6 +100,36 @@ export default function DisclaimerPage() {
         to your use of, or inability to use, this site.
       </p>
 
+      <h2>Embedded video content</h2>
+      <p>
+        Explainer videos shown on the U-visa overview and other pages are
+        embedded via YouTube&apos;s official iframe player (using the
+        privacy-enhanced{' '}
+        <code>youtube-nocookie.com</code> domain). We do{' '}
+        <strong>not</strong> host, mirror, or redistribute any video file —
+        the bytes stream directly from YouTube&apos;s servers to your
+        browser when you press play, and YouTube&apos;s own player UI,
+        controls, branding, and (where applicable) advertising are what
+        you see. Each embed is presented under the licence YouTube grants
+        to third-party sites in its Terms of Service for any video whose
+        uploader has left embedding enabled. We make no claim of
+        ownership over any embedded video; copyright remains with the
+        uploader and any underlying rights holders. Availability of any
+        embed is at YouTube&apos;s and the uploader&apos;s sole discretion
+        — videos may be removed, age-restricted, or have embedding
+        disabled at any time without notice. If you are a rights holder
+        who believes a video has been embedded in error, please raise the
+        issue with YouTube directly via their{' '}
+        <a
+          href="https://www.youtube.com/copyright_complaint_form"
+          target="_blank"
+          rel="noreferrer"
+        >
+          copyright complaint process
+        </a>{' '}
+        — removal at the source removes the embed everywhere it appears.
+      </p>
+
       <h2>News aggregation, fair use, and AI-generated tags</h2>
       <p>
         The Live News section displays headlines, deep links, and short

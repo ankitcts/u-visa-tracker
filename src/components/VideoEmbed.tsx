@@ -37,15 +37,38 @@ export default function VideoEmbed({
   }
 
   return (
-    <div className="aspect-video rounded-lg overflow-hidden border">
-      <iframe
-        className="w-full h-full"
-        src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0`}
-        title={title}
-        loading="lazy"
-        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
+    <div className="space-y-1.5">
+      <div className="aspect-video rounded-lg overflow-hidden border">
+        <iframe
+          className="w-full h-full"
+          src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0`}
+          title={title}
+          loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+      <p className="text-[10px] text-muted-foreground/80 leading-tight">
+        Source:{' '}
+        <a
+          href={`https://www.youtube.com/watch?v=${youtubeId}`}
+          target="_blank"
+          rel="noreferrer"
+          className="underline hover:text-foreground"
+        >
+          YouTube
+        </a>
+        . Embedded under{' '}
+        <a
+          href="https://www.youtube.com/static?template=terms"
+          target="_blank"
+          rel="noreferrer"
+          className="underline hover:text-foreground"
+        >
+          YouTube&apos;s Terms of Service
+        </a>
+        . Not hosted on this site.
+      </p>
     </div>
   );
 }
