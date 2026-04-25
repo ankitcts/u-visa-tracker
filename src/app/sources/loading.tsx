@@ -1,3 +1,5 @@
+'use client';
+
 import { Database, FileText, Lock, Archive } from 'lucide-react';
 import PipelineLoader from '@/components/PipelineLoader';
 

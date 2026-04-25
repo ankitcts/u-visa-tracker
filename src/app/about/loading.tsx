@@ -1,3 +1,5 @@
+'use client';
+
 import { Info, BookOpen, Users, Shield } from 'lucide-react';
 import PipelineLoader from '@/components/PipelineLoader';
 

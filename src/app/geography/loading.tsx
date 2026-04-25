@@ -1,3 +1,5 @@
+'use client';
+
 import { MapPin, Database, ShieldCheck, Layers } from 'lucide-react';
 import PipelineLoader from '@/components/PipelineLoader';
 

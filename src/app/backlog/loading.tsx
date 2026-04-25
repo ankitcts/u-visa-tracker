@@ -1,3 +1,5 @@
+'use client';
+
 import { Clock, Database, TrendingUp, Calculator, Hourglass } from 'lucide-react';
 import PipelineLoader from '@/components/PipelineLoader';
 

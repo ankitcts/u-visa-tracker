@@ -1,3 +1,5 @@
+'use client';
+
 import { Scale, Users, CheckCircle2, Video } from 'lucide-react';
 import PipelineLoader from '@/components/PipelineLoader';
 

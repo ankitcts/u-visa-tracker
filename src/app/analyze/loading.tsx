@@ -1,3 +1,5 @@
+'use client';
+
 import { Sliders, Filter, BarChart3, Table } from 'lucide-react';
 import PipelineLoader from '@/components/PipelineLoader';
 

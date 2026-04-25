@@ -1,3 +1,5 @@
+'use client';
+
 import { Gavel, FileText, Scale, BookOpen, Search } from 'lucide-react';
 import PipelineLoader from '@/components/PipelineLoader';
 

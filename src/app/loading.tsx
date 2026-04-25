@@ -1,3 +1,5 @@
+'use client';
+
 import {
   BookOpen,
   Image as ImageIcon,
