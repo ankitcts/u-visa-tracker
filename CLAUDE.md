@@ -4,11 +4,13 @@
 
 This project uses the **`release-pipeline`** skill. Invoke it whenever the user says commit / push / merge / release / deploy. Summary of the rules it enforces:
 
-- Branches: `feature/<slug>`, `bug/<slug>`, or `hotfix/<slug>` — never commit to `master`/`main`.
+- Branches: `feature/<slug>`, `bug/<slug>`, or `hotfix/<slug>` — never commit to `main`.
 - Before any push, ASK the user whether the change is a feature, bug, or hotfix.
-- After push → open PR → merge to `master` → ask the user to cut an RC.
-- Only RC tags (e.g. `v1.4.2-rc.1`) get deployed to Vercel. `master` and feature branches do NOT auto-deploy.
-- See `~/.claude/skills/release-pipeline/SKILL.md` for the full workflow and the Vercel config (`vercel.json` + `.github/workflows/deploy-rc.yml`).
+- After push → open PR → merge to `main` → ask the user to cut an RC.
+- **RC tags** (e.g. `v0.4.0-rc.1`) deploy to Vercel **PREVIEW** via `.github/workflows/deploy-rc.yml`, then alias to **https://u-visa-tracker.vercel.app** for verification.
+- **Final release tags** (e.g. `v0.4.0`) deploy to Vercel **PRODUCTION** via `.github/workflows/deploy-release.yml`, which is what serves **https://uvisatracker.com**.
+- `main` pushes and feature branches do NOT auto-deploy.
+- See `~/.claude/skills/release-pipeline/SKILL.md` for the full workflow.
 
 ## Scope guardrails (READ FIRST)
 
