@@ -3,6 +3,16 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["iad1"],
+  "git": {
+    "deploymentEnabled": {
+      "main": false,
+      "master": false
+    }
+  },
+  "github": {
+    "silent": true,
+    "autoAlias": false
+  },
   "headers": [
     {
       "source": "/(.*)",
