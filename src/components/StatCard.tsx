@@ -12,22 +12,24 @@ export default function StatCard({
 }) {
   return (
     <Card className="transition-colors hover:border-primary/40">
-      <CardContent className="p-4 flex flex-col gap-1">
-        <span className="text-xs uppercase tracking-wide text-muted-foreground">
+      <CardContent className="p-3.5 flex flex-col gap-0.5">
+        <span className="text-[10.5px] uppercase tracking-[0.12em] text-muted-foreground font-semibold">
           {label}
         </span>
         {typeof value === 'number' ? (
           <AnimatedNumber
             value={value}
-            className="text-2xl sm:text-3xl font-semibold tabular-nums"
+            className="text-lg sm:text-xl font-semibold tabular-nums leading-tight"
           />
         ) : (
-          <span className="text-2xl sm:text-3xl font-semibold tabular-nums">
+          <span className="text-lg sm:text-xl font-semibold tabular-nums leading-tight">
             {value}
           </span>
         )}
         {sublabel && (
-          <span className="text-xs text-muted-foreground">{sublabel}</span>
+          <span className="text-[11px] text-muted-foreground leading-snug">
+            {sublabel}
+          </span>
         )}
       </CardContent>
     </Card>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Archive } from 'lucide-react';
 import ArchiveSearchPanel from '@/components/ArchiveSearchPanel';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 
 export const metadata: Metadata = {
   title: 'Archive Search — Newspapers, Federal Register, Court Opinions',
@@ -13,10 +14,13 @@ export default function ArchivesPage() {
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight inline-flex items-center gap-2">
-          <Archive className="h-6 w-6 text-primary" />
-          Archive Search
-        </h1>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-3xl font-semibold tracking-tight inline-flex items-center gap-2">
+            <Archive className="h-6 w-6 text-primary" />
+            Archive Search
+          </h1>
+          <LastUpdatedPill routeKey="archives" />
+        </div>
         <p className="text-muted-foreground max-w-3xl">
           Pre-built searches into every major newspaper, government, and
           court archive that covers the U-visa era. Filter by access tier

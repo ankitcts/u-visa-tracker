@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 import StatCard from '@/components/StatCard';
 import FilingsTrendChart from '@/components/FilingsTrendChart';
 import BacklogChart from '@/components/BacklogChart';
@@ -7,7 +8,6 @@ import AnnualTable from '@/components/AnnualTable';
 import StateShareChart from '@/components/StateShareChart';
 import CategoryBarChart from '@/components/CategoryBarChart';
 import DerivativeLinkedChart from '@/components/DerivativeLinkedChart';
-import NewsFeed from '@/components/NewsFeed';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ANNUAL_PRINCIPAL,
@@ -44,14 +44,17 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <section className="space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
-          Dashboard
-        </h1>
-        <p className="text-muted-foreground max-w-2xl">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+            Dashboard
+          </h1>
+          <LastUpdatedPill routeKey="dashboard" />
+        </div>
+        <p className="text-sm text-muted-foreground">
           Public aggregate statistics for <strong>Form I-918</strong> — the
           petition for U nonimmigrant status granted to victims of qualifying
-          crimes who assist law enforcement. Data sourced from USCIS and DHS.
-          Individual petitioner information is protected by law and never
+          crimes who assist law enforcement. Data sourced from USCIS and DHS;
+          individual petitioner information is protected by law and never
           displayed.
         </p>
       </section>
@@ -207,20 +210,6 @@ export default function DashboardPage() {
             color="rgba(16, 185, 129, 0.8)"
             max={100}
           />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-baseline justify-between">
-            <CardTitle className="text-lg">Latest U-visa news</CardTitle>
-            <Link href="/" className="text-sm text-primary hover:underline">
-              Full feed & video explainers →
-            </Link>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <NewsFeed limit={6} compact />
         </CardContent>
       </Card>
 

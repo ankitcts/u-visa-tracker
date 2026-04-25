@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DATA_SOURCES } from '@/lib/data';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 
 export const metadata: Metadata = {
   title: 'Data Sources',
@@ -13,7 +14,10 @@ export const metadata: Metadata = {
 export default function SourcesPage() {
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-semibold tracking-tight">Data Sources</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-3xl font-semibold tracking-tight">Data Sources</h1>
+        <LastUpdatedPill routeKey="sources" />
+      </div>
       <p className="text-muted-foreground max-w-3xl">
         Every figure on this site is drawn from publicly published government
         reports. Individual petitioner information is legally protected under

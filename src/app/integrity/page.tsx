@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import IntegritySignalCard from '@/components/IntegritySignalCard';
@@ -37,7 +38,10 @@ export default function IntegrityPage() {
   return (
     <div className="space-y-10">
       <section className="space-y-3">
-        <Badge variant="warning">USCIS-reported</Badge>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Badge variant="warning">USCIS-reported</Badge>
+          <LastUpdatedPill routeKey="integrity" />
+        </div>
         <h1 className="text-3xl font-semibold tracking-tight">
           Program Integrity &amp; Concerns
         </h1>

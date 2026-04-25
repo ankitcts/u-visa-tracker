@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, Scale, Users, CheckCircle2 } from 'lucide-react';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 import VideoEmbed from '@/components/VideoEmbed';
 import ChapteredVideo from '@/components/ChapteredVideo';
 import StatCard from '@/components/StatCard';
@@ -41,7 +42,10 @@ export default function UVisaPage() {
       {/* Hero */}
       <section className="grid gap-6 md:grid-cols-2 items-center">
         <div className="space-y-4">
-          <Badge variant="secondary">Plain-English explainer</Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">Plain-English explainer</Badge>
+            <LastUpdatedPill routeKey="u-visa" />
+          </div>
           <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">
             Understanding the U&nbsp;Visa
           </h1>

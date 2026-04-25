@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Scale, Clock } from 'lucide-react';
@@ -23,7 +24,10 @@ export default async function LitigationPage() {
   return (
     <div className="space-y-10">
       <section className="space-y-3">
-        <Badge variant="secondary">Legal</Badge>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Badge variant="secondary">Legal</Badge>
+          <LastUpdatedPill routeKey="litigation" />
+        </div>
         <h1 className="text-3xl font-semibold tracking-tight">
           U Visa Litigation
         </h1>

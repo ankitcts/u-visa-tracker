@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Explorer from '@/components/Explorer';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 import {
   ANNUAL_PRINCIPAL,
   ANNUAL_DERIVATIVE,
@@ -17,9 +18,12 @@ export default function AnalyzePage() {
   return (
     <div className="space-y-6">
       <section className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Analyze: By Year &amp; By State
-        </h1>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Analyze: By Year &amp; By State
+          </h1>
+          <LastUpdatedPill routeKey="analyze" />
+        </div>
         <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
           Drill into the aggregate U-visa data with year and state filters.
           Because USCIS publishes annual filing volumes{' '}

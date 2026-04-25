@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import BacklogChart from '@/components/BacklogChart';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 import StatCard from '@/components/StatCard';
 import {
   ANNUAL_PRINCIPAL,
@@ -22,9 +23,12 @@ export default function BacklogPage() {
   return (
     <div className="space-y-8">
       <section className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          The U Visa Backlog
-        </h1>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            The U Visa Backlog
+          </h1>
+          <LastUpdatedPill routeKey="backlog" />
+        </div>
         <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
           Because Congress capped U-1 principal approvals at 10,000 per
           fiscal year but receipts have run at 25,000–45,000 per year for over

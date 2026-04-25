@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 import StateShareChart from '@/components/StateShareChart';
 import CategoryBarChart from '@/components/CategoryBarChart';
 import {
@@ -20,9 +21,12 @@ export default function GeographyPage() {
   return (
     <div className="space-y-10">
       <section className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Geography &amp; Context
-        </h1>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Geography &amp; Context
+          </h1>
+          <LastUpdatedPill routeKey="geography" />
+        </div>
         <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
           In 2020, USCIS published a research report with aggregate
           breakdowns covering <strong>FY2012–FY2018</strong>. It is the only

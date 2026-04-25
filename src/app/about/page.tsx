@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import CrimeCategoryList from '@/components/CrimeCategoryList';
+import LastUpdatedPill from '@/components/LastUpdatedPill';
 import ProcessFlowchart from '@/components/ProcessFlowchart';
 import { QUALIFYING_CRIMES } from '@/lib/data';
 
@@ -12,9 +13,12 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="prose-page">
-      <h1 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-        About the U Visa
-      </h1>
+      <div className="flex flex-wrap items-center justify-between gap-2 not-prose">
+        <h1 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 m-0">
+          About the U Visa
+        </h1>
+        <LastUpdatedPill routeKey="about" />
+      </div>
 
       <p>
         The U nonimmigrant visa was created by the{' '}
