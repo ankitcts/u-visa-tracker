@@ -26,7 +26,7 @@ import archiveClippings from '../../public/narration/archive-clippings.json';
 export const FPS = 30;
 const PADDING_SEC = 0.4;
 
-export type ManifestFile = {
+type ManifestFile = {
   filename: string;
   duration: number | null;
   year?: number;
@@ -89,12 +89,8 @@ function computeTimings(voiceKey: string) {
 
 const DEFAULT_TIMINGS = computeTimings(DEFAULT_VOICE_KEY);
 
-// Exports used by the <Player> outside this composition. We fix the length
-// to the default voice's timing; voices within ~5% of each other mean
-// switching voices at the Player is seamless.
-export const INTRO_DURATION = DEFAULT_TIMINGS.introDur;
-export const OUTRO_DURATION = DEFAULT_TIMINGS.outroDur;
-export const EVENT_DURATIONS: number[] = DEFAULT_TIMINGS.eventDurs;
+// Only TOTAL_DURATION is consumed by the external <Player>; intro/outro/event
+// durations are read directly off DEFAULT_TIMINGS inside the component.
 export const TOTAL_DURATION = DEFAULT_TIMINGS.total;
 
 export const VIDEO_WIDTH = 1280;
