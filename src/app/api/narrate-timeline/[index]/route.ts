@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { HISTORY } from '@/lib/u-visa-history';
 
+// Dynamic by default — the [index] segment can't be force-static without
+// generateStaticParams(). Per-response Cache-Control headers handle CDN
+// caching (max-age=31536000, immutable) so first hit per index per
+// region is the only one that actually does the TTS work.
 export const runtime = 'nodejs';
-export const dynamic = 'force-static';
-export const revalidate = false;
 
 /**
  * Server-side TTS for the homepage "Read the history aloud" button.
