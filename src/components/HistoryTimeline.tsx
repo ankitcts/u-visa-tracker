@@ -211,8 +211,11 @@ function TimelineItem({
 
         {event.image && (
           <figure
-            className="float-right ml-4 mb-2 w-44 md:w-56 rounded-sm overflow-hidden border border-[#c8bb96] dark:border-[#5a5040] bg-white shadow-sm"
-            style={{ shapeOutside: 'margin-box' }}
+            className="float-right ml-4 mb-2 w-44 md:w-56 clipping-frame"
+            style={{
+              shapeOutside: 'margin-box',
+              transform: `rotate(${(event.year % 3) - 1}deg)`,
+            }}
           >
             <a
               href={commonsPageUrlFor(event.image.url)}
@@ -221,30 +224,30 @@ function TimelineItem({
               className="block group"
               title={`Open source on Wikimedia Commons: ${event.image.caption}`}
             >
-              <div className="aspect-[4/3] bg-[#f4ecd8] flex items-center justify-center overflow-hidden">
+              <div className="clipping-dateline">
+                {event.date ?? `${event.year} · Archive`}
+              </div>
+              <div className="aspect-[4/3] overflow-hidden bg-[#f4ecd8]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={event.image.url}
                   alt={event.image.caption}
                   loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                  style={{
-                    filter: 'sepia(0.08) saturate(0.95)',
-                  }}
+                  className="clipping-image transition-transform duration-300 group-hover:scale-[1.03]"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.visibility = 'hidden';
                   }}
                 />
               </div>
-              <figcaption
-                className="px-2 py-1.5 text-[10.5px] leading-snug text-foreground/70 border-t border-dashed border-[#c8bb96] dark:border-[#5a5040] group-hover:text-foreground"
+              <figcaption className="clipping-caption group-hover:text-[#1d1a14]">
+                {event.image.caption}
+              </figcaption>
+              <div
+                className="text-[8px] uppercase tracking-[0.15em] text-[#8a6a30] text-center pt-1"
                 style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
               >
-                <span className="block italic">{event.image.caption}</span>
-                <span className="block mt-0.5 text-[9px] uppercase tracking-[0.1em] text-muted-foreground">
-                  {event.image.credit} · {event.image.license}
-                </span>
-              </figcaption>
+                {event.image.credit}
+              </div>
             </a>
           </figure>
         )}

@@ -68,46 +68,50 @@ export default function ClippingGallery() {
 
   return (
     <>
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {images.map((img, i) => (
-          <motion.button
-            key={`${img.year}-${i}`}
-            type="button"
-            onClick={() => setActive(img)}
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -2 }}
-            transition={{ duration: 0.25 }}
-            className="group text-left rounded-sm overflow-hidden border border-[#c8bb96] dark:border-[#5a5040] bg-[#fdfbf4] dark:bg-[#2a2824] shadow-sm hover:shadow-md transition-shadow"
-            aria-label={`${img.year}: ${img.caption}`}
-          >
-            <div className="relative aspect-[4/3] bg-[#f4ecd8] dark:bg-[#1d1a14] overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={img.url}
-                alt={img.caption}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                style={{ filter: 'sepia(0.08) saturate(0.95)' }}
-              />
-              <span className="absolute top-1.5 left-1.5 inline-flex items-center gap-1 rounded bg-background/90 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-foreground shadow">
-                {img.year}
-              </span>
-              <span className="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center h-6 w-6 rounded-full bg-background/90 opacity-0 group-hover:opacity-100 transition-opacity">
-                <ZoomIn className="h-3 w-3" />
-              </span>
-            </div>
-            <div
-              className="px-2 py-1.5 border-t border-dashed border-[#c8bb96] dark:border-[#5a5040]"
-              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+      <div className="grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {images.map((img, i) => {
+          const tilt = ((img.year + i) % 5) - 2;
+          return (
+            <motion.button
+              key={`${img.year}-${i}`}
+              type="button"
+              onClick={() => setActive(img)}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -3, rotate: tilt > 0 ? tilt - 0.4 : tilt + 0.4 }}
+              transition={{ duration: 0.25 }}
+              className="group text-left clipping-frame block"
+              style={{ transform: `rotate(${tilt * 0.4}deg)` }}
+              aria-label={`${img.year}: ${img.caption}`}
             >
-              <p className="text-[11px] italic leading-snug line-clamp-2 text-foreground/80">
+              <div className="clipping-dateline">
+                {img.year} · Archive
+              </div>
+              <div className="relative aspect-[4/3] overflow-hidden bg-[#f4ecd8]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={img.url}
+                  alt={img.caption}
+                  loading="lazy"
+                  className="clipping-image transition-transform duration-500 group-hover:scale-[1.05]"
+                />
+                <span className="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center h-6 w-6 rounded-full bg-[#fdfbf4]/95 opacity-0 group-hover:opacity-100 transition-opacity shadow">
+                  <ZoomIn className="h-3 w-3 text-[#4a3a1e]" />
+                </span>
+              </div>
+              <figcaption className="clipping-caption line-clamp-2">
                 {img.caption}
-              </p>
-            </div>
-          </motion.button>
-        ))}
+              </figcaption>
+              <div
+                className="text-[8px] uppercase tracking-[0.18em] text-[#8a6a30] text-center pt-0.5 pb-1"
+                style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+              >
+                {img.credit.split('·')[0].trim()}
+              </div>
+            </motion.button>
+          );
+        })}
       </div>
 
       <AnimatePresence>
