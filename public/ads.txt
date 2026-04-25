@@ -1,7 +1,1 @@
-# Google AdSense — required by AdSense for ads.txt verification.
-# Replace YOUR_PUBLISHER_ID with your AdSense publisher ID (the value
-# of NEXT_PUBLIC_ADSENSE_ID without the "ca-pub-" prefix is fine here;
-# AdSense strips it).
-# Example:
-#   google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
-google.com, YOUR_PUBLISHER_ID, DIRECT, f08c47fec0942fa0
+google.com, pub-6746391460508825, DIRECT, f08c47fec0942fa0
