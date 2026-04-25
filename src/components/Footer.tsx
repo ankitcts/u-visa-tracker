@@ -131,7 +131,7 @@ export default async function Footer() {
               <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
               Live
             </span>
-            News feed last refreshed {newsUpdated} · refreshes hourly. USCIS
+            News feed last refreshed {newsUpdated} · refreshes every 5 min. USCIS
             aggregate data last updated {updated} · refreshes daily.
           </p>
           <p>

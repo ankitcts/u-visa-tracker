@@ -2,24 +2,28 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { BarChart3, Clock, MapPin, ShieldAlert, Loader2 } from 'lucide-react';
-import InteractiveNewsFeed from '@/components/InteractiveNewsFeed';
+import LiveNewsSection from '@/components/LiveNewsSection';
 import NewsTicker from '@/components/NewsTicker';
-import USNewsMap from '@/components/USNewsMapClient';
 import NewsFetchProgress from '@/components/NewsFetchProgress';
 import { Card, CardContent } from '@/components/ui/card';
 import { latestPending } from '@/lib/data';
 import { ANNUAL_PRINCIPAL } from '@/lib/data';
-import { fetchUVisaNews, getNewsLastUpdated } from '@/lib/news';
+import {
+  fetchUVisaNews,
+  getNewsLastUpdated,
+  NEWS_REFRESH_SECONDS,
+} from '@/lib/news';
 import { classifyNews } from '@/lib/news-classifier';
 
 export const metadata: Metadata = {
   title: 'Live U-Visa News Map',
   description:
-    'Live map of U-visa and immigration-fraud news, geo-tagged by state, categorized by LLM, refreshed hourly.',
+    'Live map of U-visa and immigration-fraud news, geo-tagged by state, categorized by LLM, refreshed every 5 minutes.',
   alternates: { canonical: '/news' },
 };
 
-export const revalidate = 3600;
+// Page-level ISR revalidate matches NEWS_REFRESH_SECONDS in lib/news.ts (5 min).
+export const revalidate = 300;
 
 // The /news page has two slow dependencies:
 //   1. fetchUVisaNews() — fans out to Google News / Reddit / GDELT / HN / YouTube
@@ -44,7 +48,7 @@ export default function NewsPage() {
             U-Visa News
           </h1>
           <span className="hidden sm:inline text-xs text-muted-foreground ml-2">
-            Geo-tagged · refreshes hourly
+            Geo-tagged · refreshes every 5 min
           </span>
         </div>
         <Link
@@ -69,21 +73,19 @@ export default function NewsPage() {
 }
 
 async function NewsSectionShell() {
-  // One shared fetch feeds both the map and the interactive feed — runs in
-  // parallel with the ticker above because each <Suspense> awaits
-  // independently.
+  // SSR the first paint, then LiveNewsSection (client) takes over and
+  // polls /api/news/feed every NEWS_REFRESH_SECONDS so visitors see new
+  // items without reloading the page.
   const newsItems = await fetchUVisaNews(120);
   const classifiedNews = await classifyNews(newsItems);
   const newsLastUpdated = await getNewsLastUpdated();
 
   return (
-    <>
-      <USNewsMap news={classifiedNews} lastUpdated={newsLastUpdated} />
-      <InteractiveNewsFeed
-        items={classifiedNews}
-        lastUpdated={newsLastUpdated}
-      />
-    </>
+    <LiveNewsSection
+      initialItems={classifiedNews}
+      initialLastUpdated={newsLastUpdated}
+      refreshSeconds={NEWS_REFRESH_SECONDS}
+    />
   );
 }
 
