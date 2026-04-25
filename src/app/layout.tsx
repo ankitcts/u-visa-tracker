@@ -18,8 +18,16 @@ const inter = Inter({
   display: 'swap',
 });
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://uvisatracker.com';
+const SITE_URL_FALLBACK = 'https://uvisatracker.com';
+const SITE_URL = (() => {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (!raw) return SITE_URL_FALLBACK;
+  try {
+    return new URL(raw).toString().replace(/\/$/, '');
+  } catch {
+    return SITE_URL_FALLBACK;
+  }
+})();
 
 export const viewport: Viewport = {
   width: 'device-width',
