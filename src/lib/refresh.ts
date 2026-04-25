@@ -1,45 +1,42 @@
 /**
  * Last-updated helpers.
  *
- * The displayed "last refreshed" timestamp is sourced from
- * `unstable_cache(new Date())` keyed per-route and tagged with
- * `daily-refresh`. The Vercel Cron at /api/cron/refresh calls
- * `revalidateTag('daily-refresh')` once a night, which busts the cache;
- * the next request to any data page regenerates a fresh ISO timestamp.
+ * The pill on every data page should be honest about *when the
+ * underlying data actually changed*, not when the request hit the cache
+ * or when the build was deployed. The truth is `LAST_UPDATED` in
+ * `src/lib/data.ts` — a build-time constant bumped (a) by hand when
+ * someone reconciles a fresh USCIS XLSX into the data arrays, or
+ * (b) automatically by `scripts/sync-uscis.mjs` when the upstream USCIS
+ * file SHA changes and the auto-sync workflow opens a PR.
  *
- * History and live news bypass this — the History timeline is
- * intentionally static (a curated archive), and /news has its own
- * `getNewsLastUpdated()` that records the actual feed-fetch time.
+ * Older versions cached `new Date().toISOString()` per-route and relied
+ * on the Vercel Cron at /api/cron/refresh to bust a `daily-refresh` tag.
+ * That timestamp moved with deploys (each deploy starts with a cold
+ * cache that regenerates "now"), making it wrong-by-design as a data-
+ * vintage signal. Sourcing from `LAST_UPDATED` is the simple, accurate
+ * version. The cron is now a no-op for this pill (kept in place because
+ * it's harmless and may be repurposed later).
+ *
+ * Routes that bypass this helper:
+ *   - `/`        — homepage / history timeline are intentionally static.
+ *   - `/news`    — uses getNewsLastUpdated() which records the actual
+ *                  feed-fetch time, not the data.ts vintage.
  *
  * The ISO string is rendered in UTC server-side and re-formatted in the
- * visitor's local timezone by the <LocalTimestamp> client component, so
- * a refresh at 03:00 UTC reads as "Apr 25, 8:00 PM" for an EDT visitor
- * and "Apr 25, 5:00 PM" for a PDT visitor.
+ * visitor's local timezone by the <LocalTimestamp> client component.
  */
-import { unstable_cache } from 'next/cache';
-
-const REVALIDATE_DAILY_SECONDS = 60 * 60 * 24;
-
-const cachedRouteStamp = (routeKey: string) =>
-  unstable_cache(
-    async () => new Date().toISOString(),
-    [`u-visa-route-last-updated-v2`, routeKey],
-    { revalidate: REVALIDATE_DAILY_SECONDS, tags: ['daily-refresh', routeKey] },
-  );
+import { LAST_UPDATED } from './data';
 
 /**
  * Return the ISO-8601 timestamp of the last data refresh for the given
  * route. Server-only.
  *
- *   - Daily-refreshed routes (dashboard/backlog/analyze/geography/
- *     integrity/litigation/u-visa/about/sources/archives/disclaimer/
- *     privacy/terms) → tag-revalidated by the cron.
- *
- * Pages that should NOT use this helper (use page-local logic instead):
- *   - `/`        — history page is intentionally static.
- *   - `/news`    — uses getNewsLastUpdated() which records the actual
- *                  feed-fetch time, not the daily refresh tick.
+ * `routeKey` is preserved as the function signature so callers don't
+ * need to change. Today every daily-refreshed route resolves to the
+ * same `LAST_UPDATED` constant; if a future route ever needs its own
+ * vintage (e.g. a separately-sourced dataset), branch on routeKey here.
  */
-export async function getRouteLastUpdated(routeKey: string): Promise<string> {
-  return cachedRouteStamp(routeKey)();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function getRouteLastUpdated(_routeKey: string): Promise<string> {
+  return LAST_UPDATED;
 }

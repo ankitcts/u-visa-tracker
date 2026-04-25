@@ -8,7 +8,11 @@ import type {
   YearlyCrimeShare,
 } from './types';
 
-export const LAST_UPDATED = '2026-04-25T00:00:00Z';
+// Bumped manually after a USCIS reconciliation; auto-bumped by
+// scripts/sync-uscis.mjs when the upstream XLSX SHA changes. The pill
+// renders this in the visitor's local timezone via <LocalTimestamp />.
+// 2026-04-25T04:59:00Z = Apr 24 23:59 America/Chicago (CDT, UTC-5).
+export const LAST_UPDATED = '2026-04-25T04:59:00Z';
 
 /**
  * Anchor for the per-table "Verified against USCIS file" badge.
