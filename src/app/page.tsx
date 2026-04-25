@@ -8,7 +8,6 @@ import ClippingGallery from '@/components/ClippingGallery';
 import HistoryGallery3D from '@/components/HistoryGallery3D';
 import ArchiveSearchPanel from '@/components/ArchiveSearchPanel';
 import { HISTORY } from '@/lib/u-visa-history';
-import { TOTAL_DURATION, FPS } from '@/remotion/HistoryVideo';
 
 export const metadata: Metadata = {
   title: 'U Visa Tracker — History of the U Nonimmigrant Visa',
@@ -96,8 +95,8 @@ export default function HomePage() {
             Watch the history
           </h2>
           <p className="text-sm text-muted-foreground">
-            A {formatVideoDuration(TOTAL_DURATION / FPS)} narrated
-            walk-through of every pivotal moment in the U-visa program.
+            A narrated walk-through of every pivotal moment in the U-visa
+            program.
           </p>
         </div>
         <HistoryRemotionPlayer />
@@ -191,14 +190,6 @@ export default function HomePage() {
       <HistoryNarrator />
     </div>
   );
-}
-
-function formatVideoDuration(sec: number): string {
-  const m = Math.floor(sec / 60);
-  const s = Math.round(sec % 60);
-  if (m >= 10) return `${m}-minute`;
-  if (m >= 1) return `${m}m ${s}s`;
-  return `${s}-second`;
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
