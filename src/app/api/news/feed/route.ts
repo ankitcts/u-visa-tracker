@@ -15,8 +15,11 @@ import { classifyNews } from '@/lib/news-classifier';
  * CDN absorbs the polling traffic — only one upstream RSS hit per 5 min
  * regardless of how many clients are watching.
  */
+// Next.js segment-config statically parses these exports — they must
+// be number literals, not imported bindings. Keep `300` in lockstep
+// with NEWS_REFRESH_SECONDS in lib/news.ts.
 export const runtime = 'nodejs';
-export const revalidate = NEWS_REFRESH_SECONDS;
+export const revalidate = 300; // 5 min
 
 export async function GET() {
   const items = await fetchUVisaNews(120);
