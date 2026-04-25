@@ -66,10 +66,15 @@ function buildFeedUrl(query: string): string {
   );
 }
 
-// News RSS refreshes hourly (user-facing requirement: news must feel live).
-// Other site data — USCIS stats, history timeline, category content — stays
-// on a daily cadence via LAST_UPDATED / unstable_cache at a 24h revalidate.
-const REVALIDATE_SECONDS = 60 * 60; // 1 hour
+// News RSS refreshes every 5 minutes — feed must feel live. Other site
+// data (USCIS stats, history, category content) stays on the daily
+// cadence via LAST_UPDATED / unstable_cache at a 24h revalidate.
+//
+// Keep this in sync with NEWS_REFRESH_SECONDS exported below — the
+// client polls /api/news/feed at the same cadence so users see fresh
+// items without reloading.
+const REVALIDATE_SECONDS = 60 * 5; // 5 minutes
+export const NEWS_REFRESH_SECONDS = REVALIDATE_SECONDS;
 
 function decodeHtmlEntities(s: string): string {
   return s
@@ -511,8 +516,8 @@ import { unstable_cache as _unstable_cache } from 'next/cache';
 
 export const getNewsLastUpdated = _unstable_cache(
   async () => new Date().toISOString(),
-  ['u-visa-news-last-updated'],
-  { revalidate: 60 * 60, tags: ['news-classify'] }, // hourly bucket
+  ['u-visa-news-last-updated-v2'],
+  { revalidate: NEWS_REFRESH_SECONDS, tags: ['news-classify'] },
 );
 
 /**
