@@ -145,7 +145,7 @@ export default function HistoryNarrator() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-3 shadow-xl hover:scale-[1.03] transition-transform"
+          className="uvt-narrator-pill gap-2 rounded-full bg-primary text-primary-foreground px-5 py-3 shadow-xl hover:scale-[1.03] transition-transform"
         >
           <Sparkles className="h-4 w-4" />
           <span className="font-medium text-sm">Read the history aloud</span>
@@ -157,7 +157,7 @@ export default function HistoryNarrator() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 12 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 rounded-full bg-background/95 backdrop-blur shadow-xl border px-2 py-2"
+          className="uvt-narrator-pill gap-1 rounded-full bg-background/95 backdrop-blur shadow-xl border px-2 py-2"
         >
           <button
             type="button"
