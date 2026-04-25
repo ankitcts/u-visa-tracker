@@ -4,7 +4,14 @@ module.exports = {
   generateRobotsTxt: true,
   generateIndexSitemap: true,
   sitemapSize: 5000,
-  exclude: ['/api/*', '/loading', '/not-found'],
+  exclude: [
+    '/api/*',
+    '/loading',
+    '/not-found',
+    '/icon.svg',
+    '/apple-icon.svg',
+    '/history', // legacy redirect → '/' (canonical)
+  ],
   // Per-route priority + changefreq hints. High = landing/program pages,
   // medium = data deep-dives, low = legal boilerplate.
   transform: async (_config, path) => {
