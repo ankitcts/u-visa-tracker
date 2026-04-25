@@ -11,7 +11,7 @@ import Navbar from '@/components/Navbar';
 describe('<Navbar /> (integration)', () => {
   it('renders the brand and the desktop nav links', () => {
     render(<Navbar />);
-    expect(screen.getByText(/U Visa Tracker|UVT/)).toBeInTheDocument();
+    expect(screen.getAllByText(/U Visa Tracker|UVT/).length).toBeGreaterThan(0);
     for (const label of [
       'History',
       'U Visa',

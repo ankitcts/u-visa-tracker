@@ -1,6 +1,10 @@
 /**
+ * @jest-environment node
+ *
  * Integration test for the on-demand TTS endpoint. The msedge-tts module
- * is mocked so the test stays hermetic (no outbound websocket).
+ * is mocked so the test stays hermetic (no outbound websocket). Runs under
+ * the node environment so next/server can resolve fetch-spec globals
+ * (Request/Response/Headers) at import time.
  */
 import { Readable } from 'node:stream';
 

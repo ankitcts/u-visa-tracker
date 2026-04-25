@@ -8,5 +8,7 @@ tsconfig.tsbuildinfo
 *.log
 .vercel
 coverage
+playwright-report
+test-results
 public/sitemap*.xml
 public/robots.txt

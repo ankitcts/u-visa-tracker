@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/litigation' },
 };
 
-export const revalidate = 3600 * 6;
+export const revalidate = 21600;
 
 export default async function LitigationPage() {
   const recent = await fetchRecentLitigation(10);
