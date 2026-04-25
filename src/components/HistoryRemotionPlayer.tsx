@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { Player } from '@remotion/player';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Player, type PlayerRef } from '@remotion/player';
 import { Mic2, Play } from 'lucide-react';
 import HistoryVideo, {
   FPS,
@@ -15,8 +15,21 @@ import { HISTORY } from '@/lib/u-visa-history';
 
 export default function HistoryRemotionPlayer() {
   const [voiceKey, setVoiceKey] = useState<string>(DEFAULT_VOICE_KEY);
+  const playerRef = useRef<PlayerRef>(null);
 
   const renderPoster = useCallback(() => <HistoryVideoPoster />, []);
+
+  // Pause the video whenever the page narrator ("Read the history aloud")
+  // starts. Resume control is left to the user — they can press play again.
+  useEffect(() => {
+    const onNarrationStart = () => {
+      const p = playerRef.current;
+      if (p && p.isPlaying()) p.pause();
+    };
+    window.addEventListener('uvt:narration-start', onNarrationStart);
+    return () =>
+      window.removeEventListener('uvt:narration-start', onNarrationStart);
+  }, []);
 
   return (
     <div className="space-y-3">
@@ -37,6 +50,7 @@ export default function HistoryRemotionPlayer() {
       </label>
       <div className="rounded-xl overflow-hidden border shadow-lg bg-black w-full aspect-video relative">
         <Player
+          ref={playerRef}
           key={voiceKey /* force remount on voice switch */}
           component={HistoryVideo}
           inputProps={{ voiceKey }}

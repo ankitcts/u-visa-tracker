@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: 'U Visa Backlog',
   description:
     'How the U visa backlog grew from ~15k pending in FY2009 to over 270k today — and what the 10,000 annual cap means for wait times.',
+  alternates: { canonical: '/backlog' },
 };
 
 export default function BacklogPage() {
@@ -29,7 +30,7 @@ export default function BacklogPage() {
           </h1>
           <LastUpdatedPill routeKey="backlog" />
         </div>
-        <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
+        <p className="text-muted-foreground w-full text-justify">
           Because Congress capped U-1 principal approvals at 10,000 per
           fiscal year but receipts have run at 25,000–45,000 per year for over
           a decade, the pending queue has grown steadily. The chart and
@@ -69,7 +70,7 @@ export default function BacklogPage() {
         />
       </section>
 
-      <section className="prose-page !max-w-3xl">
+      <section className="prose-page !max-w-none w-full [&>p]:text-justify">
         <h2>Why the backlog grows</h2>
         <p>
           Each year, USCIS may finally approve no more than 10,000 principal

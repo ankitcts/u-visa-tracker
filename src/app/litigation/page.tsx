@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: 'U Visa Litigation — Landmark Cases & Live Court Filings',
   description:
     'Landmark U-visa litigation — class actions on backlog delays, mandamus suits, substantial-similarity appeals, and USCIS policy responses. Supplemented by a live CourtListener feed.',
+  alternates: { canonical: '/litigation' },
 };
 
 export const revalidate = 3600 * 6;
@@ -31,7 +32,7 @@ export default async function LitigationPage() {
         <h1 className="text-3xl font-semibold tracking-tight">
           U Visa Litigation
         </h1>
-        <p className="text-muted-foreground max-w-3xl">
+        <p className="text-muted-foreground w-full text-justify">
           Courts have shaped U-visa administration in three ways: class
           actions against backlog inaction, individual mandamus suits
           forcing adjudication, and appellate decisions interpreting what
@@ -164,7 +165,7 @@ export default async function LitigationPage() {
         )}
       </section>
 
-      <section className="prose-page">
+      <section className="prose-page !max-w-none w-full [&>p]:text-justify">
         <h2>What this page is not</h2>
         <p>
           This is <strong>not</strong> legal advice, and the cases listed are

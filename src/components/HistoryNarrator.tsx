@@ -4,187 +4,136 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Pause, SkipForward, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { HISTORY } from '@/lib/u-visa-history';
 
 /**
- * Floating "read the history" control. Uses the browser Web Speech API
- * (speechSynthesis) — no audio files, no API cost. Auto-picks a feminine
- * English voice (Samantha / Victoria / Google US English) and reads the
- * currently-visible timeline card. Scrolling to a new card automatically
- * queues the next narration unless the user has paused.
+ * Floating "read the history aloud" control. Reads the *timeline* detail
+ * (year + date + title + body for each event) end-to-end, with no
+ * scroll-coupling. Audio is synthesised on the server in the same Aria
+ * voice the Remotion video uses, via /api/narrate-timeline/<idx>.
+ * Vercel CDN caches each event's mp3 after the first request.
  */
 export default function HistoryNarrator() {
   const [enabled, setEnabled] = useState(false);
   const [paused, setPaused] = useState(false);
-  const [supported, setSupported] = useState(false);
-  const [activeYear, setActiveYear] = useState<string | null>(null);
-  const currentUtterRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const spokenIds = useRef<Set<string>>(new Set());
-  const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
+  const [trackIdx, setTrackIdx] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Detect support + pick the best voice once.
+  // Tear down on unmount.
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!('speechSynthesis' in window)) return;
-    setSupported(true);
-
-    const pickVoice = () => {
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length === 0) return;
-      // Priority order of known feminine English voices.
-      const preferred = [
-        /samantha/i,
-        /victoria/i,
-        /serena/i,
-        /^Google UK English Female$/i,
-        /^Google US English Female$/i,
-        /^Google US English$/i, // often female on Chrome
-        /allison/i,
-        /ava/i,
-        /karen/i,
-        /moira/i,
-        /tessa/i,
-        /female/i,
-      ];
-      for (const re of preferred) {
-        const match = voices.find(
-          (v) => /en[-_]/i.test(v.lang) && re.test(v.name),
-        );
-        if (match) {
-          voiceRef.current = match;
-          return;
-        }
-      }
-      // Fallback: any en-US voice
-      voiceRef.current =
-        voices.find((v) => v.lang === 'en-US') ??
-        voices.find((v) => v.lang.startsWith('en')) ??
-        voices[0];
-    };
-
-    pickVoice();
-    window.speechSynthesis.onvoiceschanged = pickVoice;
-
     return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-      window.speechSynthesis.cancel();
+      const a = audioRef.current;
+      if (a) {
+        a.pause();
+        a.src = '';
+      }
     };
   }, []);
 
-  // Intersection observer on each year-anchored card.
-  useEffect(() => {
-    if (!enabled) return;
-    const sections = document.querySelectorAll<HTMLElement>('[data-narrate-id]');
-    if (sections.length === 0) return;
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.55) {
-            const id = entry.target.getAttribute('data-narrate-id') ?? '';
-            const text = entry.target.getAttribute('data-narrate-text') ?? '';
-            if (!id || !text) continue;
-            setActiveYear(id);
-            if (!paused && !spokenIds.current.has(id)) {
-              spokenIds.current.add(id);
-              speak(text);
-            }
-          }
+  const playTrack = useCallback((idx: number) => {
+    if (idx < 0 || idx >= HISTORY.length) return;
+    const url = `/api/narrate-timeline/${idx}`;
+    const a = audioRef.current ?? new Audio();
+    audioRef.current = a;
+    a.preload = 'auto';
+    a.src = url;
+    setLoading(true);
+    setError(null);
+
+    a.onended = () => {
+      setTrackIdx((i) => {
+        const next = i + 1;
+        if (next < HISTORY.length) {
+          playTrack(next);
+          return next;
         }
-      },
-      { threshold: [0.55, 0.7, 0.85] },
-    );
+        setEnabled(false);
+        setPaused(false);
+        setLoading(false);
+        return 0;
+      });
+    };
+    a.oncanplay = () => setLoading(false);
+    a.onplaying = () => setLoading(false);
+    a.onerror = () => {
+      setError('Audio failed to load');
+      setLoading(false);
+    };
 
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, paused]);
-
-  const speak = useCallback((text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    if (voiceRef.current) utter.voice = voiceRef.current;
-    utter.rate = 1.0;
-    utter.pitch = 1.15; // slightly brighter / lighter
-    utter.lang = voiceRef.current?.lang ?? 'en-US';
-    currentUtterRef.current = utter;
-    window.speechSynthesis.speak(utter);
+    a.load();
+    const p = a.play();
+    if (p && typeof p.then === 'function') {
+      p.catch((err) => {
+        // eslint-disable-next-line no-console
+        console.warn('Narration play() blocked:', err);
+        setError('Playback blocked — tap play');
+        setLoading(false);
+      });
+    }
+    setPaused(false);
   }, []);
 
   const handleStart = () => {
+    // Tell any other audio components on the page to mute themselves
+    // while the narration runs (the gallery music listens for this).
+    window.dispatchEvent(new CustomEvent('uvt:narration-start'));
     setEnabled(true);
-    setPaused(false);
-    spokenIds.current.clear();
-    // Trigger immediate narration of the currently-centered card.
-    requestAnimationFrame(() => {
-      const centerY = window.innerHeight / 2;
-      const cards = document.querySelectorAll<HTMLElement>('[data-narrate-id]');
-      let closest: HTMLElement | null = null;
-      let best = Infinity;
-      cards.forEach((c) => {
-        const rect = c.getBoundingClientRect();
-        const mid = rect.top + rect.height / 2;
-        const d = Math.abs(mid - centerY);
-        if (d < best) {
-          best = d;
-          closest = c;
-        }
-      });
-      if (closest) {
-        const id = (closest as HTMLElement).getAttribute('data-narrate-id') ?? '';
-        const text = (closest as HTMLElement).getAttribute('data-narrate-text') ?? '';
-        if (id && text) {
-          spokenIds.current.add(id);
-          setActiveYear(id);
-          speak(text);
-        }
-      }
-    });
+    setTrackIdx(0);
+    playTrack(0);
   };
 
   const handlePauseToggle = () => {
-    if (!('speechSynthesis' in window)) return;
+    const a = audioRef.current;
+    if (!a) return;
     if (paused) {
-      window.speechSynthesis.resume();
+      a.play().catch(() => {});
       setPaused(false);
     } else {
-      window.speechSynthesis.pause();
+      a.pause();
       setPaused(true);
     }
   };
 
   const handleSkip = () => {
-    window.speechSynthesis.cancel();
-    // Find the next section after the current active one
-    const cards = Array.from(
-      document.querySelectorAll<HTMLElement>('[data-narrate-id]'),
-    );
-    if (cards.length === 0) return;
-    const idx = activeYear
-      ? cards.findIndex((c) => c.getAttribute('data-narrate-id') === activeYear)
-      : -1;
-    const next = cards[idx + 1];
-    if (next) {
-      next.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const id = next.getAttribute('data-narrate-id') ?? '';
-      const text = next.getAttribute('data-narrate-text') ?? '';
-      if (id && text) {
-        spokenIds.current.add(id);
-        setActiveYear(id);
-        setTimeout(() => speak(text), 450);
+    setTrackIdx((i) => {
+      const next = i + 1;
+      if (next < HISTORY.length) {
+        playTrack(next);
+        return next;
       }
-    }
+      // Last track — stop.
+      const a = audioRef.current;
+      if (a) {
+        a.pause();
+        a.src = '';
+      }
+      setEnabled(false);
+      setPaused(false);
+      return 0;
+    });
   };
 
   const handleStop = () => {
-    window.speechSynthesis.cancel();
+    const a = audioRef.current;
+    if (a) {
+      a.pause();
+      a.src = '';
+    }
     setEnabled(false);
     setPaused(false);
-    setActiveYear(null);
-    spokenIds.current.clear();
+    setTrackIdx(0);
+    setLoading(false);
+    setError(null);
+    window.dispatchEvent(new CustomEvent('uvt:narration-stop'));
   };
 
-  if (!supported) return null;
+  if (HISTORY.length === 0) return null;
+
+  const current = HISTORY[trackIdx];
+  const yearLabel = current ? String(current.year) : '—';
 
   return (
     <AnimatePresence>
@@ -199,9 +148,7 @@ export default function HistoryNarrator() {
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-3 shadow-xl hover:scale-[1.03] transition-transform"
         >
           <Sparkles className="h-4 w-4" />
-          <span className="font-medium text-sm">
-            Read the history aloud
-          </span>
+          <span className="font-medium text-sm">Read the history aloud</span>
           <Volume2 className="h-4 w-4" />
         </motion.button>
       ) : (
@@ -230,11 +177,21 @@ export default function HistoryNarrator() {
           </button>
           <span
             className={cn(
-              'px-2 text-xs font-mono tabular-nums',
-              paused ? 'text-muted-foreground' : 'text-foreground',
+              'px-2 text-xs font-mono tabular-nums whitespace-nowrap',
+              error
+                ? 'text-destructive'
+                : loading
+                  ? 'text-muted-foreground animate-pulse'
+                  : paused
+                    ? 'text-muted-foreground'
+                    : 'text-foreground',
             )}
           >
-            {activeYear ? activeYear.replace(/[^0-9]/g, '').slice(0, 4) : '—'}
+            {error
+              ? error
+              : loading
+                ? `Loading ${yearLabel}…`
+                : `${yearLabel} · ${trackIdx + 1}/${HISTORY.length}`}
           </span>
           <button
             type="button"

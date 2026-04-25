@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: 'Live U-Visa News Map',
   description:
     'Live map of U-visa and immigration-fraud news, geo-tagged by state, categorized by LLM, refreshed hourly.',
+  alternates: { canonical: '/news' },
 };
 
 export const revalidate = 3600;
@@ -33,13 +34,13 @@ export const revalidate = 3600;
 export default function NewsPage() {
   return (
     <div className="space-y-8">
-      <header className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2 min-w-0">
+      <header className="flex items-start justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap min-w-0">
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-red-500/40 bg-red-500/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-red-600 dark:text-red-400 leading-none">
             <span className="h-1 w-1 rounded-full bg-red-500 animate-pulse" />
             Live
           </span>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight leading-none">
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight leading-tight">
             U-Visa News
           </h1>
           <span className="hidden sm:inline text-xs text-muted-foreground ml-2">
@@ -48,7 +49,7 @@ export default function NewsPage() {
         </div>
         <Link
           href="/u-visa"
-          className="text-xs text-muted-foreground hover:text-primary underline-offset-4 hover:underline shrink-0"
+          className="text-xs text-muted-foreground hover:text-primary underline-offset-4 hover:underline shrink-0 mt-1"
         >
           What is the U visa? →
         </Link>

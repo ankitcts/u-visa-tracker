@@ -23,6 +23,7 @@ export const metadata: Metadata = {
   title: 'Understanding the U Visa — Categories, Eligibility & Process',
   description:
     'Plain-English overview of the U nonimmigrant visa (Form I-918): the five U classifications, who qualifies as a crime victim, the law-enforcement certification requirement, and the 10,000 annual cap.',
+  alternates: { canonical: '/u-visa' },
 };
 
 export const revalidate = 60 * 60 * 24; // page-level ISR: refresh daily

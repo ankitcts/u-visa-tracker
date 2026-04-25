@@ -50,21 +50,23 @@ export const LANDMARK_CASES: LandmarkCase[] = [
     url: 'https://www.courtlistener.com/?q=%22U+visa%22+mandamus&type=o',
   },
   {
-    id: 'vasquez-hernandez',
-    title: 'Vasquez-Hernandez v. USCIS line of cases',
-    court: 'Various',
+    id: 'substantial-similarity-line',
+    title: '"Any similar activity" — substantial-similarity line of cases',
+    citation: '8 C.F.R. § 214.14(a)(9)',
+    court: 'AAO non-precedent + district-court orders',
     year: 2020,
     type: 'appeal',
     summary:
-      'Line of decisions addressing whether a crime is "substantially similar" to felonious assault under 8 C.F.R. § 214.14(a)(9). Courts have reached varying outcomes depending on state statute at issue and evidence of weapon use.',
+      'Line of decisions and Administrative Appeals Office (AAO) non-precedent rulings interpreting whether a state offense is "substantially similar" to one of the 28 statutorily enumerated qualifying crimes under 8 C.F.R. § 214.14(a)(9). No circuit has issued a controlling published interpretation; outcomes turn heavily on the elements and evidence of the underlying state statute (e.g., weapon use for felonious assault).',
     outcome:
-      'Split authority; informs adjudicator guidance and factored into the 2020 Trends Report\'s focus on felonious-assault misuse.',
+      'Split authority; informs USCIS adjudicator guidance and factored into the 2020 Trends Report\'s focus on felonious-assault misuse. Petitioners typically litigate via mandamus or AAO appeal.',
+    url: 'https://www.ecfr.gov/current/title-8/chapter-I/subchapter-B/part-214/section-214.14',
   },
   {
     id: 'bfd-policy-2021',
     title: 'USCIS Policy Alert — Bona Fide Determination Process',
-    citation: 'PM-602-0184',
-    court: 'USCIS Policy Manual',
+    citation: 'PA-2021-13',
+    court: 'USCIS Policy Manual Vol. 3, Pt. C, Ch. 5',
     year: 2021,
     type: 'policy',
     summary:

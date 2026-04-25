@@ -4,7 +4,6 @@ import { BookOpen, Newspaper } from 'lucide-react';
 import HistoryTimeline from '@/components/HistoryTimeline';
 import HistoryNarrator from '@/components/HistoryNarrator';
 import HistoryRemotionPlayer from '@/components/HistoryRemotionPlayerLoader';
-import ClippingGallery from '@/components/ClippingGallery';
 import HistoryGallery3D from '@/components/HistoryGallery3D';
 import { HISTORY } from '@/lib/u-visa-history';
 
@@ -135,21 +134,6 @@ export default function HomePage() {
           </p>
         </div>
         <HistoryGallery3D />
-      </section>
-
-      {/* Grid gallery (traditional view with attribution + Commons links) */}
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-semibold tracking-tight">
-            Image gallery — grid view
-          </h2>
-          <p className="text-sm text-muted-foreground max-w-3xl">
-            Same images as the reel above, laid out for browsing. Every tile
-            is public-domain (US federal government work) or Creative Commons.
-            Click any tile for the full-size view and Wikimedia Commons source.
-          </p>
-        </div>
-        <ClippingGallery />
       </section>
 
       {/* Archive search lives on its own /archives tab */}

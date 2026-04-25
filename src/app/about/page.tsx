@@ -2,19 +2,21 @@ import type { Metadata } from 'next';
 import CrimeCategoryList from '@/components/CrimeCategoryList';
 import LastUpdatedPill from '@/components/LastUpdatedPill';
 import ProcessFlowchart from '@/components/ProcessFlowchart';
+import AdSenseSlot from '@/components/AdSenseSlot';
 import { QUALIFYING_CRIMES } from '@/lib/data';
 
 export const metadata: Metadata = {
   title: 'About the U Visa',
   description:
     'What the U nonimmigrant visa is, who qualifies, the 28 statutory qualifying crimes, and why individual filings are confidential under 8 U.S.C. § 1367.',
+  alternates: { canonical: '/about' },
 };
 
 export default function AboutPage() {
   return (
     <div className="prose-page">
       <div className="flex flex-wrap items-center justify-between gap-2 not-prose">
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 m-0">
+        <h1 className="text-3xl font-semibold tracking-tight m-0">
           About the U Visa
         </h1>
         <LastUpdatedPill routeKey="about" />
@@ -66,6 +68,8 @@ export default function AboutPage() {
         processing conditions.
       </p>
       <ProcessFlowchart />
+
+      <AdSenseSlot slot="1234567890" />
 
       <h2>The 28 statutory qualifying crimes</h2>
       <p>

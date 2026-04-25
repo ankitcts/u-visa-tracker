@@ -16,6 +16,7 @@ import {
   STATE_CERT_SHARES,
   CERTIFIED_CRIME_SHARES,
   CERTIFYING_AGENCY_LEVEL_SHARES,
+  USCIS_FILE_VERIFIED,
   totals,
   latestPending,
 } from '@/lib/data';
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
   title: 'Dashboard — Filings, Approvals, Backlog & Geography',
   description:
     'U-visa filings dashboard: receipts, approvals, denials, backlog, top states, crime categories, and latest news — all aggregate, all public-source.',
+  alternates: { canonical: '/dashboard' },
 };
 
 export const revalidate = 3600;
@@ -45,7 +47,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <section className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+          <h1 className="text-3xl font-semibold tracking-tight">
             Dashboard
           </h1>
           <LastUpdatedPill routeKey="dashboard" />
@@ -216,6 +218,18 @@ export default function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Annual aggregates</CardTitle>
+          <p className="text-xs text-muted-foreground">
+            Verified against USCIS file{' '}
+            <a
+              href={USCIS_FILE_VERIFIED.url}
+              target="_blank"
+              rel="noreferrer"
+              className="font-mono underline hover:text-foreground"
+            >
+              {USCIS_FILE_VERIFIED.filename}
+            </a>{' '}
+            on {USCIS_FILE_VERIFIED.verifiedOn}.
+          </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <AnnualTable stats={ANNUAL_PRINCIPAL} form="I-918 Principal" />

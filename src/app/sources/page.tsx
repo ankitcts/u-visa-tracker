@@ -4,11 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DATA_SOURCES } from '@/lib/data';
 import LastUpdatedPill from '@/components/LastUpdatedPill';
+import AdSenseSlot from '@/components/AdSenseSlot';
 
 export const metadata: Metadata = {
   title: 'Data Sources',
   description:
     'Official government sources used to compile U visa aggregate statistics — USCIS quarterly data, DHS OHSS yearbooks, and Ombudsman reports.',
+  alternates: { canonical: '/sources' },
 };
 
 export default function SourcesPage() {
@@ -54,6 +56,8 @@ export default function SourcesPage() {
           </li>
         ))}
       </ul>
+
+      <AdSenseSlot slot="1234567891" />
 
       <section className="rounded-xl border bg-muted/20 p-5 flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">

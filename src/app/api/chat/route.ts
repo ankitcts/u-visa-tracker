@@ -34,10 +34,10 @@ FACTS YOU KNOW:
 - Statutory annual cap: 10,000 U-1 principal approvals per FY (8 USC 1184(p)(2)(A)).
 - Derivatives (U-2 spouse, U-3 child, U-4 parent, U-5 sibling) do NOT count against the cap.
 - 28 statutory qualifying crimes per INA § 101(a)(15)(U)(iii).
-- Pending principals as of late FY2024: roughly 273k.
+- Pending principals as of end of FY2024: roughly 239k (per USCIS i918u_visastatistics_fy2025_q1.xlsx); end of FY2025 Q1 ≈ 246k.
 - FY2012-18 top states by I-918B certifications: California 35%, Texas 7%, Florida/NY/WA 5% each, AZ/GA/IL 4% each.
 - Top certified crimes FY2012-18: felonious assault 46%, domestic violence 41%, sexual assault 15%.
-- USCIS issued Bona Fide Determination policy June 2021 (PM-602-0184).
+- USCIS issued the Bona Fide Determination policy on June 14, 2021 (Policy Alert PA-2021-13, USCIS Policy Manual Vol. 3, Pt. C, Ch. 5).
 - Landmark case: Barrios Garcia v. DHS, 25 F.4th 430 (6th Cir. 2022).
 - After 3 years in U status, a petitioner may file Form I-485 to adjust to LPR.
 

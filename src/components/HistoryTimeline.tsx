@@ -186,7 +186,7 @@ function TimelineItem({
         whileHover={{ rotate: side === 'left' ? -0.25 : 0.25, scale: 1.005 }}
         transition={{ type: 'spring', stiffness: 200, damping: 16 }}
         className={cn(
-          'relative ml-13 p-5 rounded-sm shadow-md',
+          'relative ml-0 sm:ml-13 p-4 sm:p-5 rounded-sm shadow-md',
           'bg-[#fdfbf4] dark:bg-[#2a2824] text-foreground',
           'border border-[#e5dcc0] dark:border-[#403a2e]',
           event.highlight && 'ring-2 ring-offset-2 ring-amber-400/60',
@@ -211,7 +211,7 @@ function TimelineItem({
 
         {event.image && (
           <figure
-            className="float-right ml-4 mb-2 w-44 md:w-56 clipping-frame"
+            className="mb-3 w-full sm:float-right sm:ml-4 sm:mb-2 sm:w-44 md:w-56 clipping-frame"
             style={{
               shapeOutside: 'margin-box',
               transform: `rotate(${(event.year % 3) - 1}deg)`,

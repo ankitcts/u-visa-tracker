@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: 'Geography & Context of U Visa Certifications',
   description:
     'Where were U visa I-918B certifications signed? State-level aggregate data from USCIS\'s 2020 Trends Report covering FY2012–FY2018, plus crime category, certifying agency type, filing delay, and case outcome distributions.',
+  alternates: { canonical: '/geography' },
 };
 
 export default function GeographyPage() {
@@ -27,7 +28,7 @@ export default function GeographyPage() {
           </h1>
           <LastUpdatedPill routeKey="geography" />
         </div>
-        <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
+        <p className="text-muted-foreground w-full text-justify">
           In 2020, USCIS published a research report with aggregate
           breakdowns covering <strong>FY2012–FY2018</strong>. It is the only
           public USCIS release that includes state-level, crime-category,
@@ -41,7 +42,7 @@ export default function GeographyPage() {
         <h2 className="text-lg font-semibold mb-1">
           Top states by I-918B certifications signed
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Percent of all nationwide Form I-918B certifications signed by law
           enforcement officials located in the state, FY2012–FY2018. Eight
           states account for ~69% of all certifications; the remaining ~31%
@@ -54,7 +55,7 @@ export default function GeographyPage() {
         <h2 className="text-lg font-semibold mb-1">
           Top qualifying crimes certified
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Share of I-918B forms that checked each qualifying-crime category,
           FY2012–FY2018. Values exceed 100% because about 31% of forms
           select more than one category.
@@ -71,7 +72,7 @@ export default function GeographyPage() {
           <h2 className="text-lg font-semibold mb-1">
             Who signs certifications?
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             By official type, FY2012–FY2018.
           </p>
           <CategoryBarChart
@@ -84,7 +85,7 @@ export default function GeographyPage() {
           <h2 className="text-lg font-semibold mb-1">
             At what government level?
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Local police and prosecutors sign the overwhelming majority.
           </p>
           <CategoryBarChart
@@ -99,7 +100,7 @@ export default function GeographyPage() {
         <h2 className="text-lg font-semibold mb-1">
           How long after the crime do victims file?
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Time between the qualifying crime and USCIS receipt of the
           principal petition. About half file within 3 years; about 15%
           file a decade or more after the crime.
@@ -113,7 +114,7 @@ export default function GeographyPage() {
 
       <section className="card">
         <h2 className="text-lg font-semibold mb-1">Case outcomes</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Aggregate outcomes recorded on certifications. Not mutually
           exclusive — a single case can have multiple outcomes.
         </p>
@@ -124,7 +125,7 @@ export default function GeographyPage() {
         />
       </section>
 
-      <section className="prose-page">
+      <section className="prose-page !max-w-none w-full [&>p]:text-justify">
         <h2>Per-state top crime mix</h2>
         <p>
           Within each top-eight state, the certifications skew toward
@@ -135,20 +136,20 @@ export default function GeographyPage() {
           {STATE_CERT_SHARES.map((s) => (
             <div key={s.abbr} className="card !p-4">
               <div className="flex items-baseline justify-between">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                <h3 className="font-semibold text-foreground">
                   {s.state}
                 </h3>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-muted-foreground">
                   {s.share}%
                 </span>
               </div>
               <ul className="mt-3 space-y-1 text-sm">
                 {s.topCrimes.map((c) => (
                   <li key={c.crime} className="flex justify-between gap-2">
-                    <span className="text-gray-700 dark:text-gray-300">
+                    <span className="text-foreground/80">
                       {c.crime}
                     </span>
-                    <span className="tabular-nums text-gray-500 dark:text-gray-400">
+                    <span className="tabular-nums text-muted-foreground">
                       {c.share.toFixed(1)}%
                     </span>
                   </li>
@@ -157,14 +158,14 @@ export default function GeographyPage() {
             </div>
           ))}
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
+        <p className="text-xs text-muted-foreground mt-4">
           Source: USCIS, <em>Trends in U Visa Law Enforcement
           Certifications, Qualifying Crimes, and Evidence of Helpfulness</em>
           , July 2020. Figure 4.
         </p>
       </section>
 
-      <section className="prose-page">
+      <section className="prose-page !max-w-none w-full [&>p]:text-justify [&_li]:text-justify">
         <h2>What this still does not tell us</h2>
         <p>
           Even with the Trends Report, the following remain{' '}
