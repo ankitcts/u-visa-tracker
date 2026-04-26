@@ -508,17 +508,20 @@ export async function fetchUVisaNews(limit = 12): Promise<NewsItem[]> {
 }
 
 /**
- * Returns the last time the news feed refreshed its RSS cache, rounded to the
- * daily bucket we revalidate on. Uses `unstable_cache` so every caller inside
- * a given day sees the same value — the timestamp only advances once per day.
+ * Returns the time the snapshot was assembled. Always "now" — the
+ * actual freshness throttling lives in the underlying fetchUVisaNews /
+ * classifyNews unstable_cache wrappers (5-min TTL each), so the
+ * timestamp here is the wall-clock time of the request that surfaced
+ * those cached values. Used as the snapshot's `lastUpdated` field.
+ *
+ * Previously this was wrapped in unstable_cache with the same 5-min
+ * TTL, which made every caller within a 5-min bucket see the SAME
+ * frozen string — the /news refresh pill then sat at "Last refreshed
+ * <stale>" indefinitely.
  */
-import { unstable_cache as _unstable_cache } from 'next/cache';
-
-export const getNewsLastUpdated = _unstable_cache(
-  async () => new Date().toISOString(),
-  ['u-visa-news-last-updated-v2'],
-  { revalidate: NEWS_REFRESH_SECONDS, tags: ['news-classify'] },
-);
+export async function getNewsLastUpdated(): Promise<string> {
+  return new Date().toISOString();
+}
 
 /**
  * Per-source wrappers used by the SSE stream endpoint (`/api/news/stream`)
