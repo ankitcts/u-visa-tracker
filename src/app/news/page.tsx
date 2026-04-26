@@ -22,8 +22,13 @@ export const metadata: Metadata = {
   alternates: { canonical: '/news' },
 };
 
-// Page-level ISR revalidate matches NEWS_REFRESH_SECONDS in lib/news.ts (5 min).
-export const revalidate = 300;
+// Page is rendered per-request so visitors always see the
+// <MapAndFeedSkeleton /> Suspense fallback (the NewsFetchProgress
+// loader) on initial paint. Upstream feed fetches in lib/news.ts are
+// still cached via unstable_cache for NEWS_REFRESH_SECONDS (5 min), so
+// per-request rendering does NOT translate to per-request upstream
+// hits — at most one fan-out per 5 min, regardless of traffic.
+export const dynamic = 'force-dynamic';
 
 // The /news page has two slow dependencies:
 //   1. fetchUVisaNews() — fans out to Google News / Reddit / GDELT / HN / YouTube
