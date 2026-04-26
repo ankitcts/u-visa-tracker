@@ -33,24 +33,36 @@ export default function LiveNewsSection({
 }) {
   const [items, setItems] = useState<ClassifiedNewsItem[]>(initialItems);
   const [lastUpdated, setLastUpdated] = useState<string>(initialLastUpdated);
+  // `lastPolledAt` tracks the last successful poll completion, separate
+  // from `lastUpdated` (which only changes when the server actually has
+  // new items). The countdown is keyed off this so it resets on every
+  // poll, not only when the data changed — otherwise after 5 min of
+  // upstream quiet the pill sticks at "Next refresh in 0s" forever and
+  // the page looks broken.
+  const [lastPolledAt, setLastPolledAt] = useState<number>(() => new Date(initialLastUpdated).getTime());
   const [now, setNow] = useState<number>(() => Date.now());
   const [refreshing, setRefreshing] = useState(false);
   const inFlight = useRef(false);
 
-  const refresh = async (manual = false) => {
+  const refresh = async () => {
     if (inFlight.current) return;
     inFlight.current = true;
     setRefreshing(true);
     try {
-      const res = await fetch('/api/news/feed', {
-        cache: manual ? 'no-store' : 'default',
-      });
+      // `no-store` on every poll (manual + auto). With `default`, the
+      // browser served the first response from its HTTP cache for the
+      // whole revalidate window, so polling never actually hit the
+      // network and data never moved.
+      const res = await fetch('/api/news/feed', { cache: 'no-store' });
       if (res.ok) {
         const snap = (await res.json()) as FeedSnapshot;
         if (snap.lastUpdated !== lastUpdated) {
           setItems(snap.items);
           setLastUpdated(snap.lastUpdated);
         }
+        // Always advance the poll clock, even if the server returned
+        // the same snapshot — otherwise the countdown never resets.
+        setLastPolledAt(Date.now());
       }
     } catch {
       // network blip — try again next tick
@@ -84,8 +96,7 @@ export default function LiveNewsSection({
     return () => window.clearInterval(id);
   }, []);
 
-  const lastUpdatedMs = new Date(lastUpdated).getTime();
-  const nextRefreshAt = lastUpdatedMs + refreshSeconds * 1000;
+  const nextRefreshAt = lastPolledAt + refreshSeconds * 1000;
   const remainingMs = Math.max(0, nextRefreshAt - now);
   const remainingSec = Math.ceil(remainingMs / 1000);
   const countdown =
@@ -99,7 +110,7 @@ export default function LiveNewsSection({
         lastUpdated={lastUpdated}
         countdown={countdown}
         refreshing={refreshing}
-        onClick={() => refresh(true)}
+        onClick={() => refresh()}
       />
       <USNewsMap news={items} lastUpdated={lastUpdated} />
       <InteractiveNewsFeed items={items} lastUpdated={lastUpdated} />
