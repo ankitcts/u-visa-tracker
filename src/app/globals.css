@@ -339,3 +339,20 @@
     transform: translateX(-50%);
   }
 }
+
+/* Collapsed FAB (default state, mobile only). On desktop the same
+   element renders as the wide pill via Tailwind sm: overrides, so we
+   re-position it the same way as .uvt-narrator-pill at sm+. */
+.uvt-narrator-fab {
+  position: fixed;
+  bottom: 6rem; /* same vertical spot as the pill, above the chatbot */
+  left: 1rem;
+  z-index: 40;
+}
+@media (min-width: 640px) {
+  .uvt-narrator-fab {
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
