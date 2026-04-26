@@ -112,8 +112,30 @@ export default function LiveNewsSection({
         refreshing={refreshing}
         onClick={() => refresh()}
       />
-      <USNewsMap news={items} lastUpdated={lastUpdated} />
-      <InteractiveNewsFeed items={items} lastUpdated={lastUpdated} />
+      <div className="relative">
+        <div
+          className={cn(
+            'transition-opacity duration-300',
+            refreshing && 'opacity-50 pointer-events-none',
+          )}
+        >
+          <USNewsMap news={items} lastUpdated={lastUpdated} />
+          <div className="mt-4">
+            <InteractiveNewsFeed items={items} lastUpdated={lastUpdated} />
+          </div>
+        </div>
+        {refreshing && (
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            aria-live="polite"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border bg-background/95 backdrop-blur shadow-md px-3 py-1.5 text-xs font-medium text-foreground">
+              <RefreshCw className="h-3.5 w-3.5 animate-spin text-primary" aria-hidden />
+              <span>Refreshing live news…</span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

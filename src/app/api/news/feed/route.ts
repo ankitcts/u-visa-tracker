@@ -15,11 +15,14 @@ import { classifyNews } from '@/lib/news-classifier';
  * CDN absorbs the polling traffic — only one upstream RSS hit per 5 min
  * regardless of how many clients are watching.
  */
-// Next.js segment-config statically parses these exports — they must
-// be number literals, not imported bindings. Keep `300` in lockstep
-// with NEWS_REFRESH_SECONDS in lib/news.ts.
+// The route MUST re-run on every poll, otherwise Vercel's edge cache
+// serves the same snapshot for the whole revalidate window and the
+// client's "Next refresh in 0s" countdown ticks against frozen data.
+// Underlying RSS / classifier work is still cached inside lib/news.ts
+// via unstable_cache (5 min), so re-running this route is cheap — it
+// just re-reads the cached values + re-stamps `lastUpdated`.
 export const runtime = 'nodejs';
-export const revalidate = 300; // 5 min
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const items = await fetchUVisaNews(120);
@@ -33,8 +36,11 @@ export async function GET() {
       refreshSeconds: NEWS_REFRESH_SECONDS,
     },
     {
+      // No CDN caching — every poll must reach the route handler so the
+      // server-side `lastUpdated` actually advances. The route itself is
+      // cheap because the data dependencies are cached at the lib layer.
       headers: {
-        'Cache-Control': `public, s-maxage=${NEWS_REFRESH_SECONDS}, stale-while-revalidate=60`,
+        'Cache-Control': 'private, no-store, max-age=0',
       },
     },
   );
