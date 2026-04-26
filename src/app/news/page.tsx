@@ -133,7 +133,9 @@ function MapAndFeedSkeleton() {
             </div>
           ))}
         </div>
-        <div className="aspect-[16/9] bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
+        {/* Mobile: tall enough to fit two stacked progress columns (5 + 4 rows + */}
+        {/* headers ≈ 480px). Desktop: keep the 16:9 widescreen ratio. */}
+        <div className="min-h-[480px] sm:min-h-0 sm:aspect-[16/9] bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
           <NewsFetchProgress />
         </div>
       </div>

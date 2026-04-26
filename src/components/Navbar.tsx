@@ -17,12 +17,12 @@ const LINKS = [
   { href: '/geography', label: 'Geography' },
   { href: '/integrity', label: 'Integrity' },
   { href: '/litigation', label: 'Litigation' },
+  { href: '/sources', label: 'Sources' },
 ];
 
 const FOOTER_LINKS = [
   { href: '/archives', label: 'Archive Search' },
   { href: '/about', label: 'About' },
-  { href: '/sources', label: 'Sources' },
 ];
 
 function isActive(href: string, pathname: string): boolean {
