@@ -145,11 +145,21 @@ export default function HistoryNarrator() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="uvt-narrator-pill gap-2 rounded-full bg-primary text-primary-foreground px-5 py-3 shadow-xl hover:scale-[1.03] transition-transform"
+          aria-label="Read the history aloud"
+          title="Read the history aloud"
+          className={cn(
+            'uvt-narrator-fab',
+            // Mobile: compact round FAB at bottom-left, no text.
+            'h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-xl hover:scale-[1.05] transition-transform inline-flex items-center justify-center gap-0',
+            // Desktop (sm+): full pill with the original copy.
+            'sm:h-auto sm:w-auto sm:gap-2 sm:px-5 sm:py-3',
+          )}
         >
-          <Sparkles className="h-4 w-4" />
-          <span className="font-medium text-sm">Read the history aloud</span>
-          <Volume2 className="h-4 w-4" />
+          <Sparkles className="h-5 w-5 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline font-medium text-sm">
+            Read the history aloud
+          </span>
+          <Volume2 className="hidden sm:inline-block h-4 w-4" />
         </motion.button>
       ) : (
         <motion.div
