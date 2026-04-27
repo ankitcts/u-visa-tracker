@@ -12,7 +12,7 @@ import type {
 // scripts/sync-uscis.mjs when the upstream XLSX SHA changes. The pill
 // renders this in the visitor's local timezone via <LocalTimestamp />.
 // 2026-04-25T04:59:00Z = Apr 24 23:59 America/Chicago (CDT, UTC-5).
-export const LAST_UPDATED = '2026-04-25T04:59:00Z';
+export const LAST_UPDATED = '2026-04-27T00:00:00Z';
 
 /**
  * Anchor for the per-table "Verified against USCIS file" badge.
@@ -28,10 +28,10 @@ export const LAST_UPDATED = '2026-04-25T04:59:00Z';
  * the live USCIS XLSX exactly.
  */
 export const USCIS_FILE_VERIFIED = {
-  filename: 'i918u_visastatistics_fy2025_q1.xlsx',
-  url: 'https://www.uscis.gov/sites/default/files/document/data/i918u_visastatistics_fy2025_q1.xlsx',
-  verifiedOn: '2026-04-25',
-  sha256: 'ddbc55216c30c117c51ffe1957e5333d004ea76461d6e88f83d069b5a5b65dd6',
+  filename: 'i918u_visastatistics_fy2025_q4_v1.xlsx',
+  url: 'https://www.uscis.gov/sites/default/files/document/data/i918u_visastatistics_fy2025_q4_v1.xlsx',
+  verifiedOn: '2026-04-27',
+  sha256: '4a0f1f3c2d5e944fe17165b3068adddb408b4104232970718f00c28b1f6c35c5',
   crossCheck: {
     filename: 'i918u_visastatistics_fy2024_q4.xlsx',
     url: 'https://www.uscis.gov/sites/default/files/document/data/i918u_visastatistics_fy2024_q4.xlsx',
@@ -72,8 +72,8 @@ export const U1_ANNUAL_CAP = 10000;
  * Run `npm run fetch` to refresh from the latest USCIS quarterly xlsx.
  */
 export const ANNUAL_PRINCIPAL: AnnualStat[] = [
-  { fiscalYear: 2009, form: 'I-918', received: 6850,  approved: 6045,  denied: 661,  pendingEndOfYear: 11740 },
-  { fiscalYear: 2010, form: 'I-918', received: 9657,  approved: 10015, denied: 3995, pendingEndOfYear: 7480 },
+  { fiscalYear: 2009, form: 'I-918', received: 6850, approved: 6045, denied: 661, pendingEndOfYear: 11740 },
+  { fiscalYear: 2010, form: 'I-918', received: 9657, approved: 10015, denied: 3995, pendingEndOfYear: 7480 },
   { fiscalYear: 2011, form: 'I-918', received: 14647, approved: 10025, denied: 2007, pendingEndOfYear: 10250 },
   { fiscalYear: 2012, form: 'I-918', received: 21141, approved: 10031, denied: 1684, pendingEndOfYear: 19824 },
   { fiscalYear: 2013, form: 'I-918', received: 25486, approved: 10022, denied: 1840, pendingEndOfYear: 33409 },
@@ -88,8 +88,7 @@ export const ANNUAL_PRINCIPAL: AnnualStat[] = [
   { fiscalYear: 2022, form: 'I-918', received: 30120, approved: 10006, denied: 2992, pendingEndOfYear: 189381 },
   { fiscalYear: 2023, form: 'I-918', received: 31204, approved: 10000, denied: 3806, pendingEndOfYear: 207133 },
   { fiscalYear: 2024, form: 'I-918', received: 41558, approved: 10000, denied: 3646, pendingEndOfYear: 238892 },
-  // FY2025 = Q1 only (Oct–Dec 2024); not a full fiscal year
-  { fiscalYear: 2025, form: 'I-918', received: 11743, approved: 2486,  denied: 815,  pendingEndOfYear: 246137 },
+  { fiscalYear: 2025, form: 'I-918', received: 39389, approved: 10001, denied: 3654, pendingEndOfYear: 253510 },
 ];
 
 /**
@@ -103,24 +102,23 @@ export const ANNUAL_PRINCIPAL: AnnualStat[] = [
  * provisional.
  */
 export const ANNUAL_DERIVATIVE: AnnualStat[] = [
-  { fiscalYear: 2009, form: 'I-918A', received: 4102,  approved: 2838,  denied: 158,  pendingEndOfYear: 9275 },
-  { fiscalYear: 2010, form: 'I-918A', received: 6418,  approved: 9315,  denied: 2576, pendingEndOfYear: 6242 },
-  { fiscalYear: 2011, form: 'I-918A', received: 10033, approved: 7602,  denied: 1645, pendingEndOfYear: 8329 },
-  { fiscalYear: 2012, form: 'I-918A', received: 15126, approved: 7421,  denied: 1465, pendingEndOfYear: 15592 },
-  { fiscalYear: 2013, form: 'I-918A', received: 18266, approved: 7724,  denied: 1234, pendingEndOfYear: 24480 },
-  { fiscalYear: 2014, form: 'I-918A', received: 19297, approved: 8457,  denied: 2655, pendingEndOfYear: 32948 },
-  { fiscalYear: 2015, form: 'I-918A', received: 22636, approved: 7649,  denied: 1754, pendingEndOfYear: 46507 },
-  { fiscalYear: 2016, form: 'I-918A', received: 25469, approved: 7624,  denied: 1257, pendingEndOfYear: 63616 },
-  { fiscalYear: 2017, form: 'I-918A', received: 25703, approved: 7628,  denied: 1612, pendingEndOfYear: 79971 },
-  { fiscalYear: 2018, form: 'I-918A', received: 24024, approved: 7906,  denied: 1991, pendingEndOfYear: 94050 },
-  { fiscalYear: 2019, form: 'I-918A', received: 18861, approved: 7846,  denied: 2397, pendingEndOfYear: 103737 },
-  { fiscalYear: 2020, form: 'I-918A', received: 14090, approved: 7212,  denied: 2472, pendingEndOfYear: 108366 },
-  { fiscalYear: 2021, form: 'I-918A', received: 15290, approved: 6728,  denied: 3085, pendingEndOfYear: 114450 },
-  { fiscalYear: 2022, form: 'I-918A', received: 20954, approved: 7423,  denied: 2803, pendingEndOfYear: 126158 },
-  { fiscalYear: 2023, form: 'I-918A', received: 21938, approved: 7889,  denied: 3187, pendingEndOfYear: 137467 },
-  { fiscalYear: 2024, form: 'I-918A', received: 29383, approved: 7839,  denied: 3412, pendingEndOfYear: 158071 },
-  // FY2025 = Q1 only (Oct–Dec 2024)
-  { fiscalYear: 2025, form: 'I-918A', received: 8243,  approved: 1600,  denied: 716,  pendingEndOfYear: 163059 },
+  { fiscalYear: 2009, form: 'I-918A', received: 4102, approved: 2838, denied: 158, pendingEndOfYear: 9275 },
+  { fiscalYear: 2010, form: 'I-918A', received: 6418, approved: 9315, denied: 2576, pendingEndOfYear: 6242 },
+  { fiscalYear: 2011, form: 'I-918A', received: 10033, approved: 7602, denied: 1645, pendingEndOfYear: 8329 },
+  { fiscalYear: 2012, form: 'I-918A', received: 15126, approved: 7421, denied: 1465, pendingEndOfYear: 15592 },
+  { fiscalYear: 2013, form: 'I-918A', received: 18266, approved: 7724, denied: 1234, pendingEndOfYear: 24480 },
+  { fiscalYear: 2014, form: 'I-918A', received: 19297, approved: 8457, denied: 2655, pendingEndOfYear: 32948 },
+  { fiscalYear: 2015, form: 'I-918A', received: 22636, approved: 7649, denied: 1754, pendingEndOfYear: 46507 },
+  { fiscalYear: 2016, form: 'I-918A', received: 25469, approved: 7624, denied: 1257, pendingEndOfYear: 63616 },
+  { fiscalYear: 2017, form: 'I-918A', received: 25703, approved: 7628, denied: 1612, pendingEndOfYear: 79971 },
+  { fiscalYear: 2018, form: 'I-918A', received: 24024, approved: 7906, denied: 1991, pendingEndOfYear: 94050 },
+  { fiscalYear: 2019, form: 'I-918A', received: 18861, approved: 7846, denied: 2397, pendingEndOfYear: 103737 },
+  { fiscalYear: 2020, form: 'I-918A', received: 14090, approved: 7212, denied: 2472, pendingEndOfYear: 108366 },
+  { fiscalYear: 2021, form: 'I-918A', received: 15290, approved: 6728, denied: 3085, pendingEndOfYear: 114450 },
+  { fiscalYear: 2022, form: 'I-918A', received: 20954, approved: 7423, denied: 2803, pendingEndOfYear: 126158 },
+  { fiscalYear: 2023, form: 'I-918A', received: 21938, approved: 7889, denied: 3187, pendingEndOfYear: 137467 },
+  { fiscalYear: 2024, form: 'I-918A', received: 29383, approved: 7839, denied: 3412, pendingEndOfYear: 158071 },
+  { fiscalYear: 2025, form: 'I-918A', received: 28119, approved: 6956, denied: 3138, pendingEndOfYear: 168272 },
 ];
 
 /**
