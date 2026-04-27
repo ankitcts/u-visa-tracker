@@ -2,14 +2,7 @@ import type { Metadata } from 'next';
 import LastUpdatedPill from '@/components/LastUpdatedPill';
 import StateShareChart from '@/components/StateShareChart';
 import CategoryBarChart from '@/components/CategoryBarChart';
-import {
-  STATE_CERT_SHARES,
-  CERTIFIED_CRIME_SHARES,
-  CERTIFYING_AGENCY_SHARES,
-  CERTIFYING_AGENCY_LEVEL_SHARES,
-  FILING_DELAY_BUCKETS,
-  CASE_OUTCOMES,
-} from '@/lib/data';
+import { getLatestSnapshot } from '@/lib/snapshot';
 
 export const metadata: Metadata = {
   title: 'Geography & Context of U Visa Certifications',
@@ -18,7 +11,15 @@ export const metadata: Metadata = {
   alternates: { canonical: '/geography' },
 };
 
-export default function GeographyPage() {
+export default async function GeographyPage() {
+  const {
+    STATE_CERT_SHARES,
+    CERTIFIED_CRIME_SHARES,
+    CERTIFYING_AGENCY_SHARES,
+    CERTIFYING_AGENCY_LEVEL_SHARES,
+    FILING_DELAY_BUCKETS,
+    CASE_OUTCOMES,
+  } = await getLatestSnapshot();
   return (
     <div className="space-y-10">
       <section className="space-y-2">

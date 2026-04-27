@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import type { ClassifiedNewsItem } from '@/lib/news-classifier';
+import type { StateCertShare } from '@/lib/types';
 
 const USNewsMap = dynamic(() => import('./USNewsMap'), {
   ssr: false,
@@ -15,9 +16,11 @@ const USNewsMap = dynamic(() => import('./USNewsMap'), {
 export default function USNewsMapClient({
   news,
   lastUpdated,
+  stateShares,
 }: {
   news: ClassifiedNewsItem[];
   lastUpdated?: string;
+  stateShares: StateCertShare[];
 }) {
-  return <USNewsMap news={news} lastUpdated={lastUpdated} />;
+  return <USNewsMap news={news} lastUpdated={lastUpdated} stateShares={stateShares} />;
 }

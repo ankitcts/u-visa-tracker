@@ -5,6 +5,9 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|scss)$': 'identity-obj-proxy',
     '^motion/react$': '<rootDir>/src/__tests__/__mocks__/motion-react.tsx',
+    // Next.js sentinel module — at runtime it's resolved by the bundler;
+    // jest doesn't have it, so map to a no-op.
+    '^server-only$': '<rootDir>/src/__tests__/__mocks__/server-only.ts',
   },
   setupFiles: ['<rootDir>/jest.polyfills.js'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.tsx'],

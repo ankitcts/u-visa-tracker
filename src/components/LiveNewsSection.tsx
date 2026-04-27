@@ -7,6 +7,7 @@ import InteractiveNewsFeed from './InteractiveNewsFeed';
 import LocalTimestamp from './LocalTimestamp';
 import { cn } from '@/lib/utils';
 import type { ClassifiedNewsItem } from '@/lib/news-classifier';
+import type { StateCertShare } from '@/lib/types';
 
 interface FeedSnapshot {
   items: ClassifiedNewsItem[];
@@ -26,10 +27,12 @@ export default function LiveNewsSection({
   initialItems,
   initialLastUpdated,
   refreshSeconds,
+  stateShares,
 }: {
   initialItems: ClassifiedNewsItem[];
   initialLastUpdated: string;
   refreshSeconds: number;
+  stateShares: StateCertShare[];
 }) {
   const [items, setItems] = useState<ClassifiedNewsItem[]>(initialItems);
   const [lastUpdated, setLastUpdated] = useState<string>(initialLastUpdated);
@@ -119,7 +122,7 @@ export default function LiveNewsSection({
             refreshing && 'opacity-50 pointer-events-none',
           )}
         >
-          <USNewsMap news={items} lastUpdated={lastUpdated} />
+          <USNewsMap news={items} lastUpdated={lastUpdated} stateShares={stateShares} />
           <div className="mt-4">
             <InteractiveNewsFeed items={items} lastUpdated={lastUpdated} />
           </div>

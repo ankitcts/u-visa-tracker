@@ -1,0 +1,11 @@
+{
+  "latest": "2026-04-27T03-36-00Z",
+  "snapshots": [
+    {
+      "id": "2026-04-27T03-36-00Z",
+      "createdAt": "2026-04-27T03:36:00Z",
+      "filename": "2026-04-27T03-36-00Z.json",
+      "summary": "Seed snapshot — first migration from src/lib/data.ts. Mirrors v1.6.0 production state (FY2009–FY2025 full year, USCIS file i918u_visastatistics_fy2025_q4_v1.xlsx)."
+    }
+  ]
+}

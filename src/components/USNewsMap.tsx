@@ -11,7 +11,7 @@ import { geoCentroid } from 'd3-geo';
 import { motion, AnimatePresence } from 'motion/react';
 import { ExternalLink, PlayCircle } from 'lucide-react';
 import { FIPS_TO_USPS, USPS_TO_NAME } from '@/lib/us-states';
-import { STATE_CERT_SHARES } from '@/lib/data';
+import type { StateCertShare } from '@/lib/types';
 import { relativeTime } from '@/lib/news';
 import { flagEmoji, countryNote } from '@/lib/geotag';
 import {
@@ -33,9 +33,7 @@ const TAG_COLOR: Record<NewsTag, string> = {
   general: '#64748b',
 };
 
-const CERT_SHARE: Record<string, number> = Object.fromEntries(
-  STATE_CERT_SHARES.map((s) => [s.state, s.share]),
-);
+// Built per-render from the prop the server component passes down.
 
 interface GeoFeature {
   rsmKey: string;
@@ -50,15 +48,22 @@ type ColorMode = 'news' | 'cert';
 export default function USNewsMap({
   news,
   lastUpdated,
+  stateShares,
 }: {
   news: ClassifiedNewsItem[];
   lastUpdated?: string;
+  stateShares: StateCertShare[];
 }) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [pinned, setPinned] = useState<string | null>(null);
   const [tagFilter, setTagFilter] = useState<NewsTag | null>(null);
   const [colorMode, setColorMode] = useState<ColorMode>('news');
   const active = pinned ?? hovered;
+
+  const CERT_SHARE = useMemo<Record<string, number>>(
+    () => Object.fromEntries(stateShares.map((s) => [s.state, s.share])),
+    [stateShares],
+  );
 
   const filteredNews = useMemo(
     () =>
