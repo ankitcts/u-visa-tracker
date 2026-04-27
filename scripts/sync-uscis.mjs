@@ -23,6 +23,7 @@
  * Run by .github/workflows/sync-uscis.yml on a daily schedule.
  */
 import { readFile, writeFile } from 'node:fs/promises';
+import { appendFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -306,8 +307,7 @@ function replaceAnnualBlock(dataTs, exportName, formLabel, rows) {
 
 function emitGhOutput(name, value) {
   if (process.env.GITHUB_OUTPUT) {
-    const fs = require('node:fs');
-    fs.appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${value}\n`);
+    appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${value}\n`);
   }
 }
 
