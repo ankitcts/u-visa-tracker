@@ -7,7 +7,7 @@ import NewsTicker from '@/components/NewsTicker';
 import NewsFetchProgress from '@/components/NewsFetchProgress';
 import { Card, CardContent } from '@/components/ui/card';
 import { latestPending } from '@/lib/data';
-import { ANNUAL_PRINCIPAL } from '@/lib/data';
+import { getLatestSnapshot } from '@/lib/snapshot';
 import {
   fetchUVisaNews,
   getNewsLastUpdated,
@@ -81,7 +81,10 @@ async function NewsSectionShell() {
   // SSR the first paint, then LiveNewsSection (client) takes over and
   // polls /api/news/feed every NEWS_REFRESH_SECONDS so visitors see new
   // items without reloading the page.
-  const newsItems = await fetchUVisaNews(120);
+  const [newsItems, snap] = await Promise.all([
+    fetchUVisaNews(120),
+    getLatestSnapshot(),
+  ]);
   const classifiedNews = await classifyNews(newsItems);
   const newsLastUpdated = await getNewsLastUpdated();
 
@@ -90,6 +93,7 @@ async function NewsSectionShell() {
       initialItems={classifiedNews}
       initialLastUpdated={newsLastUpdated}
       refreshSeconds={NEWS_REFRESH_SECONDS}
+      stateShares={snap.STATE_CERT_SHARES}
     />
   );
 }
@@ -173,7 +177,8 @@ function MapAndFeedSkeleton() {
   );
 }
 
-function QuickLinks() {
+async function QuickLinks() {
+  const { ANNUAL_PRINCIPAL } = await getLatestSnapshot();
   const latest = latestPending(ANNUAL_PRINCIPAL);
   return (
     <section className="grid gap-4 md:grid-cols-4">

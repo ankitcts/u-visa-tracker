@@ -17,7 +17,7 @@ import {
 } from '@/lib/integrity';
 import OutcomeFunnel from '@/components/OutcomeFunnel';
 import { Scale, Gavel } from 'lucide-react';
-import { STATE_CERT_SHARES } from '@/lib/data';
+import { getLatestSnapshot } from '@/lib/snapshot';
 import ClassifiedNewsFeed from '@/components/ClassifiedNewsFeed';
 
 export const metadata: Metadata = {
@@ -29,7 +29,8 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-export default function IntegrityPage() {
+export default async function IntegrityPage() {
+  const { STATE_CERT_SHARES } = await getLatestSnapshot();
   const feloniousBreakdown = [
     { label: 'Clear felonious assault (checkbox)', share: 34 },
     { label: 'Likely-qualifying via "Other" box', share: 9 },

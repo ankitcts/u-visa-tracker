@@ -9,15 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { U_CATEGORIES, FEATURED_VIDEO } from '@/lib/categories';
-import {
-  ANNUAL_PRINCIPAL,
-  ANNUAL_DERIVATIVE,
-  U1_ANNUAL_CAP,
-  STATE_CERT_SHARES,
-  CERTIFIED_CRIME_SHARES,
-  totals,
-  latestPending,
-} from '@/lib/data';
+import { U1_ANNUAL_CAP, totals, latestPending } from '@/lib/data';
+import { getLatestSnapshot } from '@/lib/snapshot';
 
 export const metadata: Metadata = {
   title: 'Understanding the U Visa — Categories, Eligibility & Process',
@@ -28,7 +21,13 @@ export const metadata: Metadata = {
 
 export const revalidate = 86400; // page-level ISR: refresh daily (24h)
 
-export default function UVisaPage() {
+export default async function UVisaPage() {
+  const {
+    ANNUAL_PRINCIPAL,
+    ANNUAL_DERIVATIVE,
+    STATE_CERT_SHARES,
+    CERTIFIED_CRIME_SHARES,
+  } = await getLatestSnapshot();
   const latest = latestPending(ANNUAL_PRINCIPAL);
   const principalTotals = totals(ANNUAL_PRINCIPAL);
   const derivativeTotals = totals(ANNUAL_DERIVATIVE);

@@ -2,12 +2,8 @@ import type { Metadata } from 'next';
 import BacklogChart from '@/components/BacklogChart';
 import LastUpdatedPill from '@/components/LastUpdatedPill';
 import StatCard from '@/components/StatCard';
-import {
-  ANNUAL_PRINCIPAL,
-  ANNUAL_DERIVATIVE,
-  U1_ANNUAL_CAP,
-  latestPending,
-} from '@/lib/data';
+import { U1_ANNUAL_CAP, latestPending } from '@/lib/data';
+import { getLatestSnapshot } from '@/lib/snapshot';
 
 export const metadata: Metadata = {
   title: 'U Visa Backlog',
@@ -16,7 +12,8 @@ export const metadata: Metadata = {
   alternates: { canonical: '/backlog' },
 };
 
-export default function BacklogPage() {
+export default async function BacklogPage() {
+  const { ANNUAL_PRINCIPAL, ANNUAL_DERIVATIVE } = await getLatestSnapshot();
   const latestP = latestPending(ANNUAL_PRINCIPAL);
   const latestD = latestPending(ANNUAL_DERIVATIVE);
   const yearsAtCap = Math.ceil(latestP.pending / U1_ANNUAL_CAP);

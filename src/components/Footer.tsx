@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ShieldAlert, AlertTriangle } from 'lucide-react';
-import { LAST_UPDATED } from '@/lib/data';
+import { getLastUpdatedIso } from '@/lib/snapshot';
 import { Separator } from '@/components/ui/separator';
 import { getNewsLastUpdated } from '@/lib/news';
 
@@ -46,7 +46,8 @@ const FOOTER_SECTIONS: {
 ];
 
 export default async function Footer() {
-  const updated = new Date(LAST_UPDATED).toLocaleDateString('en-US', {
+  const lastUpdatedIso = await getLastUpdatedIso();
+  const updated = new Date(lastUpdatedIso).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

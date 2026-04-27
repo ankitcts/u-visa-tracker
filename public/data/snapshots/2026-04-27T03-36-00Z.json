@@ -1,0 +1,622 @@
+{
+  "id": "2026-04-27T03-36-00Z",
+  "createdAt": "2026-04-27T03:36:00Z",
+  "source": {
+    "filename": "i918u_visastatistics_fy2025_q4_v1.xlsx",
+    "url": "https://www.uscis.gov/sites/default/files/document/data/i918u_visastatistics_fy2025_q4_v1.xlsx",
+    "verifiedOn": "2026-04-27",
+    "sha256": "4a0f1f3c2d5e944fe17165b3068adddb408b4104232970718f00c28b1f6c35c5",
+    "crossCheck": {
+      "filename": "i918u_visastatistics_fy2024_q4.xlsx",
+      "url": "https://www.uscis.gov/sites/default/files/document/data/i918u_visastatistics_fy2024_q4.xlsx",
+      "sha256": "19a3b5661beff24c2d5dc052dce0ef1b0f3ad0a839a354a523cf5aae8d825e4f"
+    }
+  },
+  "ANNUAL_PRINCIPAL": [
+    {
+      "fiscalYear": 2009,
+      "form": "I-918",
+      "received": 6850,
+      "approved": 6045,
+      "denied": 661,
+      "pendingEndOfYear": 11740
+    },
+    {
+      "fiscalYear": 2010,
+      "form": "I-918",
+      "received": 9657,
+      "approved": 10015,
+      "denied": 3995,
+      "pendingEndOfYear": 7480
+    },
+    {
+      "fiscalYear": 2011,
+      "form": "I-918",
+      "received": 14647,
+      "approved": 10025,
+      "denied": 2007,
+      "pendingEndOfYear": 10250
+    },
+    {
+      "fiscalYear": 2012,
+      "form": "I-918",
+      "received": 21141,
+      "approved": 10031,
+      "denied": 1684,
+      "pendingEndOfYear": 19824
+    },
+    {
+      "fiscalYear": 2013,
+      "form": "I-918",
+      "received": 25486,
+      "approved": 10022,
+      "denied": 1840,
+      "pendingEndOfYear": 33409
+    },
+    {
+      "fiscalYear": 2014,
+      "form": "I-918",
+      "received": 26089,
+      "approved": 10077,
+      "denied": 3662,
+      "pendingEndOfYear": 45814
+    },
+    {
+      "fiscalYear": 2015,
+      "form": "I-918",
+      "received": 30129,
+      "approved": 10060,
+      "denied": 2440,
+      "pendingEndOfYear": 63779
+    },
+    {
+      "fiscalYear": 2016,
+      "form": "I-918",
+      "received": 34797,
+      "approved": 10019,
+      "denied": 1761,
+      "pendingEndOfYear": 87290
+    },
+    {
+      "fiscalYear": 2017,
+      "form": "I-918",
+      "received": 37287,
+      "approved": 10011,
+      "denied": 2042,
+      "pendingEndOfYear": 112272
+    },
+    {
+      "fiscalYear": 2018,
+      "form": "I-918",
+      "received": 34967,
+      "approved": 10009,
+      "denied": 2317,
+      "pendingEndOfYear": 134714
+    },
+    {
+      "fiscalYear": 2019,
+      "form": "I-918",
+      "received": 28364,
+      "approved": 10010,
+      "denied": 2733,
+      "pendingEndOfYear": 151758
+    },
+    {
+      "fiscalYear": 2020,
+      "form": "I-918",
+      "received": 22358,
+      "approved": 10013,
+      "denied": 2693,
+      "pendingEndOfYear": 161708
+    },
+    {
+      "fiscalYear": 2021,
+      "form": "I-918",
+      "received": 21874,
+      "approved": 10003,
+      "denied": 3594,
+      "pendingEndOfYear": 170805
+    },
+    {
+      "fiscalYear": 2022,
+      "form": "I-918",
+      "received": 30120,
+      "approved": 10006,
+      "denied": 2992,
+      "pendingEndOfYear": 189381
+    },
+    {
+      "fiscalYear": 2023,
+      "form": "I-918",
+      "received": 31204,
+      "approved": 10000,
+      "denied": 3806,
+      "pendingEndOfYear": 207133
+    },
+    {
+      "fiscalYear": 2024,
+      "form": "I-918",
+      "received": 41558,
+      "approved": 10000,
+      "denied": 3646,
+      "pendingEndOfYear": 238892
+    },
+    {
+      "fiscalYear": 2025,
+      "form": "I-918",
+      "received": 39389,
+      "approved": 10001,
+      "denied": 3654,
+      "pendingEndOfYear": 253510
+    }
+  ],
+  "ANNUAL_DERIVATIVE": [
+    {
+      "fiscalYear": 2009,
+      "form": "I-918A",
+      "received": 4102,
+      "approved": 2838,
+      "denied": 158,
+      "pendingEndOfYear": 9275
+    },
+    {
+      "fiscalYear": 2010,
+      "form": "I-918A",
+      "received": 6418,
+      "approved": 9315,
+      "denied": 2576,
+      "pendingEndOfYear": 6242
+    },
+    {
+      "fiscalYear": 2011,
+      "form": "I-918A",
+      "received": 10033,
+      "approved": 7602,
+      "denied": 1645,
+      "pendingEndOfYear": 8329
+    },
+    {
+      "fiscalYear": 2012,
+      "form": "I-918A",
+      "received": 15126,
+      "approved": 7421,
+      "denied": 1465,
+      "pendingEndOfYear": 15592
+    },
+    {
+      "fiscalYear": 2013,
+      "form": "I-918A",
+      "received": 18266,
+      "approved": 7724,
+      "denied": 1234,
+      "pendingEndOfYear": 24480
+    },
+    {
+      "fiscalYear": 2014,
+      "form": "I-918A",
+      "received": 19297,
+      "approved": 8457,
+      "denied": 2655,
+      "pendingEndOfYear": 32948
+    },
+    {
+      "fiscalYear": 2015,
+      "form": "I-918A",
+      "received": 22636,
+      "approved": 7649,
+      "denied": 1754,
+      "pendingEndOfYear": 46507
+    },
+    {
+      "fiscalYear": 2016,
+      "form": "I-918A",
+      "received": 25469,
+      "approved": 7624,
+      "denied": 1257,
+      "pendingEndOfYear": 63616
+    },
+    {
+      "fiscalYear": 2017,
+      "form": "I-918A",
+      "received": 25703,
+      "approved": 7628,
+      "denied": 1612,
+      "pendingEndOfYear": 79971
+    },
+    {
+      "fiscalYear": 2018,
+      "form": "I-918A",
+      "received": 24024,
+      "approved": 7906,
+      "denied": 1991,
+      "pendingEndOfYear": 94050
+    },
+    {
+      "fiscalYear": 2019,
+      "form": "I-918A",
+      "received": 18861,
+      "approved": 7846,
+      "denied": 2397,
+      "pendingEndOfYear": 103737
+    },
+    {
+      "fiscalYear": 2020,
+      "form": "I-918A",
+      "received": 14090,
+      "approved": 7212,
+      "denied": 2472,
+      "pendingEndOfYear": 108366
+    },
+    {
+      "fiscalYear": 2021,
+      "form": "I-918A",
+      "received": 15290,
+      "approved": 6728,
+      "denied": 3085,
+      "pendingEndOfYear": 114450
+    },
+    {
+      "fiscalYear": 2022,
+      "form": "I-918A",
+      "received": 20954,
+      "approved": 7423,
+      "denied": 2803,
+      "pendingEndOfYear": 126158
+    },
+    {
+      "fiscalYear": 2023,
+      "form": "I-918A",
+      "received": 21938,
+      "approved": 7889,
+      "denied": 3187,
+      "pendingEndOfYear": 137467
+    },
+    {
+      "fiscalYear": 2024,
+      "form": "I-918A",
+      "received": 29383,
+      "approved": 7839,
+      "denied": 3412,
+      "pendingEndOfYear": 158071
+    },
+    {
+      "fiscalYear": 2025,
+      "form": "I-918A",
+      "received": 28119,
+      "approved": 6956,
+      "denied": 3138,
+      "pendingEndOfYear": 168272
+    }
+  ],
+  "QUARTERLY_PRINCIPAL": [
+    {
+      "fiscalYear": 2024,
+      "quarter": 1,
+      "form": "I-918",
+      "received": 10080,
+      "approved": 2510,
+      "denied": 940,
+      "pending": 214418
+    },
+    {
+      "fiscalYear": 2024,
+      "quarter": 2,
+      "form": "I-918",
+      "received": 10520,
+      "approved": 2510,
+      "denied": 920,
+      "pending": 222418
+    },
+    {
+      "fiscalYear": 2024,
+      "quarter": 3,
+      "form": "I-918",
+      "received": 10518,
+      "approved": 2480,
+      "denied": 900,
+      "pending": 230456
+    },
+    {
+      "fiscalYear": 2024,
+      "quarter": 4,
+      "form": "I-918",
+      "received": 10440,
+      "approved": 2500,
+      "denied": 886,
+      "pending": 238892
+    },
+    {
+      "fiscalYear": 2025,
+      "quarter": 1,
+      "form": "I-918",
+      "received": 11743,
+      "approved": 2486,
+      "denied": 815,
+      "pending": 246137
+    }
+  ],
+  "STATE_CERT_SHARES": [
+    {
+      "state": "California",
+      "abbr": "CA",
+      "share": 35,
+      "topCrimes": [
+        {
+          "crime": "Domestic Violence",
+          "share": 45.7
+        },
+        {
+          "crime": "Felonious Assault",
+          "share": 41.1
+        },
+        {
+          "crime": "Sexual Assault",
+          "share": 14.1
+        }
+      ]
+    },
+    {
+      "state": "Texas",
+      "abbr": "TX",
+      "share": 7,
+      "topCrimes": [
+        {
+          "crime": "Felonious Assault",
+          "share": 47.5
+        },
+        {
+          "crime": "Domestic Violence",
+          "share": 41
+        }
+      ]
+    },
+    {
+      "state": "Florida",
+      "abbr": "FL",
+      "share": 5,
+      "topCrimes": [
+        {
+          "crime": "Felonious Assault",
+          "share": 57.8
+        },
+        {
+          "crime": "Domestic Violence",
+          "share": 31.1
+        }
+      ]
+    },
+    {
+      "state": "New York",
+      "abbr": "NY",
+      "share": 5,
+      "topCrimes": [
+        {
+          "crime": "Domestic Violence",
+          "share": 51.2
+        },
+        {
+          "crime": "Felonious Assault",
+          "share": 37.2
+        }
+      ]
+    },
+    {
+      "state": "Washington",
+      "abbr": "WA",
+      "share": 5,
+      "topCrimes": [
+        {
+          "crime": "Domestic Violence",
+          "share": 47.6
+        },
+        {
+          "crime": "Felonious Assault",
+          "share": 35.7
+        }
+      ]
+    },
+    {
+      "state": "Arizona",
+      "abbr": "AZ",
+      "share": 4,
+      "topCrimes": [
+        {
+          "crime": "Domestic Violence",
+          "share": 64.5
+        },
+        {
+          "crime": "Assorted",
+          "share": 32.3
+        }
+      ]
+    },
+    {
+      "state": "Georgia",
+      "abbr": "GA",
+      "share": 4,
+      "topCrimes": [
+        {
+          "crime": "Domestic Violence",
+          "share": 51.4
+        },
+        {
+          "crime": "Felonious Assault",
+          "share": 22.9
+        },
+        {
+          "crime": "Sexual Assault",
+          "share": 22.9
+        }
+      ]
+    },
+    {
+      "state": "Illinois",
+      "abbr": "IL",
+      "share": 4,
+      "topCrimes": [
+        {
+          "crime": "Domestic Violence",
+          "share": 57.8
+        },
+        {
+          "crime": "Felonious Assault",
+          "share": 41.1
+        }
+      ]
+    }
+  ],
+  "CERTIFIED_CRIME_SHARES": [
+    {
+      "label": "Felonious Assault",
+      "share": 46
+    },
+    {
+      "label": "Domestic Violence",
+      "share": 41
+    },
+    {
+      "label": "Sexual Assault",
+      "share": 15
+    },
+    {
+      "label": "False Imprisonment",
+      "share": 9
+    },
+    {
+      "label": "Assorted Other",
+      "share": 4
+    },
+    {
+      "label": "Murder",
+      "share": 4
+    },
+    {
+      "label": "Crimes Against a Child",
+      "share": 2
+    },
+    {
+      "label": "Human Trafficking",
+      "share": 0.005
+    }
+  ],
+  "CERTIFYING_AGENCY_SHARES": [
+    {
+      "label": "Police",
+      "share": 65
+    },
+    {
+      "label": "Prosecutor / Judge / DA",
+      "share": 32
+    }
+  ],
+  "CERTIFYING_AGENCY_LEVEL_SHARES": [
+    {
+      "label": "Local",
+      "share": 84
+    },
+    {
+      "label": "State",
+      "share": 12
+    },
+    {
+      "label": "Federal",
+      "share": 2
+    }
+  ],
+  "YEARLY_CRIME_TRENDS": [
+    {
+      "fiscalYear": 2012,
+      "feloniousAssault": 33,
+      "domesticViolence": 54,
+      "sexualAssault": 19
+    },
+    {
+      "fiscalYear": 2013,
+      "feloniousAssault": 43,
+      "domesticViolence": 51,
+      "sexualAssault": 18
+    },
+    {
+      "fiscalYear": 2014,
+      "feloniousAssault": 33,
+      "domesticViolence": 48,
+      "sexualAssault": 15
+    },
+    {
+      "fiscalYear": 2015,
+      "feloniousAssault": 43,
+      "domesticViolence": 47,
+      "sexualAssault": 19
+    },
+    {
+      "fiscalYear": 2016,
+      "feloniousAssault": 33,
+      "domesticViolence": 54,
+      "sexualAssault": 12
+    },
+    {
+      "fiscalYear": 2017,
+      "feloniousAssault": 31,
+      "domesticViolence": 55,
+      "sexualAssault": 11
+    },
+    {
+      "fiscalYear": 2018,
+      "feloniousAssault": 42,
+      "domesticViolence": 42,
+      "sexualAssault": 11
+    }
+  ],
+  "FILING_DELAY_BUCKETS": [
+    {
+      "label": "< 1 year",
+      "share": 24.9
+    },
+    {
+      "label": "1 to 3 years",
+      "share": 27.6
+    },
+    {
+      "label": "3 to 6 years",
+      "share": 14.7
+    },
+    {
+      "label": "6 to 10 years",
+      "share": 16
+    },
+    {
+      "label": "10+ years",
+      "share": 14.8
+    },
+    {
+      "label": "Unknown/Missing",
+      "share": 2
+    }
+  ],
+  "CASE_OUTCOMES": [
+    {
+      "label": "Arrest made",
+      "share": 59
+    },
+    {
+      "label": "Indictment or prosecution",
+      "share": 41
+    },
+    {
+      "label": "Protection order issued",
+      "share": 30
+    },
+    {
+      "label": "Conviction",
+      "share": 27
+    },
+    {
+      "label": "Perpetrator deported",
+      "share": 6.5
+    },
+    {
+      "label": "Perpetrator no longer in US",
+      "share": 5
+    }
+  ]
+}

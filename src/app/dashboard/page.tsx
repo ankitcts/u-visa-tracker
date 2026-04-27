@@ -9,17 +9,8 @@ import StateShareChart from '@/components/StateShareChart';
 import CategoryBarChart from '@/components/CategoryBarChart';
 import DerivativeLinkedChart from '@/components/DerivativeLinkedChart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  ANNUAL_PRINCIPAL,
-  ANNUAL_DERIVATIVE,
-  U1_ANNUAL_CAP,
-  STATE_CERT_SHARES,
-  CERTIFIED_CRIME_SHARES,
-  CERTIFYING_AGENCY_LEVEL_SHARES,
-  USCIS_FILE_VERIFIED,
-  totals,
-  latestPending,
-} from '@/lib/data';
+import { U1_ANNUAL_CAP, totals, latestPending } from '@/lib/data';
+import { getLatestSnapshot } from '@/lib/snapshot';
 
 export const metadata: Metadata = {
   title: 'Dashboard — Filings, Approvals, Backlog & Geography',
@@ -30,7 +21,17 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const snap = await getLatestSnapshot();
+  const {
+    ANNUAL_PRINCIPAL,
+    ANNUAL_DERIVATIVE,
+    STATE_CERT_SHARES,
+    CERTIFIED_CRIME_SHARES,
+    CERTIFYING_AGENCY_LEVEL_SHARES,
+    source: USCIS_FILE_VERIFIED,
+  } = snap;
+
   const principalTotals = totals(ANNUAL_PRINCIPAL);
   const derivativeTotals = totals(ANNUAL_DERIVATIVE);
   const latest = latestPending(ANNUAL_PRINCIPAL);

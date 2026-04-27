@@ -1,12 +1,7 @@
 import type { Metadata } from 'next';
 import Explorer from '@/components/Explorer';
 import LastUpdatedPill from '@/components/LastUpdatedPill';
-import {
-  ANNUAL_PRINCIPAL,
-  ANNUAL_DERIVATIVE,
-  STATE_CERT_SHARES,
-  YEARLY_CRIME_TRENDS,
-} from '@/lib/data';
+import { getLatestSnapshot } from '@/lib/snapshot';
 
 export const metadata: Metadata = {
   title: 'Analyze U Visa Data — By Year and By State',
@@ -15,7 +10,13 @@ export const metadata: Metadata = {
   alternates: { canonical: '/analyze' },
 };
 
-export default function AnalyzePage() {
+export default async function AnalyzePage() {
+  const {
+    ANNUAL_PRINCIPAL,
+    ANNUAL_DERIVATIVE,
+    STATE_CERT_SHARES,
+    YEARLY_CRIME_TRENDS,
+  } = await getLatestSnapshot();
   return (
     <div className="space-y-6">
       <section className="space-y-2">
