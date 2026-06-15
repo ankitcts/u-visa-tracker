@@ -12,7 +12,7 @@ import type {
 // scripts/sync-uscis.mjs when the upstream XLSX SHA changes. The pill
 // renders this in the visitor's local timezone via <LocalTimestamp />.
 // 2026-04-25T04:59:00Z = Apr 24 23:59 America/Chicago (CDT, UTC-5).
-export const LAST_UPDATED = '2026-04-27T00:00:00Z';
+export const LAST_UPDATED = '2026-06-15T00:00:00Z';
 
 /**
  * Anchor for the per-table "Verified against USCIS file" badge.
@@ -28,10 +28,10 @@ export const LAST_UPDATED = '2026-04-27T00:00:00Z';
  * the live USCIS XLSX exactly.
  */
 export const USCIS_FILE_VERIFIED = {
-  filename: 'i918u_visastatistics_fy2025_q4_v1.xlsx',
-  url: 'https://www.uscis.gov/sites/default/files/document/data/i918u_visastatistics_fy2025_q4_v1.xlsx',
-  verifiedOn: '2026-04-27',
-  sha256: '4a0f1f3c2d5e944fe17165b3068adddb408b4104232970718f00c28b1f6c35c5',
+  filename: 'i918u_visastatistics_fy2026_q1_v1.xlsx',
+  url: 'https://www.uscis.gov/sites/default/files/document/reports/i918u_visastatistics_fy2026_q1_v1.xlsx',
+  verifiedOn: '2026-06-15',
+  sha256: '79ce22aee893692857398ba9d4585cad5acf36a76675235eddfe7c9f2f5a526b',
   crossCheck: {
     filename: 'i918u_visastatistics_fy2024_q4.xlsx',
     url: 'https://www.uscis.gov/sites/default/files/document/data/i918u_visastatistics_fy2024_q4.xlsx',
@@ -89,6 +89,7 @@ export const ANNUAL_PRINCIPAL: AnnualStat[] = [
   { fiscalYear: 2023, form: 'I-918', received: 31204, approved: 10000, denied: 3806, pendingEndOfYear: 207133 },
   { fiscalYear: 2024, form: 'I-918', received: 41558, approved: 10000, denied: 3646, pendingEndOfYear: 238892 },
   { fiscalYear: 2025, form: 'I-918', received: 39389, approved: 10001, denied: 3654, pendingEndOfYear: 253510 },
+  { fiscalYear: 2026, form: 'I-918', received: 4860, approved: 2876, denied: 996, pendingEndOfYear: 260542 },
 ];
 
 /**
@@ -119,6 +120,7 @@ export const ANNUAL_DERIVATIVE: AnnualStat[] = [
   { fiscalYear: 2023, form: 'I-918A', received: 21938, approved: 7889, denied: 3187, pendingEndOfYear: 137467 },
   { fiscalYear: 2024, form: 'I-918A', received: 29383, approved: 7839, denied: 3412, pendingEndOfYear: 158071 },
   { fiscalYear: 2025, form: 'I-918A', received: 28119, approved: 6956, denied: 3138, pendingEndOfYear: 168272 },
+  { fiscalYear: 2026, form: 'I-918A', received: 3024, approved: 1965, denied: 835, pendingEndOfYear: 172928 },
 ];
 
 /**
