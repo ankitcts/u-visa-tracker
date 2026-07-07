@@ -43,6 +43,16 @@ export default function DashboardPage() {
     (a, b) => b.share - a.share,
   )[0];
 
+  const firstYear = [...ANNUAL_PRINCIPAL].sort(
+    (a, b) => a.fiscalYear - b.fiscalYear,
+  )[0];
+  const receiptsVsCap = (latestYear.received / U1_ANNUAL_CAP).toFixed(1);
+  const latestDenialRate = (
+    (latestYear.denied / (latestYear.approved + latestYear.denied)) *
+    100
+  ).toFixed(0);
+  const backlogGrowth = Math.round(latest.pending / firstYear.pendingEndOfYear);
+
   return (
     <div className="space-y-8">
       <section className="space-y-2">
@@ -92,6 +102,42 @@ export default function DashboardPage() {
           value={`${topCrime.label} · ${topCrime.share}%`}
           sublabel="Certifications, FY12–18"
         />
+      </section>
+
+      <section className="prose-page !max-w-none w-full [&>p]:text-justify">
+        <h2>Reading the numbers</h2>
+        <p>
+          Three patterns run through every chart on this page. The first is a
+          ceiling that never moves: approvals sit pinned at almost exactly{' '}
+          {U1_ANNUAL_CAP.toLocaleString()} principal petitions in each recent
+          year, because that is the statutory maximum. No matter how many
+          victims petition, USCIS cannot grant more than 10,000 U-1 visas in a
+          fiscal year.
+        </p>
+        <p>
+          The second is a flood of demand pressing against that ceiling. In
+          FY{latestYear.fiscalYear}, USCIS received{' '}
+          {latestYear.received.toLocaleString()} principal petitions — about{' '}
+          {receiptsVsCap} times the number it is allowed to approve. When
+          roughly {receiptsVsCap}× more cases arrive than can clear each year,
+          the surplus does not disappear; it accumulates. That is the third
+          pattern: a backlog that has grown from{' '}
+          {firstYear.pendingEndOfYear.toLocaleString()} pending at the end of
+          FY{firstYear.fiscalYear} to {latest.pending.toLocaleString()} at the
+          end of FY{latest.fiscalYear} — roughly a {backlogGrowth}-fold
+          increase — visible as the steadily climbing line in the pending chart
+          below.
+        </p>
+        <p>
+          Denials, by contrast, stay comparatively small: about{' '}
+          {latestDenialRate}% of adjudicated principal petitions were denied in
+          FY{latestYear.fiscalYear}. The program&apos;s bottleneck is not
+          rejection — it is capacity. Most petitions are approvable; there is
+          simply no room under the cap to approve them, so they wait. The
+          geographic and crime-category charts further down show where those
+          petitions originate and what qualifying crimes underlie them, drawn
+          from the one detailed research report USCIS has published to date.
+        </p>
       </section>
 
       <Card>

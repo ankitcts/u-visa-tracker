@@ -11,11 +11,12 @@ module.exports = {
     '/icon.svg',
     '/apple-icon.svg',
     '/history', // legacy redirect → '/' (canonical)
+    '/news', // aggregated third-party headlines — noindexed, kept out of sitemap
   ],
   // Per-route priority + changefreq hints. High = landing/program pages,
   // medium = data deep-dives, low = legal boilerplate.
   transform: async (_config, path) => {
-    const high = ['/', '/u-visa', '/news', '/dashboard'];
+    const high = ['/', '/u-visa', '/dashboard', '/faq'];
     const medium = [
       '/about',
       '/sources',
@@ -31,7 +32,7 @@ module.exports = {
     let changefreq = 'monthly';
     if (high.includes(path)) {
       priority = 1.0;
-      changefreq = path === '/news' ? 'hourly' : 'daily';
+      changefreq = 'daily';
     } else if (medium.includes(path)) {
       priority = 0.7;
       changefreq = 'weekly';

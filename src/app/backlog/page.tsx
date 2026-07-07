@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import BacklogChart from '@/components/BacklogChart';
 import LastUpdatedPill from '@/components/LastUpdatedPill';
 import StatCard from '@/components/StatCard';
@@ -91,6 +92,45 @@ export default function BacklogPage() {
           describe BFD queue ages of several years for the newest cases, so
           the BFD itself has become a gating wait in addition to the eventual
           cap-governed final adjudication.
+        </p>
+        <h2>What the wait means in practice</h2>
+        <p>
+          A backlog measured in years is not an abstraction for the people
+          inside it. A victim who petitions today may wait through the BFD
+          queue simply to obtain interim work authorization, and then wait far
+          longer for a principal visa to become available under a future
+          year&apos;s cap allotment. Because eligibility to later apply for a
+          green card generally begins only after several years of holding U
+          status, the full path from the qualifying crime to permanent
+          residence routinely spans well over a decade. During that time the
+          petitioner&apos;s life — employment, travel, the ability to petition
+          for family — is shaped by where they sit in a line that moves at a
+          fixed 10,000 cases a year.
+        </p>
+        <h2>Will the backlog shrink?</h2>
+        <p>
+          Not without a change in the arithmetic. The pending queue falls only
+          when annual approvals exceed annual receipts, but approvals are
+          frozen at the statutory cap while receipts have exceeded it every
+          year for more than a decade. Barring a drop in filings or an act of
+          Congress lifting or raising the 10,000 ceiling, the mechanical result
+          is a queue that continues to lengthen. Proposals to recapture unused
+          visa numbers from prior years, to exempt certain petitioners from the
+          cap, or to raise the cap outright have circulated for years, but none
+          has become law. Until one does, the trend line above is the honest
+          forecast: up.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          For the full year-by-year receipts, approvals, and denials that drive
+          this queue, see the{' '}
+          <Link href="/dashboard" className="text-primary hover:underline">
+            dashboard
+          </Link>
+          ; for common questions about how the cap and BFD work, see the{' '}
+          <Link href="/faq" className="text-primary hover:underline">
+            FAQ
+          </Link>
+          .
         </p>
       </section>
     </div>

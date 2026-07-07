@@ -20,6 +20,13 @@ export const metadata: Metadata = {
   description:
     'Live map of U-visa and immigration-fraud news, geo-tagged by state, categorized by LLM, refreshed every 5 minutes.',
   alternates: { canonical: '/news' },
+  // The news feed aggregates and links to third-party headlines from public
+  // RSS/Atom/JSON feeds. It is a convenience surface for visitors, not
+  // original editorial content, so we keep it out of the search index (and
+  // out of the sitemap) while still letting crawlers follow the outbound
+  // links. This keeps the site's indexed footprint focused on the original,
+  // first-party writing and data analysis elsewhere on the site.
+  robots: { index: false, follow: true },
 };
 
 // Page is rendered per-request so visitors always see the
