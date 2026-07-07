@@ -106,17 +106,21 @@ export const metadata: Metadata = {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
   formatDetection: { telephone: false, address: false, email: false },
+  // AdSense account meta must ship server-side so Google's crawler can
+  // read it. We route it through metadata.other instead of a JSX <head>
+  // child because Vercel sets NEXT_PUBLIC_ADSENSE_ID only in the
+  // Production environment; if we conditionally render it inside <head>,
+  // React sees a different child count on prod vs preview and hydration
+  // fails with error #418 on prod.
+  ...(process.env.NEXT_PUBLIC_ADSENSE_ID
+    ? { other: { 'google-adsense-account': process.env.NEXT_PUBLIC_ADSENSE_ID } }
+    : {}),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_ID;
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <head>
-        {adsenseClient && (
-          <meta name="google-adsense-account" content={adsenseClient} />
-        )}
-      </head>
       <body className="min-h-screen bg-background text-foreground">
         <ThemeProvider
           attribute="class"
