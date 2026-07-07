@@ -67,7 +67,6 @@ export const metadata: Metadata = {
   creator: 'U Visa Tracker',
   publisher: 'U Visa Tracker',
   metadataBase: new URL(SITE_URL),
-  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -114,7 +113,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        <link rel="canonical" href={SITE_URL} />
         {adsenseClient && (
           <meta name="google-adsense-account" content={adsenseClient} />
         )}
