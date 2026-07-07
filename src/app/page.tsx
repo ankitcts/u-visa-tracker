@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: 'U Visa Tracker — History of the U Nonimmigrant Visa',
   description:
     'An interactive history of the U nonimmigrant visa: from VAWA 1994 and the Victims of Trafficking and Violence Protection Act of 2000 to the Bona Fide Determination policy and todays quarter-million-case backlog. Read-aloud narration available.',
+  alternates: { canonical: '/' },
 };
 
 export default function HomePage() {
