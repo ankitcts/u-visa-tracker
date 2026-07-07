@@ -12,7 +12,7 @@ import type {
 // scripts/sync-uscis.mjs when the upstream XLSX SHA changes. The pill
 // renders this in the visitor's local timezone via <LocalTimestamp />.
 // 2026-04-25T04:59:00Z = Apr 24 23:59 America/Chicago (CDT, UTC-5).
-export const LAST_UPDATED = '2026-06-13T00:00:00Z';
+export const LAST_UPDATED = '2026-07-07T00:00:00Z';
 
 /**
  * Anchor for the per-table "Verified against USCIS file" badge.
@@ -30,7 +30,7 @@ export const LAST_UPDATED = '2026-06-13T00:00:00Z';
 export const USCIS_FILE_VERIFIED = {
   filename: 'i918u_visastatistics_fy2026_q1_v1.xlsx',
   url: 'https://www.uscis.gov/sites/default/files/document/reports/i918u_visastatistics_fy2026_q1_v1.xlsx',
-  verifiedOn: '2026-06-13',
+  verifiedOn: '2026-07-07',
   sha256: '79ce22aee893692857398ba9d4585cad5acf36a76675235eddfe7c9f2f5a526b',
   crossCheck: {
     filename: 'i918u_visastatistics_fy2024_q4.xlsx',
