@@ -31,6 +31,7 @@ const FOOTER_SECTIONS: {
     label: 'About',
     links: [
       { href: '/about', label: 'About this site' },
+      { href: '/faq', label: 'FAQ' },
       { href: '/sources', label: 'Sources & methodology' },
       { href: '/archives', label: 'Archive search' },
     ],

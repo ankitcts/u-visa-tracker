@@ -6,6 +6,11 @@ import HistoryNarrator from '@/components/HistoryNarrator';
 import HistoryRemotionPlayer from '@/components/HistoryRemotionPlayerLoader';
 import HistoryGallery3D from '@/components/HistoryGallery3D';
 import { HISTORY } from '@/lib/u-visa-history';
+import {
+  ANNUAL_PRINCIPAL,
+  U1_ANNUAL_CAP,
+  latestPending,
+} from '@/lib/data';
 
 export const metadata: Metadata = {
   title: 'U Visa Tracker — History of the U Nonimmigrant Visa',
@@ -18,6 +23,9 @@ export default function HomePage() {
   const lastYear = Math.max(...HISTORY.map((e) => e.year));
   const totalEvents = HISTORY.length;
   const pivotal = HISTORY.filter((e) => e.highlight).length;
+  const latest = latestPending(ANNUAL_PRINCIPAL);
+  const pending = latest.pending.toLocaleString();
+  const yearsAtCap = Math.ceil(latest.pending / U1_ANNUAL_CAP);
 
   return (
     <div className="space-y-10">
@@ -84,6 +92,68 @@ export default function HomePage() {
             <Stat label="Pivotal" value={`${pivotal}`} />
           </dl>
         </div>
+      </section>
+
+      {/* The U visa in brief — server-rendered original prose. Gives readers
+          (and crawlers) a substantive, first-party primer high on the page
+          before the interactive timeline, video, and gallery below. */}
+      <section className="prose-page !max-w-none w-full [&>p]:text-justify">
+        <h2>The U visa in brief</h2>
+        <p>
+          The U nonimmigrant visa is one of the more unusual instruments in
+          U.S. immigration law: a benefit designed less to reward the applicant
+          than to serve the public. Congress built it into the{' '}
+          <em>Victims of Trafficking and Violence Protection Act of 2000</em> on
+          a straightforward premise — that when undocumented victims of serious
+          crime are too afraid of deportation to call the police, the crimes go
+          unsolved and whole communities become less safe. By offering victims
+          temporary legal status and work authorization in exchange for helping
+          law enforcement, the U visa tries to turn silence into cooperation.
+        </p>
+        <p>
+          It took seven years for the Department of Homeland Security to
+          finalize the regulations, so USCIS did not begin issuing U visas until
+          2007. Almost immediately the program collided with a hard statutory
+          ceiling: no more than{' '}
+          <strong>{U1_ANNUAL_CAP.toLocaleString()} principal approvals</strong>{' '}
+          may be granted in any fiscal year. That cap was first exhausted in
+          2010 and has been reached every year since. Because annual petitions
+          have run far above 10,000 for more than a decade, the number of people
+          waiting has compounded into a backlog that reached roughly{' '}
+          <strong>{pending} pending principal petitions</strong> by the end of
+          FY{latest.fiscalYear} — a queue that, at the statutory pace, would
+          take on the order of <strong>{yearsAtCap} years</strong> to clear even
+          if filings stopped tomorrow.
+        </p>
+        <p>
+          This site exists to make that public record legible. It pulls together
+          the aggregate statistics USCIS and DHS publish — filings, approvals,
+          denials, the growing backlog, the geography of certifications, and the
+          mix of qualifying crimes — and pairs them with a documented history of
+          the laws, regulations, and court decisions that shaped the program.
+          What it deliberately never shows is any individual petitioner. Under{' '}
+          <a
+            href="https://www.law.cornell.edu/uscode/text/8/1367"
+            target="_blank"
+            rel="noreferrer"
+          >
+            8 U.S.C. § 1367
+          </a>
+          , the identity, nationality, crime details, and location of a U visa
+          applicant are sealed to protect victims from retaliation, and none of
+          that information is collected or reproduced here.
+        </p>
+        <p>
+          If you are new to the program, the{' '}
+          <Link href="/u-visa">plain-English overview</Link> and the{' '}
+          <Link href="/faq">frequently asked questions</Link> are the best
+          starting points. For the numbers behind the story, the{' '}
+          <Link href="/dashboard">dashboard</Link> and{' '}
+          <Link href="/backlog">backlog deep-dive</Link> break down every
+          fiscal year. The interactive timeline below traces how each turning
+          point — from VAWA 1994 to the Bona Fide Determination policy — built
+          the system we have today.
+        </p>
       </section>
 
       {/* Animated history video (Remotion) */}

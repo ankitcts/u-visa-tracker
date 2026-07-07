@@ -10,6 +10,7 @@ import ShareButtons from './ShareButtons';
 const LINKS = [
   { href: '/', label: 'History' },
   { href: '/u-visa', label: 'U Visa' },
+  { href: '/faq', label: 'FAQ' },
   { href: '/news', label: 'Live News' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/analyze', label: 'Analyze' },
